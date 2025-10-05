@@ -279,6 +279,8 @@ const {
     EXPRESSION_ARROW,
     EXPRESSION_AS,
     EXPRESSION_RANGE,
+    EXPRESSION_TRUE,
+    EXPRESSION_FALSE,
     STATEMENT_NONE,
     STATEMENT_LET,
     STATEMENT_FUNCTION,
@@ -337,6 +339,15 @@ fn debug_ast_node_type_name(type: int): str {
     }
     elseif (type == EXPRESSION_NONE) {
         return "none";
+    }
+    elseif (type == EXPRESSION_RANGE) {
+        return "range expression";
+    }
+    elseif (type == EXPRESSION_TRUE) {
+        return "true";
+    }
+    elseif (type == EXPRESSION_FALSE) {
+        return "false";
     }
     else {
         print("Unknown expression type as ast node name " + int_to_str(type) + "\n");
@@ -1380,6 +1391,16 @@ fn parse_primary(): AstNode* {
         let long_node = new LongNode*;
         long_node->value = *(token->value as long*);
         node->node = long_node;
+        return node;
+    }
+    elseif (token->type == TRUE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_TRUE;
+        return node;
+    }
+    elseif (token->type == FALSE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_FALSE;
         return node;
     }
     elseif (token->type == IDENT) {
@@ -2474,6 +2495,20 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str((node->node as LongNode*)->value) + ", " + register_name + "\n");
         return LONG_VARIABLE;
     }
+    elseif (node->type == EXPRESSION_TRUE) {
+        if (type == LVALUE) {
+            print("True expression is not allowed as lvalue\n");
+        }
+        add_to_text_buffer(text_buffer, "\tmovb $1, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
+        return BOOL_VARIABLE;
+    }
+    elseif (node->type == EXPRESSION_FALSE) {
+        if (type == LVALUE) {
+            print("False expression is not allowed as lvalue\n");
+        }
+        add_to_text_buffer(text_buffer, "\tmovb $0, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
+        return BOOL_VARIABLE;
+    }
     elseif (node->type == EXPRESSION_VARIABLE) {
         let name = (node->node as VariableNode*)->name;
         let variable = get_variable(stack_frame, name);
@@ -2574,7 +2609,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         return return_type;
     }
-    elseif (node->type == EXPRESSION_NEW) {
+    elseif (node->type == NEW) {
         if (type == LVALUE) {
             print("New is not allowed as lvalue\n");
         }
@@ -2765,21 +2800,6 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
                 add_global_variable(global_scope, name, longPtr as ptr, expression_type);
             }
         }
-        elseif (rvalue_type == EXPRESSION_BINARY) {
-            expression_type = compile_binary_expression(text_buffer, assign_node->rvalue, stack_frame);
-        }
-        elseif (rvalue_type == EXPRESSION_UNARY) {
-            expression_type = compile_unary_expression(text_buffer, assign_node->rvalue, stack_frame, RVALUE);
-        }
-        elseif (rvalue_type == EXPRESSION_VARIABLE) {
-            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
-        }
-        elseif (rvalue_type == EXPRESSION_INDEX) {
-            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
-        }
-        elseif (rvalue_type == EXPRESSION_AS) {
-            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
-        }
         elseif (rvalue_type == EXPRESSION_FUNCTION_CALL) {
             let return_type = compile_function_call(assign_node->rvalue, text_buffer, stack_frame, 'a', RVALUE);
             if (return_type == VOID) {
@@ -2811,10 +2831,13 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
                 global_variable->name = name;
             }
         }
-        elseif (rvalue_type == EXPRESSION_NEW) {
-            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
+        elseif (rvalue_type == EXPRESSION_BINARY) {
+            expression_type = compile_binary_expression(text_buffer, assign_node->rvalue, stack_frame);
         }
-        elseif (rvalue_type == EXPRESSION_ARROW) {
+        elseif (rvalue_type == EXPRESSION_UNARY) {
+            expression_type = compile_unary_expression(text_buffer, assign_node->rvalue, stack_frame, RVALUE);
+        }
+        elseif (rvalue_type == EXPRESSION_VARIABLE || rvalue_type == EXPRESSION_INDEX || rvalue_type == EXPRESSION_AS || rvalue_type == EXPRESSION_NEW || rvalue_type == EXPRESSION_ARROW || rvalue_type == EXPRESSION_TRUE || rvalue_type == EXPRESSION_FALSE) {
             expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
         }
         else {
