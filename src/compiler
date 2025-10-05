@@ -15,6 +15,7 @@ const {
 
     COMMA,
     DOT,
+    RANGE,
     SEMICOLON,
     COLON,
     AT,
@@ -277,6 +278,7 @@ const {
     EXPRESSION_INDEX,
     EXPRESSION_ARROW,
     EXPRESSION_AS,
+    EXPRESSION_RANGE,
     STATEMENT_NONE,
     STATEMENT_LET,
     STATEMENT_FUNCTION,
@@ -610,7 +612,14 @@ fn lex_next_token(new_token: Token*) {
             new_token->type = COMMA;
         }
         elseif (curr == '.') {
-            new_token->type = DOT;
+            let next = get_next_character();
+            if (next == '.') {
+                lexer_position = lexer_position + 1;
+                new_token->type = RANGE;
+            }
+            else {
+                new_token->type = DOT;
+            }
         }
         elseif (curr == '(') {
             new_token->type = LPAREN;
@@ -1219,6 +1228,12 @@ struct ArrowNode {
     member: AstNode*,
 }
 
+struct RangeNode {
+    left: AstNode*,
+    right: AstNode*,
+    is_inclusive: bool,
+}
+
 struct IndexNode {
     left: AstNode*,
     index: AstNode*,
@@ -1555,15 +1570,25 @@ fn get_expression(min_precedence: int): AstNode* {
             node->node = function_call_node;
             left = node;
         }
+        elseif (token->type == RANGE) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_RANGE;
+            let range_node = new RangeNode*;
+            range_node->left = left;
+            range_node->right = get_expression(1);
+            node->node = range_node;
+            left = node;
+        }
         elseif (token->type == AS) {
             consume_next_token();
 
-            let type = parse_type();
             let node = new AstNode*;
             node->type = EXPRESSION_AS;
             let as_node = new AsNode*;
             as_node->value = left;
-            as_node->type = type;
+            as_node->type = parse_type();
 
             node->node = as_node;
             left = node;
