@@ -1552,14 +1552,15 @@ fn get_expression(min_precedence: int): AstNode* {
         }
         elseif (token->type == LBRACKET) {
             consume_next_token();
-            let index = get_expression(1);
-            expect_token(RBRACKET);
 
             let node = new AstNode*;
             node->type = EXPRESSION_INDEX;
             let index_node = new IndexNode*;
             index_node->left = left;
-            index_node->index = index;
+
+            index_node->index = get_expression(1);
+            expect_token(RBRACKET);
+
             node->node = index_node;
             left = node;
         }
@@ -1599,6 +1600,13 @@ fn get_expression(min_precedence: int): AstNode* {
             let range_node = new RangeNode*;
             range_node->left = left;
             range_node->right = get_expression(1);
+            if (peek_next_token()->type == ASSIGN) {
+                consume_next_token();
+                range_node->is_inclusive = true;
+            }
+            else {
+                range_node->is_inclusive = false;
+            }
             node->node = range_node;
             left = node;
         }
@@ -2609,7 +2617,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         return return_type;
     }
-    elseif (node->type == NEW) {
+    elseif (node->type == EXPRESSION_NEW) {
         if (type == LVALUE) {
             print("New is not allowed as lvalue\n");
         }
@@ -2694,16 +2702,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             add_to_text_buffer(text_buffer, "\tmovq (%rax), %rax\n");
         }
 
-        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
-        rsp_offset = rsp_offset - 8;
-        let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, 'd', RVALUE);
-
-        if (index_type != INT_VARIABLE && index_type != LONG_VARIABLE) {
-            print("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
-        }
-        add_to_text_buffer(text_buffer, "\tpopq %rax\n");
-        rsp_offset = rsp_offset + 8;
-
         let element_type: int;
         if (is_array(left_type))  {
             element_type = dereference_type(dereference_type(left_type));
@@ -2715,18 +2713,82 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             element_type = CHAR_VARIABLE;
         }
 
-        add_to_text_buffer(text_buffer, "\tleaq (%rax, %rdx, " + int_to_str(get_size(element_type)) + "), %rax\n");
-        if (type == LVALUE) {
-            element_type = to_pointer(element_type);
+        if (index_node->index->type != EXPRESSION_RANGE) {
+            add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+            rsp_offset = rsp_offset - 8;
+            let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, 'd', RVALUE);
+
+            if (index_type != INT_VARIABLE && index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
+            }
+            add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+            rsp_offset = rsp_offset + 8;
+
+            add_to_text_buffer(text_buffer, "\tleaq (%rax, %rdx, " + int_to_str(get_size(element_type)) + "), %rax\n");
+            if (type == LVALUE) {
+                element_type = to_pointer(element_type);
+            }
+            let register_name = get_register_for_type(reg, element_type);
+            let word_size = get_word_size(get_size(element_type));
+            if (type == RVALUE) {
+                add_to_text_buffer(text_buffer, "\tmov" + word_size + " (%rax), " + register_name + "\n");
+            } elseif (type == LVALUE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, " + register_name + "\n");
+            }
+            return element_type;
         }
-        let register_name = get_register_for_type(reg, element_type);
-        let word_size = get_word_size(get_size(element_type));
-        if (type == RVALUE) {
-            add_to_text_buffer(text_buffer, "\tmov" + word_size + " (%rax), " + register_name + "\n");
-        } elseif (type == LVALUE) {
-            add_to_text_buffer(text_buffer, "\tmovq %rax, " + register_name + "\n");
+        else {
+            if (is_array(left_type) || is_pointer(left_type)) {
+                print("NOT CURRENTLY SUPPORTED\n");
+            }
+
+            let range_node = (index_node->index->node as RangeNode*);
+            add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+            rsp_offset = rsp_offset - 8;
+            let left_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, 'a', RVALUE);
+
+            if (left_index_type != INT_VARIABLE && left_index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
+            }
+            if (left_index_type == INT_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovslq %eax, %r12\n");
+            }
+            elseif (left_index_type == LONG_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, %r12\n");
+            }
+
+            let right_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, 'a', RVALUE);
+            if (right_index_type != INT_VARIABLE && right_index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
+            }
+
+            if (right_index_type == INT_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovslq %eax, %r13\n");
+            }
+            elseif (right_index_type == LONG_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, %r13\n");
+            }
+
+            add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+            rsp_offset = rsp_offset + 8;
+
+            add_to_text_buffer(text_buffer, "\tsubq %r12, %r13\n");
+            add_to_text_buffer(text_buffer, "\tleaq (%rax, %r12, " + int_to_str(get_size(element_type)) + "), %r14\n");
+
+  
+            int alignment_offset = align_stack(text_buffer, rsp_offset);
+            add_to_text_buffer(text_buffer, "leaq (1, %r13, " + int_to_str(get_size(element_type)) + "), %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall malloc\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %r13, %rdx\n");
+            add_to_text_buffer(text_buffer, "\tmovq %r14, %rsi\n");
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall memcpy\n");
+
+            // add null terminator
+            add_to_text_buffer(text_buffer, "\tmovq $0, (%r14, %r13, " + int_to_str(get_size(element_type)) + ")\n");
+            dealign_stack(text_buffer, alignment_offset);
         }
-        return element_type;
     }
     elseif (node->type == EXPRESSION_AS) {
         let as_node = (node->node as AsNode*);
