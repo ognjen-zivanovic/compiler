@@ -1,0 +1,3363 @@
+const {
+    IDENT,
+    INT,
+    LONG,
+    STRING,
+    CHAR,
+
+    ASSIGN,
+    PLUS,
+    MINUS,
+    ASTERISK,
+    SLASH,
+    MODULO,
+    BANG,
+
+    COMMA,
+    DOT,
+    RANGE,
+    SEMICOLON,
+    COLON,
+    AT,
+    AS,
+
+    ARROW,
+
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    LBRACKET,
+    RBRACKET,
+
+    IF,
+    ELSE,
+    ELSEIF,
+
+    TRUE,
+    FALSE,
+
+    EQ,
+    NEQ,
+    LT,
+    LTE,
+    GT,
+    GTE,
+
+    LOGICAL_AND,
+    LOGICAL_OR,
+    LOGICAL_XOR,
+
+    BITWISE_AND,
+    BITWISE_OR,
+    BITWISE_XOR,
+    BITWISE_LEFT_SHIFT,
+    BITWISE_RIGHT_SHIFT,
+
+    FUNCTION,
+    LET,
+    CONST,
+    RETURN,
+    BREAK,
+    CONTINUE,
+    STRUCT,
+    WHILE,
+    FOR,
+
+    INT_TYPE,
+    LONG_TYPE,
+    CHAR_TYPE,
+    BOOL_TYPE,
+    STRING_TYPE,
+    PTR_TYPE,
+
+    NEW,
+
+    END
+};
+
+fn debug_token_value_to_str(token_val: int): str {
+    if (token_val == IDENT) {
+        return "IDENT";
+    }
+    elseif (token_val == INT) {
+        return "INT";
+    }
+    elseif (token_val == LONG) {
+        return "LONG";
+    }
+    elseif (token_val == STRING) {
+        return "STRING";
+    }
+    elseif (token_val == CHAR) {
+        return "CHAR";
+    }
+    elseif (token_val == ASSIGN) {
+        return "ASSIGN";
+    }
+    elseif (token_val == PLUS) {
+        return "PLUS";
+    }
+    elseif (token_val == MINUS) {
+        return "MINUS";
+    }
+    elseif (token_val == ASTERISK) {
+        return "ASTERISK";
+    }
+    elseif (token_val == SLASH) {
+        return "SLASH";
+    }
+    elseif (token_val == MODULO) {
+        return "MODULO";
+    }
+    elseif (token_val == BANG) {
+        return "BANG";
+    }
+    elseif (token_val == COMMA) {
+        return "COMMA";
+    }
+    elseif (token_val == DOT) {
+        return "DOT";
+    }
+    elseif (token_val == SEMICOLON) {
+        return "SEMICOLON";
+    }
+    elseif (token_val == COLON) {
+        return "COLON";
+    }
+    elseif (token_val == AT) {
+        return "AT";
+    }
+    elseif (token_val == AS) {
+        return "AS";
+    }
+    elseif (token_val == ARROW) {
+        return "ARROW";
+    }
+    elseif (token_val == LPAREN) {
+        return "LPAREN";
+    }
+    elseif (token_val == RPAREN) {
+        return "RPAREN";
+    }
+    elseif (token_val == LBRACE) {
+        return "LBRACE";
+    }
+    elseif (token_val == RBRACE) {
+        return "RBRACE";
+    }
+    elseif (token_val == LBRACKET) {
+        return "LBRACKET";
+    }
+    elseif (token_val == RBRACKET) {
+        return "RBRACKET";
+    }
+    elseif (token_val == IF) {
+        return "IF";
+    }
+    elseif (token_val == ELSE) {
+        return "ELSE";
+    }
+    elseif (token_val == ELSEIF) {
+        return "ELSEIF";
+    }
+    elseif (token_val == TRUE) {
+        return "TRUE";
+    }
+    elseif (token_val == FALSE) {
+        return "FALSE";
+    }
+    elseif (token_val == EQ) {
+        return "EQ";
+    }
+    elseif (token_val == NEQ) {
+        return "NEQ";
+    }
+    elseif (token_val == LT) {
+        return "LT";
+    }
+    elseif (token_val == LTE) {
+        return "LTE";
+    }
+    elseif (token_val == GT) {
+        return "GT";
+    }
+    elseif (token_val == GTE) {
+        return "GTE";
+    }
+    elseif (token_val == LOGICAL_AND) {
+        return "LOGICAL_AND";
+    }
+    elseif (token_val == LOGICAL_OR) {
+        return "LOGICAL_OR";
+    }
+    elseif (token_val == LOGICAL_XOR) {
+        return "LOGICAL_XOR";
+    }
+    elseif (token_val == BITWISE_AND) {
+        return "BITWISE_AND";
+    }
+    elseif (token_val == BITWISE_OR) {
+        return "BITWISE_OR";
+    }
+    elseif (token_val == BITWISE_XOR) {
+        return "BITWISE_XOR";
+    }
+    elseif (token_val == BITWISE_LEFT_SHIFT) {
+        return "BITWISE_LEFT_SHIFT";
+    }
+    elseif (token_val == BITWISE_RIGHT_SHIFT) {
+        return "BITWISE_RIGHT_SHIFT";
+    }
+    elseif (token_val == FUNCTION) {
+        return "FUNCTION";
+    }
+    elseif (token_val == LET) {
+        return "LET";
+    }
+    elseif (token_val == CONST) {
+        return "CONST";
+    }
+    elseif (token_val == RETURN) {
+        return "RETURN";
+    }
+    elseif (token_val == BREAK) {
+        return "BREAK";
+    }
+    elseif (token_val == CONTINUE) {
+        return "CONTINUE";
+    }
+    elseif (token_val == STRUCT) {
+        return "STRUCT";
+    }
+    elseif (token_val == WHILE) {
+        return "WHILE";
+    }
+    elseif (token_val == FOR) {
+        return "FOR";
+    }
+    elseif (token_val == INT_TYPE) {
+        return "INT_TYPE";
+    }
+    elseif (token_val == LONG_TYPE) {
+        return "LONG_TYPE";
+    }
+    elseif (token_val == CHAR_TYPE) {
+        return "CHAR_TYPE";
+    }
+    elseif (token_val == BOOL_TYPE) {
+        return "BOOL_TYPE";
+    }
+    elseif (token_val == STRING_TYPE) {
+        return "STRING_TYPE";
+    }
+    elseif (token_val == PTR_TYPE) {
+        return "PTR_TYPE";
+    }
+    elseif (token_val == NEW) {
+        return "NEW";
+    }
+    elseif (token_val == END) {
+        return "END";
+    }
+}
+
+const {
+    EXPRESSION_NONE,
+    EXPRESSION_INT,
+    EXPRESSION_LONG,
+    EXPRESSION_VARIABLE,
+    EXPRESSION_FUNCTION_CALL,
+    EXPRESSION_BINARY,
+    EXPRESSION_UNARY,
+    EXPRESSION_CONDITIONAL,
+    EXPRESSION_STRING_LITERAL,
+    EXPRESSION_STRUCT_MEMBER,
+    EXPRESSION_CHAR,
+    EXPRESSION_NEW,
+    EXPRESSION_INDEX,
+    EXPRESSION_ARROW,
+    EXPRESSION_AS,
+    EXPRESSION_RANGE,
+    EXPRESSION_TRUE,
+    EXPRESSION_FALSE,
+    STATEMENT_NONE,
+    STATEMENT_LET,
+    STATEMENT_FUNCTION,
+    STATEMENT_IF,
+    STATEMENT_WHILE,
+    STATEMENT_FOR,
+	STATEMENT_ASSIGN,
+    STATEMENT_RETURN,
+    STATEMENT_BREAK,
+    STATEMENT_CONTINUE,
+    STATEMENT_STRUCT,
+};
+
+fn debug_ast_node_type_name(type: int): str {
+    if (type == EXPRESSION_INT) {
+        return "int";
+    }
+    elseif (type == EXPRESSION_LONG) {
+        return "long";
+    }
+    elseif (type == EXPRESSION_VARIABLE) {
+        return "variable";
+    }
+    elseif (type == EXPRESSION_FUNCTION_CALL) {
+        return "function call";
+    }
+    elseif (type == EXPRESSION_BINARY) {
+        return "binary expression";
+    }
+    elseif (type == EXPRESSION_UNARY) {
+        return "unary expression";
+    }
+    elseif (type == EXPRESSION_CONDITIONAL) {
+        return "conditional expression";
+    }
+    elseif (type == EXPRESSION_STRING_LITERAL) {
+        return "string literal";
+    }
+    elseif (type == EXPRESSION_STRUCT_MEMBER) {
+        return "struct member";
+    }
+    elseif (type == EXPRESSION_CHAR) {
+        return "char";
+    }
+    elseif (type == EXPRESSION_NEW) {
+        return "new";
+    }
+    elseif (type == EXPRESSION_ARROW) {
+        return "arrow";
+    }
+    elseif (type == EXPRESSION_INDEX) {
+        return "index expression";
+    }
+    elseif (type == EXPRESSION_AS) {
+        return "as expression";
+    }
+    elseif (type == EXPRESSION_NONE) {
+        return "none";
+    }
+    elseif (type == EXPRESSION_RANGE) {
+        return "range expression";
+    }
+    elseif (type == EXPRESSION_TRUE) {
+        return "true";
+    }
+    elseif (type == EXPRESSION_FALSE) {
+        return "false";
+    }
+    else {
+        print("Unknown expression type as ast node name " + int_to_str(type) + "\n");
+        return "UNKNOWN";
+    }
+}
+
+const {
+    LVALUE,
+    RVALUE,
+};
+
+const {
+    UNDEFINED_VARIABLE,
+    INT_VARIABLE,
+    LONG_VARIABLE,
+    CHAR_VARIABLE,
+    BOOL_VARIABLE,
+    STRING_VARIABLE,
+    STRING_BUILDER_VARIABLE,
+    STRING_LITERAL_VARIABLE,
+    PTR_VARIABLE,
+    VOID
+};
+
+struct Token {
+    type: int,
+    value: ptr,
+}
+
+let tokens: Token*[];
+let token_index = 0;
+let token_count = 0;
+
+let input_text = "";
+let lexer_position = 0;
+let text_size = 0;
+
+fn get_curr_character(): char {
+    if (lexer_position >= text_size) {
+        return '\0';
+    }
+    return input_text[lexer_position];
+}
+
+fn get_next_character(): char {
+    if (lexer_position + 1 >= text_size) {
+        return '\0';
+    }
+    return input_text[lexer_position + 1];
+}
+
+fn skip_whitespace() {
+    while ((lexer_position < text_size) &&
+            (input_text[lexer_position] == ' ' || input_text[lexer_position] == '\t' || input_text[lexer_position] == '\n' || input_text[lexer_position] == '\r')) {
+        lexer_position = lexer_position + 1;
+    }
+}
+
+fn isCharacter(): bool {
+    let curr = get_curr_character();
+    return (curr >= 'a' && curr <= 'z') || (curr >= 'A' && curr <= 'Z') ||
+           curr == '_';
+}
+
+fn isDigit(): bool {
+    let curr = get_curr_character();
+    return (curr >= '0' && curr <= '9');
+}
+
+
+fn read_string(): char* {
+    let buffer = new char[];
+    lexer_position = lexer_position + 1;
+    let prev = '\0';
+    let curr = get_curr_character();
+    while (prev == '\\' || curr != '"') {
+        buffer.append(curr);
+        lexer_position = lexer_position + 1;
+        if (prev == '\\') {
+            prev = '\0';
+        } 
+        else {
+            prev = curr;
+        }
+        curr = get_curr_character();
+    }
+
+    buffer.append('\0');
+    return *buffer;
+}
+
+fn read_char(): char* {
+    let value = new char*;
+    lexer_position = lexer_position + 1;
+    let curr = get_curr_character();
+    if (curr == '\\') {
+        lexer_position = lexer_position + 1;
+        let next = get_curr_character();
+        if (next == '\'') {
+            *value = '\'';
+        }
+        elseif (next == '"') {
+            *value = '"';
+        }
+        elseif (next == '\\') {
+            *value = '\\';
+        }
+        elseif (next == 'n') {
+            *value = '\n';
+        }
+        elseif (next == 't') {
+            *value = '\t';
+        }
+        elseif (next == 'r') {
+            *value = '\r';
+        }
+        elseif (next == '0') {
+            *value = '\0';
+        }
+        else {
+            print("Unknown escape sequence \\" + next + "\n");
+        }
+    }
+    else {
+        *value = curr; 
+    }
+    lexer_position = lexer_position + 1;
+    if (get_curr_character() != '\'') {
+        print("Too many characters in char literal\n");
+    }
+    return value;
+}
+
+fn lex_next_token(new_token: Token*) {
+    skip_whitespace();
+    if (isCharacter()) {
+        let token_text = new char[];
+        while (lexer_position < text_size) {
+            let curr = get_curr_character();
+            if (!(isCharacter() || isDigit())) {
+                break;
+            }
+            token_text.append(curr);
+            lexer_position = lexer_position + 1;
+        }
+        token_text.append('\0');
+
+        let token_string = *token_text;
+        if (token_string == "let") {
+            new_token->type = LET;
+        }
+        elseif (token_string == "fn") {
+            new_token->type = FUNCTION;
+        }
+        elseif (token_string == "const") {
+            new_token->type = CONST;
+        }
+        elseif (token_string == "if") {
+            new_token->type = IF;
+        }
+        elseif (token_string == "else") {
+            new_token->type = ELSE;
+        }
+        elseif (token_string == "elseif") {
+            new_token->type = ELSEIF;
+        }
+        elseif (token_string == "return") {
+            new_token->type = RETURN;
+        }
+        elseif (token_string == "break") {
+            new_token->type = BREAK;
+        }
+        elseif (token_string == "continue") {
+            new_token->type = CONTINUE;
+        }
+        elseif (token_string == "while") {
+            new_token->type = WHILE;
+        }
+        elseif (token_string == "for") {
+            new_token->type = FOR;
+        }
+        elseif (token_string == "new") {
+            new_token->type = NEW;
+        }
+        elseif (token_string == "struct") {
+            new_token->type = STRUCT;
+        }
+        elseif (token_string == "int") {
+            new_token->type = INT_TYPE;
+        }
+        elseif (token_string == "long") {
+            new_token->type = LONG_TYPE;
+        }
+        elseif (token_string == "char") {
+            new_token->type = CHAR_TYPE;
+        }
+        elseif (token_string == "bool") {
+            new_token->type = BOOL_TYPE;
+        }
+        elseif (token_string == "str") {
+            new_token->type = STRING_TYPE;
+        }
+        elseif (token_string == "ptr") {
+            new_token->type = PTR_TYPE;
+        }
+        elseif (token_string == "as") {
+            new_token->type = AS;
+        }
+        elseif (token_string == "true") {
+            new_token->type = TRUE;
+        }
+        elseif (token_string == "false") {
+            new_token->type = FALSE;
+        }
+        else {
+            new_token->type = IDENT;
+            new_token->value = token_string;
+        }
+
+    }
+    elseif (isDigit()) {
+        let value = new int*;
+        *value = 0;
+        while (lexer_position < text_size) {
+            let curr = get_curr_character();
+            if (!isDigit()) {
+                break;
+            }
+
+            let digit = curr - '0';
+            *value = *value * 10 + digit;
+            lexer_position = lexer_position + 1;
+        }
+        new_token->type = INT;
+        new_token->value = value;
+    }
+    else {
+        let curr = get_curr_character();
+        if (curr == '"') {
+            let value = read_string();
+            new_token->type = STRING;
+            new_token->value = value;
+        }
+        elseif (curr == '\'') {
+            let value = read_char();
+            new_token->type = CHAR;
+            new_token->value = value;
+        }
+        elseif (curr == '+') {
+            new_token->type = PLUS;
+        }
+        elseif (curr == '-') {
+            let next = get_next_character();
+            if (next == '>') {
+                lexer_position = lexer_position + 1;
+                new_token->type = ARROW;
+            }
+            else {
+                new_token->type = MINUS;
+            }
+        }
+        elseif (curr == '*') {
+            new_token->type = ASTERISK;
+        }
+        elseif (curr == '/') {
+            new_token->type = SLASH;
+        }
+        elseif (curr == '%') {
+            new_token->type = MODULO;
+        }
+        elseif (curr == ',') {
+            new_token->type = COMMA;
+        }
+        elseif (curr == '.') {
+            let next = get_next_character();
+            if (next == '.') {
+                lexer_position = lexer_position + 1;
+                new_token->type = RANGE;
+            }
+            else {
+                new_token->type = DOT;
+            }
+        }
+        elseif (curr == '(') {
+            new_token->type = LPAREN;
+        }
+        elseif (curr == ')') {
+            new_token->type = RPAREN;
+        }
+        elseif (curr == '{') {
+            new_token->type = LBRACE;
+        }
+        elseif (curr == '}') {
+            new_token->type = RBRACE;
+        }
+        elseif (curr == '[') {
+            new_token->type = LBRACKET;
+        }
+        elseif (curr == ']') {
+            new_token->type = RBRACKET;
+        }
+        elseif (curr == '@') {
+            new_token->type = AT;
+        }
+        elseif (curr == '<') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = LTE;
+                lexer_position = lexer_position + 1;
+            }
+            elseif (next == '<') {
+                new_token->type = BITWISE_LEFT_SHIFT;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = LT;
+            }
+        }
+        elseif (curr == '>') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = GTE;
+                lexer_position = lexer_position + 1;
+            }
+            elseif (next == '>') {
+                new_token->type = BITWISE_RIGHT_SHIFT;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = GT;
+            }
+        }
+        elseif (curr == ':') {
+            new_token->type = COLON;
+        }
+        elseif (curr == ';') {
+            new_token->type = SEMICOLON;
+        }
+        elseif (curr == '=') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = EQ;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = ASSIGN;
+            }
+        }
+        elseif (curr == '!') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = NEQ;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BANG;
+            }
+        }
+        elseif (curr == '&') {
+            let next = get_next_character();
+            if (next == '&') {
+                new_token->type = LOGICAL_AND;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_AND;
+            }
+        }
+        elseif (curr == '|') {
+            let next = get_next_character();
+            if (next == '|') {
+                new_token->type = LOGICAL_OR;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_OR;
+            }
+        }
+        elseif (curr == '^') {
+            let next = get_next_character();
+            if (next == '^') {
+                new_token->type = LOGICAL_XOR;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_XOR;
+            }
+        }
+        elseif (curr == '\0') {
+            new_token->type = END;
+        }
+        else {
+            print("Unknown character! ");
+            print(curr.char_to_str());
+        }
+
+        lexer_position = lexer_position + 1;
+    }
+}
+
+fn lex_all_tokens() {
+    text_size = len(input_text);
+    tokens = new Token*[];
+    while (lexer_position < text_size) {
+        let new_token = new Token*;
+        lex_next_token(new_token);
+        tokens.append(new_token);
+    }
+    token_count = tokens.len();
+}
+
+fn get_token_index(): int {
+    return token_index;
+}
+
+fn unconsume_token() {
+    token_index = token_index - 1;
+}
+
+fn consume_next_token() {
+    token_index = token_index + 1;
+}
+
+fn get_next_token(): Token* {
+    if (token_index >= token_count) {
+        return 0 as Token*;
+    }
+    token_index = token_index + 1;
+    return tokens[token_index - 1];
+}
+
+fn peek_next_token(): Token* {
+    if (token_index >= token_count) {
+        return 0 as Token*;
+    }
+    return tokens[token_index];
+}
+
+fn expect_token(type: int): Token* {
+    let token = get_next_token();
+    if (token->type != type) {
+        print("Expected token " + debug_token_value_to_str(type) + ", got " + debug_token_value_to_str(token->type) + "\n");
+    }
+    return token;
+}
+
+
+
+fn variable_type_from_token(token: Token*): int {
+    if (token->type == INT_TYPE) {
+        return INT_VARIABLE;
+    }
+    elseif (token->type == LONG_TYPE) {
+        return LONG_VARIABLE;
+    }
+    elseif (token->type == CHAR_TYPE) {
+        return CHAR_VARIABLE;
+    }
+    elseif (token->type == BOOL_TYPE) {
+        return BOOL_VARIABLE;
+    }
+    elseif (token->type == STRING_TYPE) {
+        return STRING_VARIABLE;
+    }
+    elseif (token->type == PTR_TYPE) {
+        return PTR_VARIABLE;
+    }
+    else {
+        print("Variable type from token: Unknown type: " + int_to_str(token->type) + "\n");
+        return UNDEFINED_VARIABLE;
+    }
+}
+
+struct StackVariable {
+    name: str,
+    offset: int,
+    type: int,
+}
+
+struct GlobalVariable {
+    name: str,
+    value: ptr,
+    type: int,
+}
+
+struct StackFrame {
+    variables: StackVariable*[],
+    stack_size: int,
+    parent: StackFrame*,
+}
+
+struct GlobalScope {
+    variables: GlobalVariable*[],
+}
+
+let global_scope: GlobalScope*;
+
+struct StructMember {
+    name: str,
+    offset: int,
+    type: int,
+}
+
+struct StructDefinition {
+    name: str,
+    size: int,
+    type: int,
+    members: StructMember*[],
+}
+
+struct StructRegistry {
+    definitions: StructDefinition*[],
+}
+
+let struct_registry: StructRegistry*;
+
+
+fn is_const(type: int): bool {
+    return (type & (1 << 24)) != 0;
+}
+
+fn is_pointer(type: int): bool {
+    return (type & (1 << 16)) != 0;
+}
+
+fn is_array(type: int): bool {
+    return (type & (1 << 8)) != 0;
+}
+
+fn is_struct(type: int): bool {
+    return (type & (1 << 7)) != 0;
+}
+
+fn dereference_type(type: int): int {
+    let type_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let array_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let pointer_bits = type & ((1 << 8) - 1);
+
+    if ((array_bits & 1) != 0) {
+        array_bits = array_bits & (!1);
+        pointer_bits = pointer_bits | 1;
+    }
+    else {
+        pointer_bits = pointer_bits >> 1;
+        array_bits = array_bits >> 1;
+    }
+    let result = (pointer_bits << 16) | (array_bits << 8) | type_bits;
+    return result;
+}
+
+fn get_struct_with_index(struct_registry: StructRegistry*, index: int): StructDefinition* {
+    if (index >= struct_registry->definitions.len()) {
+        print("Struct index " + int_to_str(index) + " out of bounds\n");
+    }
+    return struct_registry->definitions[index];
+}
+
+fn debug_variable_non_pointer_type_name(type: int): str {
+    if (is_struct(type)) {
+        let struct_definition = get_struct_with_index(struct_registry, type ^ (1 << 7));
+        return struct_definition->name;
+    }
+    elseif (type == INT_VARIABLE) {
+        return "int";
+    }
+    elseif (type == LONG_VARIABLE) {
+        return "long";
+    }
+    elseif (type == CHAR_VARIABLE) {
+        return "char";
+    }
+    elseif (type == STRING_VARIABLE) {
+        return "string";
+    }
+    elseif (type == STRING_LITERAL_VARIABLE) {
+        return "string literal";
+    }
+    elseif (type == STRING_BUILDER_VARIABLE) {
+        return "string builder";
+    }
+    elseif (type == BOOL_VARIABLE) {
+        return "bool";
+    }
+    elseif (type == VOID) {
+        return "void";
+    }
+    elseif (type == PTR_VARIABLE) {
+        return "ptr";
+    }
+    else {
+        print("Unknown type " + int_to_str(type) + "\n");
+        return "UNKNOWN";
+    }
+}
+
+fn debug_variable_type_name(type: int): str {
+    if (is_const(type)) {
+        let non_const_type = type ^ (1 << 24);
+        return debug_variable_type_name(non_const_type) + " const";
+    }
+    if (is_pointer(type)) {
+        let non_pointer_type = dereference_type(type);
+        return debug_variable_type_name(non_pointer_type) + "*";
+    }
+    if (is_array(type)) {
+        let non_pointer_type = dereference_type(dereference_type(type));
+        return debug_variable_type_name(non_pointer_type) + "[]";
+    }
+
+    return debug_variable_non_pointer_type_name(type);
+}
+
+
+
+fn get_size(type: int): int {
+    if (is_const(type)) {
+        return get_size(type ^ (1 << 24)); 
+    }
+    if (is_pointer(type)) {
+        return 8;
+    }
+    if (is_array(type)) {
+        return 8;
+    }
+    if (is_struct(type)) {
+        let struct_definition = get_struct_with_index(struct_registry, type ^ (1 << 7));
+        return struct_definition->size;
+    }
+
+    if (type == INT_VARIABLE) {
+        return 4;
+    }
+    elseif (type == LONG_VARIABLE) {
+        return 8;
+    }
+    elseif (type == CHAR_VARIABLE) {
+        return 1;
+    }
+    elseif (type == BOOL_VARIABLE) {
+        return 1;
+    }
+    elseif (type == STRING_VARIABLE) {
+        return 8;
+    }
+    elseif (type == STRING_LITERAL_VARIABLE) {
+        return 8;
+    }
+    elseif (type == STRING_BUILDER_VARIABLE) {
+        return 8;
+    }
+    elseif (type == PTR_VARIABLE) {
+        return 8;
+    }
+    else {
+        print("Get size: Unknown type " + int_to_str(type) + "\n");
+        print("Get size: Unknown type " + debug_variable_type_name(type) + "\n");
+    }
+}
+
+fn get_word_size(size: int): char {
+    if (size == 1) {
+        return 'b';
+    }
+    elseif (size == 4) {
+        return 'l';
+    }
+    elseif (size == 8) {
+        return 'q';
+    }
+    else {
+        print("Unknown size " + int_to_str(size) + "\n");
+    }
+}
+
+fn add_member(struct_definition: StructDefinition*, name: str, type: int) {
+    let member = new StructMember*;
+    member->name = name;
+    member->type = type;
+    member->offset = struct_definition->size;
+    struct_definition->size = struct_definition->size + get_size(type);
+    struct_definition->members.append(member);
+}
+
+fn get_struct_member(struct_definition: StructDefinition*, name: str): StructMember* {
+    for (let i = 0; i < struct_definition->members.len(); i = i + 1) {
+        if (struct_definition->members[i]->name == name) {
+            return struct_definition->members[i];
+        }
+    }
+    print("Struct member " + name + " not found\n");
+}
+
+fn add_struct(struct_registry: StructRegistry*): StructDefinition* {
+    let struct_definition = new StructDefinition*;
+    struct_definition->size = 0;
+    struct_definition->type = 1 << 7 | struct_registry->definitions.len();
+    struct_definition->members = new StructMember*[];
+    struct_registry->definitions.append(struct_definition);
+    return struct_definition;
+}
+
+fn get_struct(struct_registry: StructRegistry*, name: str): StructDefinition* {
+    for (let i = 0; i < struct_registry->definitions.len(); i = i + 1) {
+        if (struct_registry->definitions[i]->name == name) {
+            return struct_registry->definitions[i];
+        }
+    }
+    print("Struct " + name + " not found\n");
+}
+
+
+
+fn add_global_variable(global_scope: GlobalScope*, name: str, value: ptr, type: int) {
+    let global_variable = new GlobalVariable*;
+    global_variable->name = name;
+    global_variable->value = value;
+    global_variable->type = type;
+
+    global_scope->variables.append(global_variable);
+}
+
+fn get_global_variable(global_scope: GlobalScope*, name: str): GlobalVariable* {
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        if (global_scope->variables[i]->name == name) {
+            return global_scope->variables[i];
+        }
+    }
+    return 0 as GlobalVariable*;
+}
+
+fn new_global_scope(): GlobalScope* {
+    let global_scope = new GlobalScope*;
+    global_scope->variables = new GlobalVariable*[];
+    return global_scope;
+}
+
+fn new_stack_frame(parent: StackFrame*): StackFrame* {
+    let stack_frame = new StackFrame*;
+    stack_frame->variables = new StackVariable*[];
+    stack_frame->stack_size = 0;
+    stack_frame->parent = parent;
+    if (parent) {
+        stack_frame->stack_size = parent->stack_size;
+    }
+    return stack_frame;
+}
+
+fn add_variable(stack_frame: StackFrame*, name: str, type: int, offset: int): StackVariable* {
+    let size = get_size(type);
+    if (offset == 0) {
+        stack_frame->stack_size = stack_frame->stack_size - size;
+    }
+    let new_variable = new StackVariable*;
+    new_variable->name = name;
+    if (offset == 0) {
+        new_variable->offset = stack_frame->stack_size;
+    }
+    else {
+        new_variable->offset = offset;
+    }
+    new_variable->type = type;
+    stack_frame->variables.append(new_variable);
+    return new_variable;
+}
+
+fn get_variable(stack_frame: StackFrame*, name: str): StackVariable* {
+    if (stack_frame) {
+        for (let i = 0; i < stack_frame->variables.len(); i = i + 1) {
+            if (stack_frame->variables[i]->name == name) {
+                return stack_frame->variables[i];
+            }
+        }
+
+        if (stack_frame->parent) {
+            return get_variable(stack_frame->parent, name);
+        }
+    }
+    return 0 as StackVariable*;
+}
+
+fn set_bits(type: int, pointer_bit: int, array_bit: int, const_bit: int): int {
+    let type_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let array_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let pointer_bits = type & ((1 << 8) - 1);
+
+    pointer_bits = pointer_bits << 1;
+    array_bits = array_bits << 1;
+    if (pointer_bits > 256) {
+        print("Too many levels of pointers\n");
+    }
+    if (array_bits > 256) {
+        print("Too many levels of arrays\n");
+    }
+    array_bits = array_bits | array_bit;
+    pointer_bits = pointer_bits | pointer_bit;
+    return (const_bit << 24) | (pointer_bits << 16) | (array_bits << 8) | type_bits;
+}
+fn to_pointer(type: int): int {
+    return set_bits(type, 1, 0, 0);
+}
+fn to_array(type: int): int {
+    return set_bits(type, 0, 1, 0);
+}
+fn to_const (type: int): int {
+    return set_bits(type, 0, 0, 1);
+}
+
+fn get_underlying_type(type: int): int {
+    type = type & (!(1 << 24));
+    if (is_array(type)) {
+        type = dereference_type(type);
+        type = to_pointer(type);
+    }
+    if (type == STRING_VARIABLE || type == STRING_LITERAL_VARIABLE || type == STRING_BUILDER_VARIABLE) {
+        type = CHAR_VARIABLE;
+        type = to_pointer(type);
+    }
+    return type;
+}
+
+struct AstNode {
+    type: int,
+    node: ptr,
+}
+
+struct AstBlock {
+    statements: AstNode*[],
+}
+
+struct AssignNode {
+    name: str,
+    lvalue: AstNode*,
+    rvalue: AstNode*,
+    type: int,
+    is_const: bool,
+}
+struct FunctionSignature {
+    name: str,
+    parameters: StackVariable*[],
+    return_type: int,
+}
+struct FunctionNode {
+    name: str,
+    body: AstBlock*,
+    function_signature: FunctionSignature*,
+}
+
+
+
+struct FunctionCallNode {
+    name: str,
+    arguments: AstNode*[],
+}
+
+struct ReturnNode {
+    value: AstNode*,
+}
+
+struct StringLiteralNode {
+    name: str,
+}
+
+struct CharNode {
+    name: str,
+}
+
+struct NewNode {
+    type: int,
+}
+
+struct BinaryExpressionNode {
+    binary_expression_type: int,
+    left: AstNode*,
+    right: AstNode*,
+}
+
+struct UnaryExpressionNode {
+    unary_expression_type: int,
+    value: AstNode*,
+}
+
+struct ArrowNode {
+    left: AstNode*,
+    member: AstNode*,
+}
+
+struct RangeNode {
+    left: AstNode*,
+    right: AstNode*,
+    is_inclusive: bool,
+}
+
+struct IndexNode {
+    left: AstNode*,
+    index: AstNode*,
+}
+
+struct StructMemberNode {
+    name: str,
+}
+
+struct IfStatementNode {
+    condition: AstNode*,
+    then_block: AstBlock*,
+    else_block: AstBlock*,
+    else_if_conditions: AstBlock*[],
+    else_if_blocks: AstBlock*[],
+    else_if_count: int,
+}
+
+struct LoopSignature {
+    type: int,
+    index: int,
+}
+
+struct WhileStatementNode {
+    condition: AstNode*,
+    body: AstBlock*,
+}
+
+struct ForStatementNode {
+    initializer: AstNode*,
+    condition: AstNode*,
+    increment: AstNode*,
+    body: AstBlock*,
+}
+
+struct VariableNode {
+    name: str,
+}
+
+struct IntNode {
+    value: int,
+}
+
+struct LongNode {
+    value: long,
+}
+
+struct AsNode {
+    value: AstNode*,
+    type: int,
+}
+
+struct StructNode {
+    name: str,
+}
+
+struct FunctionRegistry {
+    signatures: FunctionSignature*[],
+}
+
+let function_registry: FunctionRegistry*;
+
+
+fn add_statement(block: AstBlock*, statement: AstNode*) {
+    block->statements.append(statement);
+}
+
+fn add_parameter(function_signature: FunctionSignature*, name: str, type: int) {
+    let parameter = new StackVariable*;
+    parameter->name = name;
+    parameter->type = type;
+    function_signature->parameters.append(parameter);
+}
+
+fn add_argument(function_call_node: FunctionCallNode*, argument: AstNode*) {
+    function_call_node->arguments.append(argument);
+}
+
+fn add_signature(function_registry: FunctionRegistry*): FunctionSignature* {
+    let function_signature = new FunctionSignature*;
+    function_signature->parameters = new StackVariable*[];
+    function_registry->signatures.append(function_signature);
+    return function_signature;
+}
+
+fn get_signature(function_registry: FunctionRegistry*, name: str): FunctionSignature* {
+    for (let i = 0; i < function_registry->signatures.len(); i = i + 1) {
+        if (function_registry->signatures[i]->name == name) {
+            return function_registry->signatures[i];
+        }
+    }
+    print("Function " + name + " not found\n");
+}
+
+fn parse_base_type(): int {
+    let token = get_next_token();
+    if (token->type == IDENT) {
+        let struct_definition = get_struct(struct_registry, token->value);
+        return struct_definition->type;
+    }
+    else {
+        return variable_type_from_token(token);
+    }
+}
+
+fn get_expression(min_precedence: int): AstNode*
+
+fn parse_type(): int {
+    let base_type = parse_base_type();
+    let token: Token*;
+    while (1) {
+        token = peek_next_token();
+        if (token->type == ASTERISK) {
+            consume_next_token();
+            base_type = to_pointer(base_type);
+        }
+        elseif (token->type == LBRACKET) {
+            consume_next_token();
+            expect_token(RBRACKET);
+            base_type = to_array(base_type);
+        }
+        else {
+            break;
+        }
+    }
+    return base_type;
+}
+
+fn parse_primary(): AstNode* {
+    let token = get_next_token();
+    
+    if (token->type == INT) {
+
+        let node = new AstNode*;
+        node->type = EXPRESSION_INT;
+        let int_node = new IntNode*;
+        int_node->value = *(token->value as int*);
+        node->node = int_node;
+        return node;
+    }
+    elseif (token->type == LONG) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_LONG;
+        let long_node = new LongNode*;
+        long_node->value = *(token->value as long*);
+        node->node = long_node;
+        return node;
+    }
+    elseif (token->type == TRUE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_TRUE;
+        return node;
+    }
+    elseif (token->type == FALSE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_FALSE;
+        return node;
+    }
+    elseif (token->type == IDENT) {
+        if (peek_next_token()->type == LPAREN) {
+            let node = new AstNode*;
+            node->type = EXPRESSION_FUNCTION_CALL;
+            let function_call_node = new FunctionCallNode*;
+            function_call_node->arguments = new AstNode*[];
+            function_call_node->name = token->value as str;
+
+            expect_token(LPAREN);
+
+            while (peek_next_token()->type != RPAREN) {
+                let argument = get_expression(1);
+                add_argument(function_call_node, argument);
+                if (peek_next_token()->type != RPAREN) {
+                    expect_token(COMMA);
+                }
+            }
+
+            expect_token(RPAREN);
+
+            node->node = function_call_node;
+            return node;
+        }
+        else {
+            let node = new AstNode*;
+            node->type = EXPRESSION_VARIABLE;
+            let var_node = new VariableNode*;
+            var_node->name = token->value as str;
+            node->node = var_node;
+            return node;
+        }
+    } elseif (token->type == LPAREN) {
+        let expr = get_expression(1);
+
+        expect_token(RPAREN);
+        return expr;
+    } elseif (token->type == STRING) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_STRING_LITERAL;
+        let string_node = new StringLiteralNode*;
+        string_node->name = "str_" + int_to_str(get_token_index());
+        add_global_variable(global_scope, string_node->name, token->value, STRING_LITERAL_VARIABLE);
+
+        node->node = string_node;
+        return node;
+    } elseif (token->type == CHAR) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_CHAR;
+        let char_node = new CharNode*;
+        char_node->name = "char_" + int_to_str(get_token_index());
+        add_global_variable(global_scope, char_node->name, token->value, CHAR_VARIABLE);
+
+        node->node = char_node;
+        return node;
+    } elseif (token->type == NEW) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_NEW;
+        let new_node = new NewNode*;
+
+        let type = parse_type();
+
+        new_node->type = type;
+
+        node->node = new_node;
+        return node;
+    } else {
+        let node = new AstNode*;
+        node->type = EXPRESSION_UNARY;
+        let unary_expression_node = new UnaryExpressionNode*;
+        unary_expression_node->unary_expression_type = token->type;
+        unary_expression_node->value = get_expression(100);
+        node->node = unary_expression_node;
+        return node;
+    }
+}
+
+fn get_precedence(type: int): int {
+    if (type == LOGICAL_OR) {
+        return 1;
+    }
+    elseif (type == LOGICAL_XOR) {
+        return 2;
+    }
+    elseif (type == LOGICAL_AND) {
+        return 3;
+    }
+    elseif (type == RANGE) {
+        return 3;
+    }
+    elseif (type == EQ || type == NEQ || type == LT || type == LTE || type == GT || type == GTE) {
+        return 4;
+    }
+    elseif (type == PLUS || type == MINUS) {
+        return 5;
+    }
+    elseif (type == ASTERISK || type == SLASH || type == MODULO) {
+        return 6;
+    }
+    elseif (type == BITWISE_AND) {
+        return 7;
+    }
+    elseif (type == BITWISE_OR) {
+        return 8;
+    }
+    elseif (type == BITWISE_XOR) {
+        return 9;
+    }
+    elseif (type == BITWISE_LEFT_SHIFT || type == BITWISE_RIGHT_SHIFT) {
+        return 10;
+    }
+    elseif (type == LBRACKET || type == ARROW || type == DOT) {
+        return 11;
+    }
+    elseif (type == AS) {
+        return 12;
+    }
+    else {
+        return 0;
+    }
+}
+
+fn get_expression(min_precedence: int): AstNode* {
+    let left = parse_primary();
+    while (1) {
+        let token = peek_next_token();
+        let precedence = get_precedence(token->type);
+        if (precedence < min_precedence) {
+            break;
+        }
+
+        if (token->type == ARROW) {
+            consume_next_token();
+            let member = new AstNode*;
+            token = get_next_token();
+            if (token->type != IDENT) {
+                print("Expected identifier after arrow\n");
+            }
+            member->type = EXPRESSION_STRUCT_MEMBER;
+            let struct_member_node = new StructMemberNode*;
+            struct_member_node->name = token->value as str;
+            member->node = struct_member_node;
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_ARROW;
+            let arrow_node = new ArrowNode*;
+            arrow_node->left = left;
+            arrow_node->member = member;
+            node->node = arrow_node;
+            left = node;
+        }
+        elseif (token->type == LBRACKET) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_INDEX;
+            let index_node = new IndexNode*;
+            index_node->left = left;
+
+            index_node->index = get_expression(1);
+            expect_token(RBRACKET);
+
+            node->node = index_node;
+            left = node;
+        }
+        elseif (token->type == DOT) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_FUNCTION_CALL;
+            let function_call_node = new FunctionCallNode*;
+
+            token = expect_token(IDENT);
+            function_call_node->name = token->value as str;
+
+            expect_token(LPAREN);
+
+            function_call_node->arguments = new AstNode*[];
+            add_argument(function_call_node, left);
+
+            while (peek_next_token()->type != RPAREN) {
+                let argument = get_expression(1);
+                add_argument(function_call_node, argument);
+                if (peek_next_token()->type != RPAREN) {
+                    expect_token(COMMA);
+                }
+            }
+
+            expect_token(RPAREN);
+
+            node->node = function_call_node;
+            left = node;
+        }
+        elseif (token->type == RANGE) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_RANGE;
+            let range_node = new RangeNode*;
+            range_node->left = left;
+            range_node->right = get_expression(1);
+            if (peek_next_token()->type == ASSIGN) {
+                consume_next_token();
+                range_node->is_inclusive = true;
+            }
+            else {
+                range_node->is_inclusive = false;
+            }
+            node->node = range_node;
+            left = node;
+        }
+        elseif (token->type == AS) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_AS;
+            let as_node = new AsNode*;
+            as_node->value = left;
+            as_node->type = parse_type();
+
+            node->node = as_node;
+            left = node;
+        }
+        else {
+            consume_next_token();
+
+            let right = get_expression(precedence + 1);
+            let node = new AstNode*;
+            node->type = EXPRESSION_BINARY;
+            let binary_expression_node = new BinaryExpressionNode*;
+            binary_expression_node->binary_expression_type = token->type;
+            binary_expression_node->left = left;
+            binary_expression_node->right = right;
+            node->node = binary_expression_node;
+            left = node;
+        }
+    }
+    return left;
+}
+
+fn get_block(): AstBlock*
+
+fn get_statement(): AstNode* {
+    let node = new AstNode*;
+
+    let token = get_next_token();
+
+    if (token->type == LET || token->type == CONST) {
+        if (token->type == CONST && peek_next_token()->type == LBRACE) {
+            consume_next_token();
+
+            let const_value = 0;
+
+            while (peek_next_token()->type != RBRACE) {
+                token = expect_token(IDENT);
+
+                let value = new int*;
+                *value = const_value;
+
+                add_global_variable(global_scope, token->value, value, to_const(INT_VARIABLE));
+                const_value = const_value + 1;
+
+                if (peek_next_token()->type != RBRACE) {
+                    expect_token(COMMA);
+                }
+            }
+            expect_token(RBRACE);
+            expect_token(SEMICOLON);
+            node->type = STATEMENT_NONE;
+            return node;
+        }
+        node->type = STATEMENT_LET;
+
+        let let_node = new AssignNode*;
+        let_node->is_const = (token->type == CONST);
+        let_node->type = UNDEFINED_VARIABLE;
+        let_node->lvalue = 0 as AstNode*;
+        let_node->rvalue = 0 as AstNode*;
+        token = expect_token(IDENT);
+
+        if (peek_next_token()->type == COLON) {
+            consume_next_token();
+            let_node->type = parse_type();
+        }
+
+        let_node->name = token->value as str;
+
+        if (peek_next_token()->type == ASSIGN) {
+            consume_next_token();
+
+            let_node->rvalue = get_expression(1);
+        }
+        node->node = let_node;
+
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == IF) {
+        node->type = STATEMENT_IF;
+        expect_token(LPAREN);
+
+        let if_statement_node = new IfStatementNode*;
+        if_statement_node->else_if_blocks = new AstBlock*[];
+        if_statement_node->else_if_conditions = new AstBlock*[];
+        if_statement_node->condition = get_expression(1);
+        expect_token(RPAREN);
+
+        expect_token(LBRACE);
+        if_statement_node->then_block = get_block();
+        expect_token(RBRACE);
+
+        while (peek_next_token()->type == ELSEIF) {
+            consume_next_token();
+
+            expect_token(LPAREN);
+            let elseif_conditional_node = get_expression(1);
+            expect_token(RPAREN);
+
+            expect_token(LBRACE);
+            let elseif_block = get_block();
+            expect_token(RBRACE);
+
+            if_statement_node->else_if_blocks.append(elseif_block);
+            if_statement_node->else_if_conditions.append(elseif_conditional_node);
+            if_statement_node->else_if_count = if_statement_node->else_if_count + 1;
+        }
+        if (peek_next_token()->type == ELSE) {
+            consume_next_token();
+
+            expect_token(LBRACE);
+            if_statement_node->else_block = get_block();
+            expect_token(RBRACE);
+        }
+
+        node->node = if_statement_node;
+    }
+    elseif (token->type == FUNCTION) {
+        node->type = STATEMENT_FUNCTION;
+        let function_node = new FunctionNode*;
+        let function_signature = add_signature(function_registry);
+
+        token = get_next_token();
+        function_node->name = token->value as str;
+        function_signature->name = token->value as str;
+        function_node->function_signature = function_signature;
+
+        expect_token(LPAREN);
+        while (peek_next_token()->type != RPAREN) {
+            let name = expect_token(IDENT)->value;
+            expect_token(COLON);
+
+            let type = parse_type();
+            add_parameter(function_signature, name, type);
+            if (peek_next_token()->type != RPAREN) {
+                expect_token(COMMA);
+            }
+        }
+
+        token = expect_token(RPAREN);
+
+        let return_type = VOID;
+        if (peek_next_token()->type == COLON) {
+            consume_next_token();
+            return_type = parse_type();
+        }
+
+        function_signature->return_type = return_type;
+
+        let total_offset = 16;
+        for (let i = function_signature->parameters.len() - 1; i >= 0; i = i - 1) {
+            let parameter = function_signature->parameters[i];
+            parameter->offset = total_offset;
+            total_offset = total_offset + get_size(parameter->type);
+        }
+
+        if (peek_next_token()->type == LBRACE) {
+            expect_token(LBRACE);
+            function_node->body = get_block();
+            expect_token(RBRACE);
+        }
+
+        node->node = function_node;
+
+    }
+    elseif (token->type == RETURN) {
+        node->type = STATEMENT_RETURN;
+        let return_node = new ReturnNode*;
+        if (peek_next_token()->type == SEMICOLON) {
+            return_node->value = (0 as AstNode*);
+        }
+        else {
+            return_node->value = get_expression(1);
+        }
+        node->node = return_node;
+
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == BREAK) {
+        node->type = STATEMENT_BREAK;
+        node->node = 0 as AstNode*;
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == CONTINUE) {
+        node->type = STATEMENT_CONTINUE;
+        node->node = 0 as AstNode*;
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == STRUCT) {
+        node->type = STATEMENT_STRUCT;
+        let struct_node = new StructNode*;
+        let struct_definition = add_struct(struct_registry);
+
+        token = get_next_token();
+        struct_node->name = token->value as str;
+        struct_definition->name = token->value as str;
+
+        expect_token(LBRACE);
+        while (peek_next_token()->type != RBRACE) {
+            let member = new StructMember*;
+            token = expect_token(IDENT);
+            member->name = token->value as str;
+            expect_token(COLON);
+            let type = parse_type();
+            add_member(struct_definition, member->name, type);
+            if (peek_next_token()->type != RBRACE) {
+                expect_token(COMMA);
+            }
+        }
+        expect_token(RBRACE);
+
+        node->node = struct_node;
+    }
+    elseif (token->type == WHILE) {
+        node->type = STATEMENT_WHILE;
+        let while_statement_node = new WhileStatementNode*;
+        expect_token(LPAREN);
+        while_statement_node->condition = get_expression(1);
+        expect_token(RPAREN);
+        expect_token(LBRACE);
+        while_statement_node->body = get_block();
+        expect_token(RBRACE);
+        node->node = while_statement_node;
+    }
+    elseif (token->type == FOR) {
+        node->type = STATEMENT_FOR;
+        let for_statement_node = new ForStatementNode*;
+        expect_token(LPAREN);
+        for_statement_node->initializer = get_statement();
+        for_statement_node->condition = get_expression(1);
+        expect_token(SEMICOLON);
+        for_statement_node->increment = get_statement();
+        expect_token(RPAREN);
+        expect_token(LBRACE);
+        for_statement_node->body = get_block();
+        expect_token(RBRACE);
+        node->node = for_statement_node;
+    }
+    else {
+        unconsume_token();
+        let lvalue = get_expression(1);
+        if (peek_next_token()->type == ASSIGN) {
+            consume_next_token();
+            node->type = STATEMENT_ASSIGN;
+
+            let assign_node = new AssignNode*;
+
+            assign_node->name = "";
+            assign_node->type = UNDEFINED_VARIABLE;
+            assign_node->lvalue = lvalue;
+            assign_node->rvalue = get_expression(1);
+            node->node = assign_node;
+
+            if (peek_next_token()->type == SEMICOLON) {
+                consume_next_token();
+            }
+        }
+        else {
+            if (lvalue->type == EXPRESSION_FUNCTION_CALL) {
+                expect_token(SEMICOLON);
+                return lvalue;
+            }
+            else {
+                print("Unknown statement. Found lvalue with type: " + int_to_str(lvalue->type) + "\n");
+            }
+        }
+    }
+
+    return node;
+}
+
+fn get_block(): AstBlock* {
+    let block = new AstBlock*;
+    block->statements = new AstNode*[];
+    while (peek_next_token()->type != RBRACE) {
+        let statement = get_statement();
+        add_statement(block, statement);
+    }
+    return block;
+}
+
+
+
+struct TextBuffer {
+    buffer: char[],
+}
+
+fn new_text_buffer(): TextBuffer* {
+    let text_buffer = new TextBuffer*;
+    text_buffer->buffer = new char[];
+    return text_buffer;
+}
+
+fn add_to_text_buffer(buffer: TextBuffer*, text: str) {
+    let text_length = len(text);
+    for (let i = 0; i < text_length; i = i + 1) {
+        buffer->buffer.append(text[i]);
+    }
+}
+
+fn terminate_buffer(buffer: TextBuffer*) {
+    buffer->buffer.append('\0');
+}
+
+let rsp_offset = 0;
+
+fn align_stack(text_buffer: TextBuffer*, offset: int): int {
+    let alignment_offset = (offset % 16 + 16) % 16;
+
+    if (alignment_offset != 0) {
+        add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(alignment_offset) + ", %rsp\n");
+        rsp_offset = rsp_offset - alignment_offset;
+    }
+    return alignment_offset;
+}
+
+fn dealign_stack(text_buffer: TextBuffer*, offset: int) {
+    if (offset != 0) {
+        add_to_text_buffer(text_buffer, "\taddq $" + int_to_str(offset) + ", %rsp\n");
+        rsp_offset = rsp_offset + offset;
+    }
+}
+
+fn print_stack_frame_size(text_buffer: TextBuffer*, stack_frame: StackFrame*) {
+    let stack_frame_size = -(stack_frame->stack_size);
+    if (stack_frame_size > 0) {
+        stack_frame_size = (stack_frame_size + 15) & (!15);
+        if (text_buffer) {
+            add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
+        }
+        else {
+            print("\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
+        }
+    }
+}
+
+let label_index = 0;
+
+fn get_label_index(): int {
+    label_index = label_index + 1;
+    return label_index;
+}
+
+fn get_register_for_size(reg: char, size: int): str {
+    if (size == 1) {
+        return "%" + reg + "l";
+    }
+    elseif (size == 4) {
+        return "%e" + reg + "x";
+    }
+    elseif (size == 8) {
+        return "%r" + reg + "x";
+    }
+    else {
+        print("Unknown size " + int_to_str(size) + "\n");
+    }
+}
+
+fn get_register_for_type(reg: char, type: int): str {
+    let size = get_size(type);
+    return get_register_for_size(reg, size);
+}
+
+fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: char, type: int): int
+
+fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, type: int): int {
+    let unary_expression_node = (node->node as UnaryExpressionNode*);
+    let lrtype = RVALUE;
+    if (unary_expression_node->unary_expression_type == AT) {
+        lrtype = LVALUE;
+    }
+    let value_type = compile_expression_into_register(text_buffer, unary_expression_node->value, stack_frame, 'a', lrtype);
+    let pointer_register_name = get_register_for_type('a', value_type);
+
+    if (unary_expression_node->unary_expression_type == ASTERISK && type == RVALUE) {
+        if (is_pointer(value_type) || is_array(value_type)) {
+            value_type = dereference_type(value_type);
+        }
+        else {
+            print("Unary * must have a pointer or an array as a type\n");
+        }
+    }
+
+    let register_name = get_register_for_type('a', value_type);
+    let word_size = get_word_size(get_size(value_type));
+
+    if (unary_expression_node->unary_expression_type == MINUS) {
+        if (type == LVALUE) {
+            print("Unary minus is not allowed as lvalue\n");
+        }
+        add_to_text_buffer(text_buffer, "\tneg " + register_name + "\n");
+    }
+    elseif (unary_expression_node->unary_expression_type == PLUS) {
+        if (type == LVALUE) {
+            print("Unary plus is not allowed as lvalue\n");
+        }
+    }
+    elseif (unary_expression_node->unary_expression_type == ASTERISK) {
+        if (type == RVALUE) {
+            add_to_text_buffer(text_buffer, "\tmov" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
+        }
+        elseif (type == LVALUE) {
+            add_to_text_buffer(text_buffer, "\tlea" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
+        }
+    }
+    elseif (unary_expression_node->unary_expression_type == BANG) {
+        if (value_type == BOOL_VARIABLE) {
+            add_to_text_buffer(text_buffer, "\ttestb " + register_name + ", " + register_name + "\n\tsetz %al\n");
+        }
+        else {
+            add_to_text_buffer(text_buffer, "\tnot " + register_name + "\n");
+        }
+    }
+    else {
+        print("Unknown unary expression type " + debug_token_value_to_str(unary_expression_node->unary_expression_type) + "\n");
+        add_to_text_buffer(text_buffer, "Unknown unary expression type " + int_to_str(unary_expression_node->unary_expression_type) + "\n");
+    }
+    return value_type;
+}
+
+fn compile_char_into_builder(text_buffer: TextBuffer*) {
+    let index = get_label_index();
+
+    let alignment_offset = align_stack(text_buffer, rsp_offset);
+    add_to_text_buffer(text_buffer, "\tmovq $1, %rbx\n");
+    add_to_text_buffer(text_buffer, "\tmovq %r14, %rax\n");
+    add_to_text_buffer(text_buffer, "\taddq %rbx, %rax\n");
+    add_to_text_buffer(text_buffer, "\tincq %rax\n");
+    add_to_text_buffer(text_buffer, "\tcmpq %r13, %rax\n");
+    add_to_text_buffer(text_buffer, "\tjbe .L" + int_to_str(index) + "_after_grow\n");
+
+    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_grow:\n");
+    add_to_text_buffer(text_buffer, "\taddq %r13, %r13\n");
+    add_to_text_buffer(text_buffer, "\tcmpq %rax, %r13\n");
+    add_to_text_buffer(text_buffer, "\tjb .L" + int_to_str(index) + "_grow\n");
+
+    add_to_text_buffer(text_buffer, "\tmovq %r13, %rsi\n");
+    add_to_text_buffer(text_buffer, "\tmovq %r15, %rdi\n");
+    add_to_text_buffer(text_buffer, "\tcall realloc\n");
+    add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
+
+    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
+    add_to_text_buffer(text_buffer, "\tleaq (%r15,%r14), %rdi\n");
+    add_to_text_buffer(text_buffer, "\tmovb %r12b, (%r15,%r14)\n");
+    add_to_text_buffer(text_buffer, "\taddq %rbx, %r14\n");
+    add_to_text_buffer(text_buffer, "\tmovb $0, (%r15,%r14)\n");
+
+    dealign_stack(text_buffer, alignment_offset);
+}
+
+fn compile_string_into_builder(text_buffer: TextBuffer*) {
+    let index = get_label_index();
+    
+    let alignment_offset = align_stack(text_buffer, rsp_offset);
+    add_to_text_buffer(text_buffer, "\tmovq %r12, %rdi\n");
+    add_to_text_buffer(text_buffer, "\tcall strlen\n");
+    add_to_text_buffer(text_buffer, "\tmovq %rax, %rbx\n");
+
+    add_to_text_buffer(text_buffer, "\tmovq %r14, %rax\n");
+    add_to_text_buffer(text_buffer, "\taddq %rbx, %rax\n");
+    add_to_text_buffer(text_buffer, "\tincq %rax\n");
+
+    add_to_text_buffer(text_buffer, "\tcmpq %r13, %rax\n");
+    add_to_text_buffer(text_buffer, "\tjbe .L" + int_to_str(index) + "_after_grow\n");
+
+    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_grow:\n");
+    add_to_text_buffer(text_buffer, "\taddq %r13, %r13\n");
+    add_to_text_buffer(text_buffer, "\tcmpq %rax, %r13\n");
+    add_to_text_buffer(text_buffer, "\tjb .L" + int_to_str(index) + "_grow\n");
+
+    add_to_text_buffer(text_buffer, "\tmovq %r13, %rsi\n");
+    add_to_text_buffer(text_buffer, "\tmovq %r15, %rdi\n");
+    add_to_text_buffer(text_buffer, "\tcall realloc\n");
+    add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
+
+    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
+    add_to_text_buffer(text_buffer, "\tleaq (%r15,%r14), %rdi\n");
+    add_to_text_buffer(text_buffer, "\tmovq %r12, %rsi\n");
+    add_to_text_buffer(text_buffer, "\tmovq %rbx, %rdx\n");
+    add_to_text_buffer(text_buffer, "\taddq %rbx, %r14\n");
+    add_to_text_buffer(text_buffer, "\tcall memcpy\n");
+    add_to_text_buffer(text_buffer, "\tmovb $0, (%r15,%r14)\n");
+
+    dealign_stack(text_buffer, alignment_offset);
+}
+
+fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*): int {
+    let binary_expression_node = (node->node as BinaryExpressionNode*);
+    let operator = binary_expression_node->binary_expression_type;
+    let right_expression_type = binary_expression_node->right->type;
+
+    let preserve_rax = right_expression_type == EXPRESSION_BINARY || right_expression_type == EXPRESSION_FUNCTION_CALL || right_expression_type == EXPRESSION_ARROW || right_expression_type == EXPRESSION_UNARY || right_expression_type == EXPRESSION_INDEX || right_expression_type == EXPRESSION_AS;
+
+    let left_type = compile_expression_into_register(text_buffer, binary_expression_node->left, stack_frame, 'a', RVALUE);
+
+    if (preserve_rax) {
+        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        rsp_offset = rsp_offset - 8;
+    }
+
+    let right_type = compile_expression_into_register(text_buffer, binary_expression_node->right, stack_frame, 'd', RVALUE);
+
+    if (preserve_rax) {
+        add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+        rsp_offset = rsp_offset + 8;
+    }
+
+    let right_underlying_type = get_underlying_type(right_type);
+    let is_right_char = (right_underlying_type == to_pointer(CHAR_VARIABLE)) || (right_underlying_type == CHAR_VARIABLE);
+
+    let left_underlying_type = get_underlying_type(left_type);
+    let is_left_char = (left_underlying_type == to_pointer(CHAR_VARIABLE)) || (left_underlying_type == CHAR_VARIABLE);
+
+    if (operator == PLUS && left_type == STRING_BUILDER_VARIABLE && is_right_char && right_expression_type != EXPRESSION_FUNCTION_CALL) {
+        add_to_text_buffer(text_buffer, "\tmovq %rdx, %r12\n");
+        if (right_type == CHAR_VARIABLE) {
+            compile_char_into_builder(text_buffer);
+        }
+        else {
+            compile_string_into_builder(text_buffer);
+        }
+
+        add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        return STRING_BUILDER_VARIABLE;
+    }
+    elseif (operator == PLUS && is_left_char && is_right_char) {
+        add_to_text_buffer(text_buffer, "\tpushq %rdx\n");
+        rsp_offset = rsp_offset - 8;
+        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        rsp_offset = rsp_offset - 8;
+        add_to_text_buffer(text_buffer, "\tmovq $64, %rdi\n");
+        add_to_text_buffer(text_buffer, "\tcall malloc\n");
+        add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
+        add_to_text_buffer(text_buffer, "\tmovq $0, %r14\n");
+        add_to_text_buffer(text_buffer, "\tmovq $64, %r13\n");
+
+        add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        rsp_offset = rsp_offset + 8;
+        if (left_type == CHAR_VARIABLE) {
+            compile_char_into_builder(text_buffer);
+        }
+        else {
+            compile_string_into_builder(text_buffer);
+        }
+
+        add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        rsp_offset = rsp_offset + 8;
+        if (right_type == CHAR_VARIABLE) {
+            compile_char_into_builder(text_buffer);
+        }
+        else {
+            compile_string_into_builder(text_buffer);
+        }
+
+        add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        return STRING_BUILDER_VARIABLE;
+    }
+
+    
+    if ((operator == EQ || operator == NEQ) && 
+        (get_underlying_type(left_type) == to_pointer(CHAR_VARIABLE)) &&
+        (get_underlying_type(right_type) == to_pointer(CHAR_VARIABLE))) {
+        add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+        add_to_text_buffer(text_buffer, "\tmovq %rdx, %rsi\n");
+
+        let alignment_offset = align_stack(text_buffer, rsp_offset);
+        add_to_text_buffer(text_buffer, "\tcall strcmp\n");
+        add_to_text_buffer(text_buffer, "\tcmpq $0, %rax\n");
+        if (operator == EQ) {
+            add_to_text_buffer(text_buffer, "\tsete %al\n");
+        }
+        elseif (operator == NEQ) {
+            add_to_text_buffer(text_buffer, "\tsetne %al\n");
+        }
+        else {
+            print("Unknown operator to compare 2 strings " + int_to_str(operator) + "\n");
+        }
+        dealign_stack(text_buffer, alignment_offset);
+        return BOOL_VARIABLE;
+    }
+
+    left_type = get_underlying_type(left_type);
+    right_type = get_underlying_type(right_type);
+
+    if (left_type != right_type) {
+        if ((left_type == CHAR_VARIABLE || left_type == INT_VARIABLE || left_type == LONG_VARIABLE) && (right_type == CHAR_VARIABLE || right_type == INT_VARIABLE || right_type == LONG_VARIABLE)) {
+            let left_size = get_size(left_type);
+            let right_size = get_size(right_type);
+
+            if (left_size < right_size) {
+                let source_register = get_register_for_type('a', left_type);
+                let destination_register = get_register_for_type('a', right_type);
+
+                add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(left_size) + get_word_size(right_size) + " " + source_register + ", " + destination_register + "\n");
+                left_type = right_type;
+            }
+            elseif (right_size < left_size) {
+                let source_register = get_register_for_type('d', right_type);
+                let destination_register = get_register_for_type('d', left_type);
+
+                add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(right_size) + get_word_size(left_size) + " " + source_register + ", " + destination_register + "\n");
+                right_type = left_type;
+            }
+        }
+        elseif ((is_pointer(left_type) || left_type == PTR_VARIABLE) && (is_pointer(right_type) || right_type == PTR_VARIABLE)) {
+            left_type = PTR_VARIABLE;
+            right_type = PTR_VARIABLE;
+        }
+        else {
+            print("Implicit conversion of non numeric types not implemented\n");
+        }
+    }
+  
+    let type = left_type;
+
+    let left_register = get_register_for_type('a', left_type);
+    let right_register = get_register_for_type('d', right_type);
+
+    let word_size = get_word_size(get_size(left_type));
+    if (operator == PLUS) {
+        add_to_text_buffer(text_buffer, "\tadd" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == MINUS) {
+        add_to_text_buffer(text_buffer, "\tsub" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == ASTERISK) {
+        add_to_text_buffer(text_buffer, "\timul" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == SLASH) {
+        if (type != INT_VARIABLE && type != LONG_VARIABLE) {
+            print("Division not implemented for non-int types\n");
+        }
+        if (get_size(type) == 4) {
+            add_to_text_buffer(text_buffer, "\tmovl %edx, %ebx\n");
+            add_to_text_buffer(text_buffer, "\tcdq\n");
+            add_to_text_buffer(text_buffer, "\tidivl %ebx\n");
+        }
+        elseif (get_size(type) == 8) {
+            add_to_text_buffer(text_buffer, "\tmovq %rdx, %rbx\n");
+            add_to_text_buffer(text_buffer, "\tcqo\n");
+            add_to_text_buffer(text_buffer, "\tidivq %rbx\n");
+        }
+    }
+    elseif (operator == MODULO) {
+        if (type != INT_VARIABLE && type != LONG_VARIABLE) {
+            print("Modulo not implemented for non-int types\n");
+        }
+        if (get_size(type) == 4) {
+            add_to_text_buffer(text_buffer, "\tmovl %edx, %ebx\n");
+            add_to_text_buffer(text_buffer, "\tcdq\n");
+            add_to_text_buffer(text_buffer, "\tidivl %ebx\n");
+            add_to_text_buffer(text_buffer, "\tmovl %edx, %eax\n");
+        }
+        elseif (get_size(type) == 8) {
+            add_to_text_buffer(text_buffer, "\tmovq %rdx, %rbx\n");
+            add_to_text_buffer(text_buffer, "\tcqo\n");
+            add_to_text_buffer(text_buffer, "\tidivq %rbx\n");
+            add_to_text_buffer(text_buffer, "\tmovq %rdx, %rax\n");
+        }
+    }
+    elseif (operator == LT) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsetl %al\n");
+    }
+    elseif (operator == LTE) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsetle %al\n");
+    }
+    elseif (operator == GT) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsetg %al\n");
+    }
+    elseif (operator == GTE) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsetge %al\n");
+    }
+    elseif (operator == EQ) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsete %al\n");
+    }
+    elseif (operator == NEQ) {
+        add_to_text_buffer(text_buffer, "\tcmp" + word_size + " " + right_register + ", " + left_register + "\n\tsetne %al\n");
+    }
+    elseif (operator == LOGICAL_AND) {
+        add_to_text_buffer(text_buffer, "\tand" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == LOGICAL_OR) {
+        add_to_text_buffer(text_buffer, "\tor" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == LOGICAL_XOR) {
+        add_to_text_buffer(text_buffer, "\txor" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == BITWISE_AND) {
+        add_to_text_buffer(text_buffer, "\tand" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == BITWISE_OR) {
+        add_to_text_buffer(text_buffer, "\tor" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == BITWISE_XOR) {
+        add_to_text_buffer(text_buffer, "\txor" + word_size + " " + right_register + ", " + left_register + "\n");
+    }
+    elseif (operator == BITWISE_LEFT_SHIFT) {
+        add_to_text_buffer(text_buffer, "\tmovb %dl, %cl\n");
+        add_to_text_buffer(text_buffer, "\tshll %cl, " + left_register + "\n");
+    }
+    elseif (operator == BITWISE_RIGHT_SHIFT) {
+        add_to_text_buffer(text_buffer, "\tmovb %dl, %cl\n");
+        add_to_text_buffer(text_buffer, "\tshrl %cl, " + left_register + "\n");
+    }
+    else {
+        print("Unknown binary expression type " + int_to_str(operator) + "\n");
+    }
+
+    if (operator == PLUS || operator == MINUS || operator == ASTERISK || operator == SLASH || operator == MODULO || operator == BITWISE_AND || operator == BITWISE_OR || operator == BITWISE_XOR || operator == BITWISE_LEFT_SHIFT || operator == BITWISE_RIGHT_SHIFT) {
+        return type;
+    }
+    elseif (operator == LT || operator == LTE || operator == GT || operator == GTE || operator == EQ || operator == NEQ || operator == LOGICAL_AND || operator == LOGICAL_OR || operator == LOGICAL_XOR) {
+        return BOOL_VARIABLE;
+    }
+    else {
+        print("Unknown binary expression type " + int_to_str(operator) + "\n");
+    }
+}
+
+fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: StackFrame*, reg: char, type: int): int {
+    let function_call_node = (node->node as FunctionCallNode*);
+    let name = function_call_node->name;
+
+    if (name == "len") {
+        if (type == LVALUE) {
+            print("len function is not allowed as lvalue\n");
+        }
+        if (function_call_node->arguments.len() != 1) {
+            print("len function takes exactly one argument\n");
+        }
+        let argument = function_call_node->arguments[0];
+        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+        if (argument_type == STRING_VARIABLE || argument_type == STRING_LITERAL_VARIABLE || argument_type == STRING_BUILDER_VARIABLE) {
+            let alignment_offset = align_stack(text_buffer, rsp_offset);
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall strlen\n");
+
+            add_to_text_buffer(text_buffer, "\tmovl %eax, " + get_register_for_type(reg, INT_VARIABLE) + "\n");
+            dealign_stack(text_buffer, alignment_offset);
+            return INT_VARIABLE;
+        }
+        elseif (is_array(argument_type)) {
+            add_to_text_buffer(text_buffer, "\tmovl 8(%rax), " + get_register_for_type(reg, INT_VARIABLE) + "\n");
+            return INT_VARIABLE;
+        }
+        else {
+            print("Len function can only be used on strings and arrays\n");
+        }
+    }
+    elseif (name == "capacity") {
+        if (type == LVALUE) {
+            print("capacity function is not allowed as lvalue\n");
+        }
+        if (function_call_node->arguments.len() != 1) {
+            print("capacity function takes exactly one argument\n");
+        }
+        let argument = function_call_node->arguments[0];
+        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+        if (is_array(argument_type)) {
+            add_to_text_buffer(text_buffer, "\tmovl " + int_to_str(12) + "(%rax), " + get_register_for_type(reg, INT_VARIABLE) + "\n");
+            return INT_VARIABLE;
+        }
+        else {
+            print("Capacity function can only be used on arrays\n");
+        }
+    }
+    elseif (name == "append") {
+        if (function_call_node->arguments.len() != 2) {
+            print("append function takes exactly two arguments, got " + int_to_str(function_call_node->arguments.len()) + "\n");
+        }
+        let alignment_offset = align_stack(text_buffer, rsp_offset);
+
+        let array_type = compile_expression_into_register(text_buffer, function_call_node->arguments[0], stack_frame, 'a', RVALUE);
+
+        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        rsp_offset = rsp_offset - 8;
+
+        let element_type = compile_expression_into_register(text_buffer, function_call_node->arguments[1], stack_frame, 'b', RVALUE);
+
+        add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+        rsp_offset = rsp_offset + 8;
+
+        let index = get_label_index();
+
+        add_to_text_buffer(text_buffer, "\tmovq %rax, %r12\n");
+        add_to_text_buffer(text_buffer, "\tmovl 12(%r12), %edx\n");
+        add_to_text_buffer(text_buffer, "\tmovl 8(%r12), %ecx\n");
+        add_to_text_buffer(text_buffer, "\taddl $1, %ecx\n");
+        add_to_text_buffer(text_buffer, "\tcmpl %ecx, %edx\n");
+        add_to_text_buffer(text_buffer, "\tjge .L" + int_to_str(index) + "_after_grow\n");
+        
+        add_to_text_buffer(text_buffer, "\taddl %edx, %edx\n");
+        add_to_text_buffer(text_buffer, "\tmovl %edx, 12(%r12)\n");
+        add_to_text_buffer(text_buffer, "\tmovslq %edx, %rsi\n");
+        add_to_text_buffer(text_buffer, "\timulq $" + int_to_str(get_size(element_type)) + ", %rsi\n");
+        add_to_text_buffer(text_buffer, "\tmovq (%r12), %rdi\n");
+        add_to_text_buffer(text_buffer, "\tcall realloc\n");
+
+        add_to_text_buffer(text_buffer, "\tmovq %rax, (%r12)\n");
+        add_to_text_buffer(text_buffer, "\tmovq %r12, %rax\n");
+
+        add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
+        add_to_text_buffer(text_buffer, "\tmovslq 8(%rax), %rdx\n");
+        add_to_text_buffer(text_buffer, "\tmovq (%rax), %rax\n");
+        add_to_text_buffer(text_buffer, "\tleaq (%rax, %rdx, " + int_to_str(get_size(element_type)) + "), %rax\n");
+        add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(element_type)) + " " + get_register_for_type('b', element_type) + ", (%rax)\n");
+
+        if (type == LVALUE) {
+            element_type = to_pointer(element_type);
+        }
+
+        if (type == RVALUE) {
+            add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(element_type)) + " (%rax), " + get_register_for_type(reg, element_type) + "\n");
+        }
+        elseif (type == LVALUE) {
+            add_to_text_buffer(text_buffer, "\tlea" + get_word_size(get_size(element_type)) + " (%rax), " + get_register_for_type(reg, element_type) + "\n");
+        }
+
+
+        add_to_text_buffer(text_buffer, "\taddl $1, 8(%r12)\n");
+        dealign_stack(text_buffer, alignment_offset);
+        return element_type;
+    }
+    else {
+        if (type == LVALUE) {
+            print("User defined function call is not allowed as lvalue\n");
+        }
+
+
+        let function_signature = get_signature(function_registry, name);
+        let arguments_size = 0;
+        for (let i = 0; i < function_signature->parameters.len(); i = i + 1) {
+            arguments_size = arguments_size + get_size(function_signature->parameters[i]->type);
+        }
+
+        let alignment_offset = align_stack(text_buffer, rsp_offset - arguments_size);
+
+        for (let i = 0; i < function_call_node->arguments.len(); i = i + 1) {
+            let argument = function_call_node->arguments[i];
+            let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+
+            let size = get_size(argument_type);
+            let word_size = get_word_size(size);
+
+            add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(size) + ", %rsp\n");
+            add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + get_register_for_type('a', argument_type) + ", (%rsp)\n");
+
+            rsp_offset = rsp_offset - size;
+        }
+
+        let return_type = function_signature->return_type;
+        add_to_text_buffer(text_buffer, "\tcall " + name + "\n");
+
+        if (return_type != VOID) {
+            add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(return_type)) + " " + get_register_for_type('a', return_type) + ", " + get_register_for_type(reg, return_type) + "\n");
+        }
+
+        for (let i = 0; i < function_signature->parameters.len(); i = i + 1) {
+            let argument_size = get_size(function_signature->parameters[i]->type);
+            add_to_text_buffer(text_buffer, "\taddq $" + int_to_str(argument_size) + ", %rsp\n");
+            rsp_offset = rsp_offset + argument_size;
+        }
+
+        dealign_stack(text_buffer, alignment_offset);
+        return return_type;
+    }
+}
+
+
+fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: char, type: int): int {
+    if (node->type == EXPRESSION_INT) {
+        if (type == LVALUE) {
+            print("Int expression is not allowed as lvalue\n");
+        }
+        let register_name = get_register_for_size(reg, 4);
+        add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str((node->node as IntNode*)->value) + ", " + register_name + "\n");
+        return INT_VARIABLE;
+    }
+    elseif (node->type == EXPRESSION_LONG) {
+        if (type == LVALUE) {
+            print("Long expression is not allowed as lvalue\n");
+        }
+        let register_name = get_register_for_size(reg, 8);
+        add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str((node->node as LongNode*)->value) + ", " + register_name + "\n");
+        return LONG_VARIABLE;
+    }
+    elseif (node->type == EXPRESSION_TRUE) {
+        if (type == LVALUE) {
+            print("True expression is not allowed as lvalue\n");
+        }
+        add_to_text_buffer(text_buffer, "\tmovb $1, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
+        return BOOL_VARIABLE;
+    }
+    elseif (node->type == EXPRESSION_FALSE) {
+        if (type == LVALUE) {
+            print("False expression is not allowed as lvalue\n");
+        }
+        add_to_text_buffer(text_buffer, "\tmovb $0, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
+        return BOOL_VARIABLE;
+    }
+    elseif (node->type == EXPRESSION_VARIABLE) {
+        let name = (node->node as VariableNode*)->name;
+        let variable = get_variable(stack_frame, name);
+        if (variable) {
+            let variable_type = variable->type;
+            if (type == LVALUE) { 
+                variable_type = to_pointer(variable_type);
+            }
+            let register_name = get_register_for_type(reg, variable_type);
+            let word_size = get_word_size(get_size(variable_type));
+            if (type == RVALUE) {
+                add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
+            }
+            elseif (type == LVALUE) {
+                add_to_text_buffer(text_buffer, "\tlea" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
+            }
+            return variable_type;
+        }
+        else {
+            let global_variable = get_global_variable(global_scope, name);
+            let variable_type = UNDEFINED_VARIABLE;
+            if (global_variable) {
+                variable_type = global_variable->type;
+                if (type == LVALUE) {
+                    variable_type = to_pointer(variable_type);
+                }
+                let register_name = get_register_for_type(reg, variable_type);
+                let word_size = get_word_size(get_size(variable_type));
+                if (type == RVALUE) {
+                    if (is_const(variable_type)) {
+                        variable_type = variable_type ^ (1 << 24);
+                        if (variable_type == INT_VARIABLE) {
+                            add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str(*(global_variable->value as int*)) + ", " + register_name + "\n");
+                        }
+                        elseif (variable_type == LONG_VARIABLE) {
+                            add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str(*(global_variable->value as long*)) + ", " + register_name + "\n");
+                        }
+                        else {
+                            print("Unknown const variable type " + debug_variable_type_name(variable_type) + "\n");
+                        }
+                    }
+                    else {
+                        add_to_text_buffer(text_buffer, "\tmov" + word_size + " ." + global_variable->name + "(%rip), " + register_name + "\n");
+                    }
+                }
+                elseif (type == LVALUE) {
+                    if (is_const(variable_type)) {
+                        print("Const variables cannot be lvalues\n");
+                    }
+                    add_to_text_buffer(text_buffer, "\tlea" + word_size + " ." + global_variable->name + "(%rip), " + register_name + "\n");
+                }
+            }
+            else {
+                print("Global variable " + name + " not found\n");
+            }
+            return variable_type;
+        }
+    }
+    elseif (node->type == EXPRESSION_BINARY) {
+        if (type == LVALUE) {
+            print("Binary expression is not allowed as lvalue\n");
+        }
+        let expression_type = compile_binary_expression(text_buffer, node, stack_frame);
+        let register_name = get_register_for_type(reg, expression_type);
+        add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
+        return expression_type;
+    }
+    elseif (node->type == EXPRESSION_UNARY) {
+        let expression_type = compile_unary_expression(text_buffer, node, stack_frame, type);
+        let register_name = get_register_for_type(reg, expression_type);
+        add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
+        return expression_type;
+    }
+    elseif (node->type == EXPRESSION_STRING_LITERAL) {
+        if (type == LVALUE) {
+            print("String literal is not allowed as lvalue\n");
+        }
+        let string_node = (node->node as StringLiteralNode*)->name;
+        let global_variable = get_global_variable(global_scope, string_node);
+        let register_name = get_register_for_type(reg, global_variable->type);
+        add_to_text_buffer(text_buffer, "\tleaq ." + global_variable->name + "(%rip), " + register_name + "\n");
+        return global_variable->type;
+    }
+    elseif (node->type == EXPRESSION_CHAR) {
+        if (type == LVALUE) {
+            print("Char is not allowed as lvalue\n");
+        }
+        let char_node = (node->node as CharNode*)->name;
+        let global_variable = get_global_variable(global_scope, char_node);
+        let register_name = get_register_for_type(reg, global_variable->type);
+        add_to_text_buffer(text_buffer, "\tmovb ." + global_variable->name + "(%rip), " + register_name + "\n");
+        return global_variable->type;
+    }
+    elseif (node->type == EXPRESSION_FUNCTION_CALL) {
+        let return_type = compile_function_call(node, text_buffer, stack_frame, reg, type);
+        if (return_type == VOID) {
+            print("Can't assign to void\n");
+        }
+        return return_type;
+    }
+    elseif (node->type == EXPRESSION_NEW) {
+        if (type == LVALUE) {
+            print("New is not allowed as lvalue\n");
+        }
+        let new_node = (node->node as NewNode*);
+        let node_type = new_node->type;
+        let alignment_offset = align_stack(text_buffer, rsp_offset);
+
+        if (is_pointer(node_type)) {
+            let element_type = dereference_type(node_type);
+            add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(get_size(element_type)) + ", %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall malloc\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+            add_to_text_buffer(text_buffer, "\tmovq $0, %rsi\n");
+            add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(get_size(element_type)) + ", %rdx\n");
+            add_to_text_buffer(text_buffer, "\tcall memset\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %rax, " + get_register_for_type(reg, node_type) + "\n");
+        }
+        elseif (is_array(node_type)) {
+            add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(16) + ", %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall malloc\n");
+
+            let element_type = dereference_type(dereference_type(node_type));
+            let base_capacity = 4;
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rbx\n");
+            add_to_text_buffer(text_buffer, "\tmovl $0, " + int_to_str(8) + "(%rbx)\n");
+            add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str(base_capacity) + ", " + int_to_str(12) + "(%rbx)\n");
+            add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(get_size(element_type) * base_capacity) + ", %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall malloc\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+            add_to_text_buffer(text_buffer, "\tmovq $0, %rsi\n");
+            add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(get_size(element_type) * base_capacity) + ", %rdx\n");
+            add_to_text_buffer(text_buffer, "\tcall memset\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %rax, " + int_to_str(0) + "(%rbx)\n");
+            add_to_text_buffer(text_buffer, "\tmovq %rbx, " + get_register_for_type(reg, node_type) + "\n");
+        }
+        else {
+            print("New keyword can only be used to create pointers and arrays\n");
+        }
+        dealign_stack(text_buffer, alignment_offset);
+        return node_type;
+    }
+    elseif (node->type == EXPRESSION_ARROW) {
+        let arrow_node = (node->node as ArrowNode*);
+        let left_type = compile_expression_into_register(text_buffer, arrow_node->left, stack_frame, 'a', RVALUE);
+        let pointer_register_name = get_register_for_type('a', left_type);
+        if (!is_pointer(left_type)) {
+            print("Expected pointer type, got " + debug_variable_type_name(left_type) + "\n");
+        }
+
+        left_type = dereference_type(left_type);
+        if (!(!is_pointer(left_type) && !is_array(left_type) && is_struct(left_type))) {
+            print("Expected struct type, got " + debug_variable_type_name(left_type) + "\n");
+        }
+        let struct_definition = get_struct_with_index(struct_registry, left_type ^ (1 << 7));
+        let member = get_struct_member(struct_definition, (arrow_node->member->node as StructMemberNode*)->name);
+        let member_type = member->type;
+        if (type == LVALUE) {
+            member_type = to_pointer(member_type);
+        }
+        let member_offset = member->offset;
+        let register_name = get_register_for_type(reg, member_type);
+        let word_size = get_word_size(get_size(member_type));
+        if (type == RVALUE) {
+            add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
+        }
+        elseif (type == LVALUE) {
+            add_to_text_buffer(text_buffer, "\tlea" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
+        }
+        return member_type;
+    }
+    elseif (node->type == EXPRESSION_INDEX) {
+        let index_node = (node->node as IndexNode*);
+        let left_type = compile_expression_into_register(text_buffer, index_node->left, stack_frame, 'a', RVALUE);
+        if (left_type != STRING_VARIABLE && !is_array(left_type) && !is_pointer(left_type)) {
+            print("Expected string, array or pointer type, got " + debug_variable_type_name(left_type) + "\n");
+        }
+        if (is_array(left_type)) {
+            add_to_text_buffer(text_buffer, "\tmovq (%rax), %rax\n");
+        }
+
+        let element_type: int;
+        if (is_array(left_type))  {
+            element_type = dereference_type(dereference_type(left_type));
+        }
+        elseif (is_pointer(left_type)) {
+            element_type = dereference_type(left_type);
+        }
+        else {
+            element_type = CHAR_VARIABLE;
+        }
+
+        if (index_node->index->type != EXPRESSION_RANGE) {
+            add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+            rsp_offset = rsp_offset - 8;
+            let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, 'd', RVALUE);
+
+            if (index_type != INT_VARIABLE && index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
+            }
+            add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+            rsp_offset = rsp_offset + 8;
+
+            add_to_text_buffer(text_buffer, "\tleaq (%rax, %rdx, " + int_to_str(get_size(element_type)) + "), %rax\n");
+            if (type == LVALUE) {
+                element_type = to_pointer(element_type);
+            }
+            let register_name = get_register_for_type(reg, element_type);
+            let word_size = get_word_size(get_size(element_type));
+            if (type == RVALUE) {
+                add_to_text_buffer(text_buffer, "\tmov" + word_size + " (%rax), " + register_name + "\n");
+            } elseif (type == LVALUE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, " + register_name + "\n");
+            }
+            return element_type;
+        }
+        else {
+            if (is_array(left_type) || is_pointer(left_type)) {
+                print("NOT CURRENTLY SUPPORTED\n");
+            }
+
+            let range_node = (index_node->index->node as RangeNode*);
+            add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+            rsp_offset = rsp_offset - 8;
+            let left_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, 'a', RVALUE);
+
+            if (left_index_type != INT_VARIABLE && left_index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(left_index_type) + "\n");
+            }
+            if (left_index_type == INT_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovslq %eax, %r12\n");
+            }
+            elseif (left_index_type == LONG_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, %r12\n");
+            }
+
+            let right_index_type = compile_expression_into_register(text_buffer, range_node->right, stack_frame, 'a', RVALUE);
+            if (right_index_type != INT_VARIABLE && right_index_type != LONG_VARIABLE) {
+                print("Expected int type, got " + debug_variable_type_name(right_index_type) + "\n");
+            }
+
+            if (right_index_type == INT_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovslq %eax, %r13\n");
+            }
+            elseif (right_index_type == LONG_VARIABLE) {
+                add_to_text_buffer(text_buffer, "\tmovq %rax, %r13\n");
+            }
+
+            add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+            rsp_offset = rsp_offset + 8;
+
+            add_to_text_buffer(text_buffer, "\tsubq %r12, %r13\n");
+            add_to_text_buffer(text_buffer, "\tleaq (%rax, %r12, " + int_to_str(get_size(element_type)) + "), %r14\n");
+
+  
+            let alignment_offset = align_stack(text_buffer, rsp_offset);
+            add_to_text_buffer(text_buffer, "\tleaq 1(,%r13, " + int_to_str(get_size(element_type)) + "), %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall malloc\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq %r13, %rdx\n");
+            add_to_text_buffer(text_buffer, "\tmovq %r14, %rsi\n");
+            add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+            add_to_text_buffer(text_buffer, "\tcall memcpy\n");
+
+            add_to_text_buffer(text_buffer, "\tmovq $0, (%rax, %r13, " + int_to_str(get_size(element_type)) + ")\n");
+            dealign_stack(text_buffer, alignment_offset);
+            return STRING_VARIABLE;
+        }
+    }
+    elseif (node->type == EXPRESSION_AS) {
+        let as_node = (node->node as AsNode*);
+        let value_type = compile_expression_into_register(text_buffer, as_node->value, stack_frame, reg, RVALUE);
+        let cast_type = as_node->type;
+
+        let value_size = get_size(value_type);
+        let cast_size = get_size(cast_type);
+        if (value_size == cast_size) {
+            return cast_type;
+        }
+
+        if (cast_size > value_size) {
+            add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(value_size) + get_word_size(cast_size) + " " + get_register_for_type(reg, value_type) + ", " + get_register_for_type(reg, cast_type) + "\n");
+        }
+        else {
+            print("Narrowing conversion from " + debug_variable_type_name(value_type) + " to " + debug_variable_type_name(cast_type) + "\n");
+        }
+        return cast_type;
+    }
+    print("Unknown expression type to put in register " + int_to_str(node->type) + "\n");
+    return VOID;
+}
+
+fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, type: int) {
+    let assign_node = (node->node as AssignNode*);
+    let name = assign_node->name;
+
+    let variable_type = 0;
+    if (text_buffer) {
+        if (type == STATEMENT_ASSIGN) {
+            variable_type = compile_expression_into_register(text_buffer, assign_node->lvalue, stack_frame, 'a', LVALUE);
+
+            add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+            rsp_offset = rsp_offset - 8;
+        }
+    }
+
+    if (assign_node->rvalue) {
+        let expression_type: int;
+
+        let rvalue_type = assign_node->rvalue->type;
+        if (rvalue_type == EXPRESSION_INT) {
+            expression_type = INT_VARIABLE;
+
+            let int_node = (assign_node->rvalue->node as IntNode*);
+            if (text_buffer) {
+                add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str(int_node->value) + ", %eax\n");
+            }
+            else {
+                if (assign_node->is_const) {
+                    expression_type = to_const(expression_type);
+                }
+                let intPtr = new int*;
+                *intPtr = int_node->value;
+                add_global_variable(global_scope, name, intPtr as ptr, expression_type);
+            }
+        }
+        elseif (rvalue_type == EXPRESSION_LONG) {
+            expression_type = LONG_VARIABLE;
+            let long_node = (assign_node->rvalue->node as LongNode*);
+            if (text_buffer) {
+                add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str(long_node->value) + ", %rax\n");
+            }
+            else {
+                if (assign_node->is_const) {
+                    expression_type = to_const(expression_type);
+                }
+                let longPtr = new long*;
+                *longPtr = long_node->value; 
+                add_global_variable(global_scope, name, longPtr as ptr, expression_type);
+            }
+        }
+        elseif (rvalue_type == EXPRESSION_FUNCTION_CALL) {
+            let return_type = compile_function_call(assign_node->rvalue, text_buffer, stack_frame, 'a', RVALUE);
+            if (return_type == VOID) {
+                print("Can't assign to void\n");
+            }
+            expression_type = return_type;
+        }
+        elseif (rvalue_type == EXPRESSION_STRING_LITERAL) {
+            expression_type = STRING_VARIABLE;
+
+            let string_node = (assign_node->rvalue->node as StringLiteralNode*);
+            let global_variable = get_global_variable(global_scope, string_node->name);
+
+            if (text_buffer) {
+                add_to_text_buffer(text_buffer, "\tleaq ." + global_variable->name + "(%rip), %rax\n");
+            }
+            else {
+                add_global_variable(global_scope, name, global_variable->name as ptr, expression_type);
+            }
+        }
+        elseif (rvalue_type == EXPRESSION_CHAR) {
+            let char_node = (assign_node->rvalue->node as CharNode*);
+            let global_variable = get_global_variable(global_scope, char_node->name);
+            expression_type = CHAR_VARIABLE;
+            if (text_buffer) {
+                add_to_text_buffer(text_buffer, "\tmovb ." + global_variable->name + "(%rip), %al\n");
+            }
+            else {
+                global_variable->name = name;
+            }
+        }
+        elseif (rvalue_type == EXPRESSION_BINARY) {
+            expression_type = compile_binary_expression(text_buffer, assign_node->rvalue, stack_frame);
+        }
+        elseif (rvalue_type == EXPRESSION_UNARY) {
+            expression_type = compile_unary_expression(text_buffer, assign_node->rvalue, stack_frame, RVALUE);
+        }
+        elseif (rvalue_type == EXPRESSION_VARIABLE || rvalue_type == EXPRESSION_INDEX || rvalue_type == EXPRESSION_AS || rvalue_type == EXPRESSION_NEW || rvalue_type == EXPRESSION_ARROW || rvalue_type == EXPRESSION_TRUE || rvalue_type == EXPRESSION_FALSE) {
+            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
+        }
+        else {
+            print("Unknown expression type to assign" + int_to_str(rvalue_type) + "\n");
+        }
+
+
+
+        if ((text_buffer != (0 as ptr)) && (type == STATEMENT_ASSIGN)) {
+            variable_type = dereference_type(variable_type);
+            if (get_underlying_type(variable_type) != get_underlying_type(expression_type)) {
+                if (!(variable_type == PTR_VARIABLE && (is_pointer(expression_type) || is_array(expression_type)))) {
+                    print("Implicit conversion not possible. Trying to assign type " + debug_variable_type_name(expression_type) + " to variable type " + debug_variable_type_name(variable_type) + "\n");
+                }
+            }
+
+            add_to_text_buffer(text_buffer, "\tpopq %rbx\n");
+            rsp_offset = rsp_offset + 8;
+            add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(variable_type)) + " " + get_register_for_type('a', variable_type) + ", (%rbx)\n");
+        }
+
+        if (text_buffer != (0 as ptr) && type == STATEMENT_LET) {
+            let variable_node = get_variable(stack_frame, name);
+            if (variable_node) {
+                print("Variable named: " + name + " already declared\n");
+            }
+            variable_node = add_variable(stack_frame, name, expression_type, 0);
+            add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + int_to_str(variable_node->offset) + "(%rbp)\n");
+        }
+    }
+    else {
+        if (assign_node->type == UNDEFINED_VARIABLE) {
+            print("Cannot create/assign to a variable because neither the value nor the type was provided\n");
+        }
+
+        let zero_buffer = new char[];
+        for (let i = 0; i < get_size(assign_node->type); i = i + 1) {
+            zero_buffer.append('\0');
+        }
+        add_global_variable(global_scope, name, (*zero_buffer) as ptr, assign_node->type);
+    }
+}
+
+
+fn compile_if_jump(text_buffer: TextBuffer*, if_statement_node: IfStatementNode*, index: int, i: int) {
+    if (if_statement_node->else_if_count > i + 1) {
+        add_to_text_buffer(text_buffer, "\tjz .L" + int_to_str(index) + "_elseif_" + int_to_str(i + 1) + "\n");
+    }
+    elseif (if_statement_node->else_block) {
+        add_to_text_buffer(text_buffer, "\tjz .L" + int_to_str(index) + "_else\n");
+    }
+    else {
+        add_to_text_buffer(text_buffer, "\tjz .L" + int_to_str(index) + "_end\n");
+    }
+}
+
+fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, statement: AstNode*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) 
+
+fn compile_block(text_buffer: TextBuffer*, stack_frame: StackFrame*, block: AstBlock*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
+    for (let i = 0; i < block->statements.len(); i = i + 1) {
+        compile_statement(text_buffer, stack_frame, block->statements[i], curr_func, curr_loop);
+    }
+}
+
+fn compile_if_block(text_buffer: TextBuffer*, if_block: AstBlock*, stack_frame: StackFrame*, index: int, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
+    let block_stack_frame = new_stack_frame(stack_frame);
+    let block_text_buffer = new_text_buffer();
+
+
+    compile_block(block_text_buffer, block_stack_frame, if_block, curr_func, curr_loop);
+
+    add_to_text_buffer(block_text_buffer, "\tjmp .L" + int_to_str(index) + "_end\n");
+
+    print_stack_frame_size(text_buffer, block_stack_frame);
+    terminate_buffer(block_text_buffer);
+    add_to_text_buffer(text_buffer, *(block_text_buffer->buffer));
+}
+
+fn compile_if(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
+
+    let if_statement_node = (node->node as IfStatementNode*);
+
+    let index = get_label_index();
+
+    let conditional_node = if_statement_node->condition;
+
+    let conditional_type = compile_expression_into_register(text_buffer, conditional_node, stack_frame, 'a', RVALUE);
+    add_to_text_buffer(text_buffer, "\tcmp $0, " + get_register_for_type('a', conditional_type) + "\n");
+    compile_if_jump(text_buffer, if_statement_node, index, -1);
+
+    compile_if_block(text_buffer, if_statement_node->then_block, stack_frame, index, curr_func, curr_loop);
+
+    for (let i = 0; i < if_statement_node->else_if_count; i = i + 1) {
+        let elseif_conditional_node = if_statement_node->else_if_conditions[i];
+
+        add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_elseif_" + int_to_str(i) + ":\n");
+
+        let elseif_conditional_type = compile_expression_into_register(text_buffer, elseif_conditional_node, stack_frame, 'a', RVALUE);
+        add_to_text_buffer(text_buffer, "\tcmp $0, " + get_register_for_type('a', elseif_conditional_type) + "\n");
+        compile_if_jump(text_buffer, if_statement_node, index, i);
+
+        compile_if_block(text_buffer, if_statement_node->else_if_blocks[i], stack_frame, index, curr_func, curr_loop);
+    }
+
+    if (if_statement_node->else_block) {
+        add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_else:\n");
+
+        compile_if_block(text_buffer, if_statement_node->else_block, stack_frame, index, curr_func, curr_loop);
+    }
+
+    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_end:\n");
+}
+
+fn compile_return(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*): int {
+    let return_node = (node->node as ReturnNode*);
+
+    if (curr_func == (0 as FunctionSignature*)) {
+        print("Return called from outside of a function\n");
+    }
+
+    if (return_node->value == (0 as AstNode*)) {
+        add_to_text_buffer(text_buffer, "\tleave\n");
+        add_to_text_buffer(text_buffer, "\tret\n");
+        return VOID;
+    }
+
+    let return_type = curr_func->return_type;
+    let return_expression_type = compile_expression_into_register(text_buffer, return_node->value, stack_frame, 'a', RVALUE);
+
+    if (get_underlying_type(return_type) != get_underlying_type(return_expression_type)) {
+        print("Type in return statement doesnt match the return type of function " + curr_func->name + ". Expected " + debug_variable_type_name(return_type) + ", got " + debug_variable_type_name(return_expression_type) + "\n");
+        print("Underlying types are: " + debug_variable_type_name(get_underlying_type(return_type)) + " and " + debug_variable_type_name(get_underlying_type(return_expression_type)) + "\n");
+    }
+
+    add_to_text_buffer(text_buffer, "\tleave\n");
+    add_to_text_buffer(text_buffer, "\tret\n");
+    return return_type;
+}
+
+fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
+    let function_node = (node->node as FunctionNode*);
+    if ((function_node->body) == (0 as ptr)) {
+        return;
+    }
+
+    let function_stack_frame = new_stack_frame(0 as StackFrame*);
+    let function_text_buffer = new_text_buffer();
+    let function_signature = function_node->function_signature;
+
+    let name = function_node->name;
+    if (name == "main") {
+        add_variable(function_stack_frame, "argc", INT_VARIABLE, 0);
+        add_variable(function_stack_frame, "argv", to_pointer(to_pointer(CHAR_VARIABLE)), 0);
+    }
+    for (let i = 0; i < function_signature->parameters.len(); i = i + 1) {
+        let parameter = function_signature->parameters[i];
+        add_variable(function_stack_frame, parameter->name, parameter->type, parameter->offset);
+    }
+    for (let i = 0; i < function_node->body->statements.len(); i = i + 1) {
+        if (function_node->body->statements[i]->type == STATEMENT_RETURN) {
+            let return_type = compile_return(function_text_buffer, function_node->body->statements[i], function_stack_frame, function_signature);
+            if (get_underlying_type(return_type) != get_underlying_type(function_signature->return_type)) {
+                print("Return type mismatch in function " + function_node->name + ". Expected " + debug_variable_type_name(function_signature->return_type) + ", got " + debug_variable_type_name(return_type) + "\n");
+                print("Underlying types are: " + debug_variable_type_name(get_underlying_type(function_signature->return_type)) + " and " + debug_variable_type_name(get_underlying_type(return_type)) + "\n");
+            }
+        }
+        else {
+            compile_statement(function_text_buffer, function_stack_frame, function_node->body->statements[i], function_signature, 0 as LoopSignature*);
+        }
+    }
+
+    print(".globl " + name + "\n");
+    print(name + ":\n");
+    print("\tpushq %rbp\n");
+    print("\tmovq %rsp, %rbp\n");
+    rsp_offset = 0;
+
+    if (name == "main") {
+        rsp_offset = -16;
+        print("\tsubq $16, %rsp\n");
+        print("\tmovl %edi, -4(%rbp)\n");
+        print("\tmovq %rsi, -12(%rbp)\n");
+    }
+
+    print_stack_frame_size(0 as TextBuffer*, function_stack_frame);
+    terminate_buffer(function_text_buffer);
+    print(*(function_text_buffer->buffer));
+
+    print("\tleave\n\tret\n");
+}
+
+fn compile_break(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
+    if (curr_loop == (0 as LoopSignature*)) {
+        print("Break called from outside of a loop\n");
+    }
+
+    if (curr_loop->type == STATEMENT_FOR) {
+        add_to_text_buffer(text_buffer, "\tjmp .L" + int_to_str(curr_loop->index) + "_for_end\n");
+    }
+    elseif (curr_loop->type == STATEMENT_WHILE) {
+        add_to_text_buffer(text_buffer, "\tjmp .L" + int_to_str(curr_loop->index) + "_while_end\n");
+    }
+    else {
+        print("Unknown loop type " + int_to_str(curr_loop->type) + "\n");
+    }
+}
+
+fn compile_continue(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
+    if (curr_loop == (0 as LoopSignature*)) {
+        print("Continue called from outside of a loop\n");
+    }
+    
+    if (curr_loop->type == STATEMENT_FOR) {
+        add_to_text_buffer(text_buffer, "\tjmp .L" + int_to_str(curr_loop->index) + "_for_inc\n");
+    }
+    elseif (curr_loop->type == STATEMENT_WHILE) {
+        add_to_text_buffer(text_buffer, "\tjmp .L" + int_to_str(curr_loop->index) + "_while_start\n");
+    }
+    else {
+        print("Unknown loop type " + int_to_str(curr_loop->type) + "\n");
+    }
+}
+
+fn compile_while(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*) {
+    let while_statement_node = (node->node as WhileStatementNode*);
+
+    let while_stack_frame = new_stack_frame(stack_frame);
+    let while_text_buffer = new_text_buffer();
+
+    let loop_signature = new LoopSignature*;
+
+    let index = get_label_index();
+    loop_signature->type = node->type;
+    loop_signature->index = index;
+
+    add_to_text_buffer(while_text_buffer, ".L" + int_to_str(index) + "_while_start:\n");
+
+    let condition_type = compile_expression_into_register(while_text_buffer, while_statement_node->condition, while_stack_frame, 'a', RVALUE);
+
+    add_to_text_buffer(while_text_buffer, "\tcmp $0, " + get_register_for_type('a', condition_type) + "\n");
+    add_to_text_buffer(while_text_buffer, "\tjz .L" + int_to_str(index) + "_while_end\n");
+
+    compile_block(while_text_buffer, while_stack_frame, while_statement_node->body, curr_func, loop_signature);
+
+    add_to_text_buffer(while_text_buffer, "\tjmp .L" + int_to_str(index) + "_while_start\n");
+
+    add_to_text_buffer(while_text_buffer, ".L" + int_to_str(index) + "_while_end:\n");
+
+    print_stack_frame_size(text_buffer, while_stack_frame);
+    terminate_buffer(while_text_buffer);
+    add_to_text_buffer(text_buffer, *(while_text_buffer->buffer));
+}
+    
+fn compile_for(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*) {
+    let for_statement_node = (node->node as ForStatementNode*);
+    
+    let for_stack_frame = new_stack_frame(stack_frame);
+    let for_text_buffer = new_text_buffer();
+
+    let init_node = for_statement_node->initializer;
+    let condition_node = for_statement_node->condition;
+    let increment_node = for_statement_node->increment;
+    let body_block = for_statement_node->body;
+
+    compile_statement(for_text_buffer, for_stack_frame, init_node, curr_func, 0 as LoopSignature*);
+
+    let index = get_label_index();
+    let loop_signature = new LoopSignature*;
+    loop_signature->type = node->type;
+    loop_signature->index = index;
+
+    add_to_text_buffer(for_text_buffer, ".L" + int_to_str(index) + "_for_start:\n");
+
+    let condition_type = compile_expression_into_register(for_text_buffer, condition_node, for_stack_frame, 'a', RVALUE);
+    add_to_text_buffer(for_text_buffer, "\tcmp $0, " + get_register_for_type('a', condition_type) + "\n");
+    add_to_text_buffer(for_text_buffer, "\tjz .L" + int_to_str(index) + "_for_end\n");
+
+    compile_block(for_text_buffer, for_stack_frame, body_block, curr_func, loop_signature);
+
+    add_to_text_buffer(for_text_buffer, ".L" + int_to_str(index) + "_for_inc:\n");
+    compile_statement(for_text_buffer, for_stack_frame, increment_node, curr_func, loop_signature);
+    add_to_text_buffer(for_text_buffer, "\tjmp .L" + int_to_str(index) + "_for_start\n");
+
+    add_to_text_buffer(for_text_buffer, ".L" + int_to_str(index) + "_for_end:\n");
+
+    print_stack_frame_size(text_buffer, for_stack_frame);
+    terminate_buffer(for_text_buffer);
+    add_to_text_buffer(text_buffer, *(for_text_buffer->buffer));
+}
+
+fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, statement: AstNode*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
+
+    if (statement->type == STATEMENT_LET) {
+        compile_assign(text_buffer, statement, stack_frame, statement->type);
+    }
+    elseif (statement->type == STATEMENT_ASSIGN) {
+        compile_assign(text_buffer, statement, stack_frame, statement->type);
+    }
+    elseif (statement->type == STATEMENT_IF) {
+        compile_if(text_buffer, statement, stack_frame, curr_func, curr_loop);
+    }
+    elseif (statement->type == STATEMENT_FUNCTION) {
+        if (text_buffer != (0 as ptr)) {
+            print("Nested functions are not supported\n");
+        }
+        compile_function(statement, stack_frame);
+    }
+    elseif (statement->type == STATEMENT_RETURN) {
+        compile_return(text_buffer, statement, stack_frame, curr_func);
+    }
+    elseif (statement->type == STATEMENT_BREAK) {
+        compile_break(text_buffer, stack_frame, curr_loop);
+    }
+    elseif (statement->type == STATEMENT_CONTINUE) {
+        compile_continue(text_buffer, stack_frame, curr_loop);
+    }
+    elseif (statement->type == EXPRESSION_FUNCTION_CALL) {
+        compile_function_call(statement, text_buffer, stack_frame, 'a', RVALUE);
+    }
+    elseif (statement->type == STATEMENT_WHILE) {
+        compile_while(text_buffer, statement, stack_frame, curr_func);
+    }
+    elseif (statement->type == STATEMENT_FOR) {
+        compile_for(text_buffer, statement, stack_frame, curr_func);
+    }
+    elseif (statement->type == STATEMENT_STRUCT || statement->type == STATEMENT_NONE) {
+
+    }
+    else {
+        print("Unknown statement type " + int_to_str(statement->type) + "\n");
+    }
+}
+
+let print_asm_code = ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n";
+
+let strlen_internal_asm_code = ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n";
+    
+let long_to_str_asm_code = ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n";
+
+let int_to_str_asm_code = ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n";
+
+let char_to_str_asm_code = ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n";
+
+let read_file_asm_code = ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n";
+
+
+fn main(): int {
+    if (argc != 2) {
+        print("Usage: ./compiler input_file\n");
+        return 1;
+    }
+    input_text = read_file(argv[1]);
+
+    global_scope = new_global_scope();
+
+    struct_registry = new StructRegistry*;
+    struct_registry->definitions = new StructDefinition*[];
+    function_registry = new FunctionRegistry*;
+    function_registry->signatures = new FunctionSignature*[];
+
+    let print_signature = add_signature(function_registry);
+    print_signature->name = "print";
+    print_signature->return_type = VOID;
+    add_parameter(print_signature, "str_var", STRING_VARIABLE);
+
+    let int_to_str_signature = add_signature(function_registry);
+    int_to_str_signature->name = "int_to_str";
+    int_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
+
+    let long_to_str_signature = add_signature(function_registry);
+    long_to_str_signature->name = "long_to_str";
+    long_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
+
+    let char_to_str_signature = add_signature(function_registry);
+    char_to_str_signature->name = "char_to_str";
+    char_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
+
+    let read_file_signature = add_signature(function_registry);
+    read_file_signature->name = "read_file";
+    read_file_signature->return_type = STRING_VARIABLE;
+    add_parameter(read_file_signature, "str", STRING_VARIABLE);
+
+    lex_all_tokens();
+
+    print(".section .text\n");
+    print(".extern malloc\n");
+    print(".extern realloc\n");
+    print(".extern snprintf\n");
+    print(".extern strcmp\n");
+
+    while (peek_next_token() != (0 as Token*)) {
+        if (peek_next_token()->type == END) {
+            break;
+        }
+        let node = get_statement();
+
+        compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
+    }
+
+    print(print_asm_code);
+    print(strlen_internal_asm_code);
+    print(long_to_str_asm_code);
+    print(int_to_str_asm_code);
+    print(char_to_str_asm_code);
+    print(read_file_asm_code);
+
+
+    print(".section .data\n");
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        let variable_type = global_scope->variables[i]->type;
+
+        if (is_const(variable_type)) {
+            continue;
+        }
+
+        if (variable_type == STRING_LITERAL_VARIABLE) {
+            continue;
+        }
+
+        print("\t." + global_scope->variables[i]->name + ":\t");
+        if (is_pointer(variable_type) || is_array(variable_type)) {
+            print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
+        }
+        elseif (variable_type == STRING_VARIABLE) {
+            print(".quad ." + (global_scope->variables[i]->value as char*) + "\n");
+        }
+        elseif (variable_type == INT_VARIABLE) {
+            print(".quad " + (*(global_scope->variables[i]->value as int*)).int_to_str() + "\n");
+        }
+        elseif (variable_type == LONG_VARIABLE) {
+            print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
+        }
+        elseif (variable_type == CHAR_VARIABLE) {
+            print(".byte " + (*(global_scope->variables[i]->value as char*) as int).int_to_str() + "\n");
+        }
+    }
+    
+    print(".section .rodata\n");
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        let variable_type = global_scope->variables[i]->type;
+        if (is_const(variable_type)) {
+            continue;
+        }
+        if (variable_type == STRING_LITERAL_VARIABLE) {
+            print("\t." + global_scope->variables[i]->name + ":\t");
+            print(".string \"" + ((global_scope->variables[i]->value) as char*) + "\"\n");
+        }
+    }
+    print("\t.long_fmt:\t.string \"%ld\"\n");
+    print("\t.int_fmt:\t.string \"%d\"\n");
+    print(".section .bss\n");
+    print("\tfile_statbuf:\t.skip 144\n");
+
+    return 0;
+}
