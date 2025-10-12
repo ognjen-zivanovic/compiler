@@ -39925,7 +39925,7 @@ get_index_of_last_slash:
 compile_file:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $32, %rsp
+	subq $48, %rsp
 	leaq 16(%rbp), %rax
 	pushq %rax
 	movq .relative_directory(%rip), %rax
@@ -40028,8 +40028,22 @@ compile_file:
 	movl 8(%rax), %eax
 	popq %rbx
 	movl %eax, (%rbx)
+	movl .token_index(%rip), %eax
+	movl %eax, -20(%rbp)
+	leaq .token_index(%rip), %rax
+	pushq %rax
+	movl $0, %eax
+	popq %rbx
+	movl %eax, (%rbx)
+	movl .lexer_position(%rip), %eax
+	movl %eax, -24(%rbp)
+	leaq .lexer_position(%rip), %rax
+	pushq %rax
+	movl $0, %eax
+	popq %rbx
+	movl %eax, (%rbx)
 	movq .relative_directory(%rip), %rax
-	movq %rax, -24(%rbp)
+	movq %rax, -32(%rbp)
 	subq $8, %rsp
 	movq 16(%rbp), %rax
 	subq $8, %rsp
@@ -40038,8 +40052,8 @@ compile_file:
 	movl %eax, %eax
 	addq $8, %rsp
 	addq $8, %rsp
-	movl %eax, -28(%rbp)
-	movl -28(%rbp), %eax
+	movl %eax, -36(%rbp)
+	movl -36(%rbp), %eax
 	pushq %rax
 	movl $1, %eax
 	neg %eax
@@ -40050,14 +40064,17 @@ compile_file:
 	movb %al, %al
 	cmp $0, %al
 	jz .L940_else
-	subq $32, %rsp
+	subq $48, %rsp
 	leaq .relative_directory(%rip), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
 	movslq %eax, %r12
-	movl -28(%rbp), %eax
+	movl -36(%rbp), %eax
+	movl $1, %edx
+	addl %edx, %eax
+	movl %eax, %eax
 	movslq %eax, %r13
 	popq %rax
 	subq %r12, %r13
@@ -40075,10 +40092,10 @@ compile_file:
 	movq %rax, (%rbx)
 	jmp .L940_end
 .L940_else:
-	subq $32, %rsp
+	subq $48, %rsp
 	leaq .relative_directory(%rip), %rax
 	pushq %rax
-	leaq .str_18158(%rip), %rax
+	leaq .str_18178(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	jmp .L940_end
@@ -40105,13 +40122,13 @@ compile_file:
 	movb %al, %al
 	cmp $0, %al
 	jz .L942_end
-	subq $32, %rsp
+	subq $48, %rsp
 	jmp .L941_while_end
 	jmp .L942_end
 .L942_end:
 	call get_statement
 	movq %rax, %rax
-	movq %rax, -36(%rbp)
+	movq %rax, -44(%rbp)
 	subq $8, %rsp
 	movl $0, %eax
 	movslq %eax, %rax
@@ -40121,7 +40138,7 @@ compile_file:
 	movslq %eax, %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	movq -36(%rbp), %rax
+	movq -44(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $0, %eax
@@ -40164,7 +40181,7 @@ compile_file:
 	movq .tokens(%rip), %rax
 	cmp $0, %rax
 	jz .L943_end
-	subq $32, %rsp
+	subq $48, %rsp
 	leaq .token_count(%rip), %rax
 	pushq %rax
 	movq .tokens(%rip), %rax
@@ -40173,9 +40190,19 @@ compile_file:
 	movl %eax, (%rbx)
 	jmp .L943_end
 .L943_end:
+	leaq .token_index(%rip), %rax
+	pushq %rax
+	movl -20(%rbp), %eax
+	popq %rbx
+	movl %eax, (%rbx)
+	leaq .lexer_position(%rip), %rax
+	pushq %rax
+	movl -24(%rbp), %eax
+	popq %rbx
+	movl %eax, (%rbx)
 	leaq .relative_directory(%rip), %rax
 	pushq %rax
-	movq -24(%rbp), %rax
+	movq -32(%rbp), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	leave
@@ -40197,7 +40224,7 @@ main:
 	jz .L944_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_18302(%rip), %rax
+	leaq .str_18330(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
@@ -40294,7 +40321,7 @@ main:
 	movq -20(%rbp), %rax
 	leaq 0(%rax), %rax
 	pushq %rax
-	leaq .str_18359(%rip), %rax
+	leaq .str_18387(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -20(%rbp), %rax
@@ -40307,7 +40334,7 @@ main:
 	movq -20(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	leaq .str_18371(%rip), %rax
+	leaq .str_18399(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $5, %eax
@@ -40330,7 +40357,7 @@ main:
 	movq -28(%rbp), %rax
 	leaq 0(%rax), %rax
 	pushq %rax
-	leaq .str_18388(%rip), %rax
+	leaq .str_18416(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -28(%rbp), %rax
@@ -40343,7 +40370,7 @@ main:
 	movq -28(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	leaq .str_18400(%rip), %rax
+	leaq .str_18428(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $1, %eax
@@ -40366,7 +40393,7 @@ main:
 	movq -36(%rbp), %rax
 	leaq 0(%rax), %rax
 	pushq %rax
-	leaq .str_18417(%rip), %rax
+	leaq .str_18445(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -36(%rbp), %rax
@@ -40379,7 +40406,7 @@ main:
 	movq -36(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	leaq .str_18429(%rip), %rax
+	leaq .str_18457(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $2, %eax
@@ -40402,7 +40429,7 @@ main:
 	movq -44(%rbp), %rax
 	leaq 0(%rax), %rax
 	pushq %rax
-	leaq .str_18446(%rip), %rax
+	leaq .str_18474(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -44(%rbp), %rax
@@ -40415,7 +40442,7 @@ main:
 	movq -44(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	leaq .str_18458(%rip), %rax
+	leaq .str_18486(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $3, %eax
@@ -40438,7 +40465,7 @@ main:
 	movq -52(%rbp), %rax
 	leaq 0(%rax), %rax
 	pushq %rax
-	leaq .str_18475(%rip), %rax
+	leaq .str_18503(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -52(%rbp), %rax
@@ -40451,7 +40478,7 @@ main:
 	movq -52(%rbp), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
-	leaq .str_18487(%rip), %rax
+	leaq .str_18515(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	movl $5, %eax
@@ -40463,35 +40490,35 @@ main:
 	addq $4, %rsp
 	addq $12, %rsp
 	subq $8, %rsp
-	leaq .str_18494(%rip), %rax
+	leaq .str_18522(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18499(%rip), %rax
+	leaq .str_18527(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18504(%rip), %rax
+	leaq .str_18532(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18509(%rip), %rax
+	leaq .str_18537(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18514(%rip), %rax
+	leaq .str_18542(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
@@ -40552,7 +40579,7 @@ main:
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18557(%rip), %rax
+	leaq .str_18585(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
@@ -40609,7 +40636,7 @@ main:
 	jmp .L947_end
 .L947_end:
 	subq $8, %rsp
-	leaq .str_18619(%rip), %rax
+	leaq .str_18647(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq 0(%rax), %rax
@@ -40680,7 +40707,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18630(%rip), %rdx
+	leaq .str_18658(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -40738,7 +40765,7 @@ main:
 	jz .L951_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18648(%rip), %rax
+	leaq .str_18676(%rip), %rax
 	pushq %rax
 	subq $8, %rsp
 	movq .global_scope(%rip), %rax
@@ -40818,7 +40845,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18669(%rip), %rdx
+	leaq .str_18697(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -40863,7 +40890,7 @@ main:
 	jz .L951_elseif_1
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18682(%rip), %rax
+	leaq .str_18710(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq 0(%rax), %rax
@@ -40934,7 +40961,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18698(%rip), %rdx
+	leaq .str_18726(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -40979,7 +41006,7 @@ main:
 	jz .L951_elseif_2
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18711(%rip), %rax
+	leaq .str_18739(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq .global_scope(%rip), %rax
@@ -41059,7 +41086,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18734(%rip), %rdx
+	leaq .str_18762(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -41104,7 +41131,7 @@ main:
 	jz .L951_elseif_3
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18747(%rip), %rax
+	leaq .str_18775(%rip), %rax
 	pushq %rax
 	subq $8, %rsp
 	movq .global_scope(%rip), %rax
@@ -41184,7 +41211,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18768(%rip), %rdx
+	leaq .str_18796(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -41229,7 +41256,7 @@ main:
 	jz .L951_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18781(%rip), %rax
+	leaq .str_18809(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq .global_scope(%rip), %rax
@@ -41310,7 +41337,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18806(%rip), %rdx
+	leaq .str_18834(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -41357,7 +41384,7 @@ main:
 	jmp .L945_for_start
 .L945_for_end:
 	subq $8, %rsp
-	leaq .str_18813(%rip), %rax
+	leaq .str_18841(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
@@ -41411,7 +41438,7 @@ main:
 	jz .L969_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_18872(%rip), %rax
+	leaq .str_18900(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq 0(%rax), %rax
@@ -41482,7 +41509,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18883(%rip), %rdx
+	leaq .str_18911(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -41517,7 +41544,7 @@ main:
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18888(%rip), %rax
+	leaq .str_18916(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq 0(%rax), %rax
@@ -41588,7 +41615,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_18906(%rip), %rdx
+	leaq .str_18934(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	movq %r12, %rdi
@@ -41635,28 +41662,28 @@ main:
 	jmp .L967_for_start
 .L967_for_end:
 	subq $8, %rsp
-	leaq .str_18913(%rip), %rax
+	leaq .str_18941(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18918(%rip), %rax
+	leaq .str_18946(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18923(%rip), %rax
+	leaq .str_18951(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_18928(%rip), %rax
+	leaq .str_18956(%rip), %rax
 	subq $8, %rsp
 	movq %rax, (%rsp)
 	call print
@@ -41913,12 +41940,12 @@ read_file:
 	.char_17576:	.byte 97
 	.char_17906:	.byte 97
 	.char_18052:	.byte 47
-	.print_asm_code:	.quad .str_18259
-	.strlen_internal_asm_code:	.quad .str_18264
-	.long_to_str_asm_code:	.quad .str_18269
-	.int_to_str_asm_code:	.quad .str_18274
-	.char_to_str_asm_code:	.quad .str_18279
-	.read_file_asm_code:	.quad .str_18284
+	.print_asm_code:	.quad .str_18287
+	.strlen_internal_asm_code:	.quad .str_18292
+	.long_to_str_asm_code:	.quad .str_18297
+	.int_to_str_asm_code:	.quad .str_18302
+	.char_to_str_asm_code:	.quad .str_18307
+	.read_file_asm_code:	.quad .str_18312
 .section .rodata
 	.str_148:	.string "IDENT"
 	.str_159:	.string "INT"
@@ -42616,51 +42643,51 @@ read_file:
 	.str_17818:	.string "Nested functions are not supported\n"
 	.str_18003:	.string "Unknown statement type "
 	.str_18012:	.string "\n"
-	.str_18158:	.string ""
-	.str_18259:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
-	.str_18264:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
-	.str_18269:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	.str_18274:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	.str_18279:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
-	.str_18284:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
-	.str_18302:	.string "Usage: ./compiler input_file\n"
-	.str_18359:	.string "print"
-	.str_18371:	.string "str_var"
-	.str_18388:	.string "int_to_str"
-	.str_18400:	.string "int_var"
-	.str_18417:	.string "long_to_str"
-	.str_18429:	.string "long_var"
-	.str_18446:	.string "char_to_str"
-	.str_18458:	.string "char_var"
-	.str_18475:	.string "read_file"
-	.str_18487:	.string "str"
-	.str_18494:	.string ".section .text\n"
-	.str_18499:	.string ".extern malloc\n"
-	.str_18504:	.string ".extern realloc\n"
-	.str_18509:	.string ".extern snprintf\n"
-	.str_18514:	.string ".extern strcmp\n"
-	.str_18557:	.string ".section .data\n"
-	.str_18619:	.string "\t."
-	.str_18630:	.string ":\t"
-	.str_18648:	.string ".quad "
-	.str_18669:	.string "\n"
-	.str_18682:	.string ".quad ."
-	.str_18698:	.string "\n"
-	.str_18711:	.string ".quad "
-	.str_18734:	.string "\n"
-	.str_18747:	.string ".quad "
-	.str_18768:	.string "\n"
-	.str_18781:	.string ".byte "
-	.str_18806:	.string "\n"
-	.str_18813:	.string ".section .rodata\n"
-	.str_18872:	.string "\t."
-	.str_18883:	.string ":\t"
-	.str_18888:	.string ".string \""
-	.str_18906:	.string "\"\n"
-	.str_18913:	.string "\t.long_fmt:\t.string \"%ld\"\n"
-	.str_18918:	.string "\t.int_fmt:\t.string \"%d\"\n"
-	.str_18923:	.string ".section .bss\n"
-	.str_18928:	.string "\tfile_statbuf:\t.skip 144\n"
+	.str_18178:	.string ""
+	.str_18287:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
+	.str_18292:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
+	.str_18297:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	.str_18302:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	.str_18307:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
+	.str_18312:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
+	.str_18330:	.string "Usage: ./compiler input_file\n"
+	.str_18387:	.string "print"
+	.str_18399:	.string "str_var"
+	.str_18416:	.string "int_to_str"
+	.str_18428:	.string "int_var"
+	.str_18445:	.string "long_to_str"
+	.str_18457:	.string "long_var"
+	.str_18474:	.string "char_to_str"
+	.str_18486:	.string "char_var"
+	.str_18503:	.string "read_file"
+	.str_18515:	.string "str"
+	.str_18522:	.string ".section .text\n"
+	.str_18527:	.string ".extern malloc\n"
+	.str_18532:	.string ".extern realloc\n"
+	.str_18537:	.string ".extern snprintf\n"
+	.str_18542:	.string ".extern strcmp\n"
+	.str_18585:	.string ".section .data\n"
+	.str_18647:	.string "\t."
+	.str_18658:	.string ":\t"
+	.str_18676:	.string ".quad "
+	.str_18697:	.string "\n"
+	.str_18710:	.string ".quad ."
+	.str_18726:	.string "\n"
+	.str_18739:	.string ".quad "
+	.str_18762:	.string "\n"
+	.str_18775:	.string ".quad "
+	.str_18796:	.string "\n"
+	.str_18809:	.string ".byte "
+	.str_18834:	.string "\n"
+	.str_18841:	.string ".section .rodata\n"
+	.str_18900:	.string "\t."
+	.str_18911:	.string ":\t"
+	.str_18916:	.string ".string \""
+	.str_18934:	.string "\"\n"
+	.str_18941:	.string "\t.long_fmt:\t.string \"%ld\"\n"
+	.str_18946:	.string "\t.int_fmt:\t.string \"%d\"\n"
+	.str_18951:	.string ".section .bss\n"
+	.str_18956:	.string "\tfile_statbuf:\t.skip 144\n"
 	.long_fmt:	.string "%ld"
 	.int_fmt:	.string "%d"
 .section .bss

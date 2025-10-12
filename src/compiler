@@ -3282,11 +3282,15 @@ fn compile_file(file_name: str) {
     let old_tokens = tokens;
     tokens = lex_all_tokens();
     token_count = tokens.len();
+    let old_token_index = token_index;
+    token_index = 0;
+    let old_lexer_position = lexer_position;
+    lexer_position = 0;
 
     let old_relative_directory = relative_directory;
     let index = get_index_of_last_slash(file_name);
     if (index != -1) {
-        relative_directory = file_name[0..index];
+        relative_directory = file_name[0..index + 1];
     }
     else {
         relative_directory = "";
@@ -3307,6 +3311,8 @@ fn compile_file(file_name: str) {
     if (tokens) {
         token_count = tokens.len();
     }
+    token_index = old_token_index;
+    lexer_position = old_lexer_position;
     relative_directory = old_relative_directory;
 }
 
