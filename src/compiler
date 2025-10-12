@@ -749,15 +749,14 @@ fn lex_next_token(new_token: Token*) {
     }
 }
 
-fn lex_all_tokens() {
-    text_size = len(input_text);
-    tokens = new Token*[];
+fn lex_all_tokens(): Token*[]{
+    let new_tokens = new Token*[];
     while (lexer_position < text_size) {
         let new_token = new Token*;
         lex_next_token(new_token);
-        tokens.append(new_token);
+        new_tokens.append(new_token);
     }
-    token_count = tokens.len();
+    return new_tokens;
 }
 
 fn get_token_index(): int {
@@ -3254,7 +3253,6 @@ fn main(): int {
         print("Usage: ./compiler input_file\n");
         return 1;
     }
-    input_text = read_file(argv[1]);
 
     global_scope = new_global_scope();
 
@@ -3288,13 +3286,20 @@ fn main(): int {
     read_file_signature->return_type = STRING_VARIABLE;
     add_parameter(read_file_signature, "str", STRING_VARIABLE);
 
-    lex_all_tokens();
 
     print(".section .text\n");
     print(".extern malloc\n");
     print(".extern realloc\n");
     print(".extern snprintf\n");
     print(".extern strcmp\n");
+
+    let old_input_text = input_text;
+    input_text = read_file(argv[1]);
+    text_size = len(input_text);
+
+    let old_tokens = tokens;
+    tokens = lex_all_tokens();
+    token_count = tokens.len();
 
     while (peek_next_token() != (0 as Token*)) {
         if (peek_next_token()->type == END) {
@@ -3303,6 +3308,13 @@ fn main(): int {
         let node = get_statement();
 
         compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
+    }
+    input_text = old_input_text;
+    text_size = len(input_text);
+
+    tokens = old_tokens;
+    if (tokens) {
+        token_count = tokens.len();
     }
 
     print(print_asm_code);
