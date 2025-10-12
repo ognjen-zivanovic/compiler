@@ -1,0 +1,380 @@
+const {
+    IDENT,
+    INT,
+    LONG,
+    STRING,
+    CHAR,
+
+    ASSIGN,
+    PLUS,
+    MINUS,
+    ASTERISK,
+    SLASH,
+    MODULO,
+    BANG,
+
+    COMMA,
+    DOT,
+    RANGE,
+    SEMICOLON,
+    COLON,
+    AT,
+    AS,
+
+    ARROW,
+
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    LBRACKET,
+    RBRACKET,
+
+    IF,
+    ELSE,
+    ELSEIF,
+
+    TRUE,
+    FALSE,
+
+    EQ,
+    NEQ,
+    LT,
+    LTE,
+    GT,
+    GTE,
+
+    LOGICAL_AND,
+    LOGICAL_OR,
+    LOGICAL_XOR,
+
+    BITWISE_AND,
+    BITWISE_OR,
+    BITWISE_XOR,
+    BITWISE_LEFT_SHIFT,
+    BITWISE_RIGHT_SHIFT,
+
+    FUNCTION,
+    LET,
+    CONST,
+    RETURN,
+    BREAK,
+    CONTINUE,
+    STRUCT,
+    WHILE,
+    FOR,
+    IMPORT,
+
+    INT_TYPE,
+    LONG_TYPE,
+    CHAR_TYPE,
+    BOOL_TYPE,
+    STRING_TYPE,
+    PTR_TYPE,
+
+    NEW,
+
+    END
+};
+
+fn debug_token_value_to_str(token_val: int): str {
+    if (token_val == IDENT) {
+        return "IDENT";
+    }
+    elseif (token_val == INT) {
+        return "INT";
+    }
+    elseif (token_val == LONG) {
+        return "LONG";
+    }
+    elseif (token_val == STRING) {
+        return "STRING";
+    }
+    elseif (token_val == CHAR) {
+        return "CHAR";
+    }
+    elseif (token_val == ASSIGN) {
+        return "ASSIGN";
+    }
+    elseif (token_val == PLUS) {
+        return "PLUS";
+    }
+    elseif (token_val == MINUS) {
+        return "MINUS";
+    }
+    elseif (token_val == ASTERISK) {
+        return "ASTERISK";
+    }
+    elseif (token_val == SLASH) {
+        return "SLASH";
+    }
+    elseif (token_val == MODULO) {
+        return "MODULO";
+    }
+    elseif (token_val == BANG) {
+        return "BANG";
+    }
+    elseif (token_val == COMMA) {
+        return "COMMA";
+    }
+    elseif (token_val == DOT) {
+        return "DOT";
+    }
+    elseif (token_val == SEMICOLON) {
+        return "SEMICOLON";
+    }
+    elseif (token_val == COLON) {
+        return "COLON";
+    }
+    elseif (token_val == AT) {
+        return "AT";
+    }
+    elseif (token_val == AS) {
+        return "AS";
+    }
+    elseif (token_val == ARROW) {
+        return "ARROW";
+    }
+    elseif (token_val == LPAREN) {
+        return "LPAREN";
+    }
+    elseif (token_val == RPAREN) {
+        return "RPAREN";
+    }
+    elseif (token_val == LBRACE) {
+        return "LBRACE";
+    }
+    elseif (token_val == RBRACE) {
+        return "RBRACE";
+    }
+    elseif (token_val == LBRACKET) {
+        return "LBRACKET";
+    }
+    elseif (token_val == RBRACKET) {
+        return "RBRACKET";
+    }
+    elseif (token_val == IF) {
+        return "IF";
+    }
+    elseif (token_val == ELSE) {
+        return "ELSE";
+    }
+    elseif (token_val == ELSEIF) {
+        return "ELSEIF";
+    }
+    elseif (token_val == TRUE) {
+        return "TRUE";
+    }
+    elseif (token_val == FALSE) {
+        return "FALSE";
+    }
+    elseif (token_val == EQ) {
+        return "EQ";
+    }
+    elseif (token_val == NEQ) {
+        return "NEQ";
+    }
+    elseif (token_val == LT) {
+        return "LT";
+    }
+    elseif (token_val == LTE) {
+        return "LTE";
+    }
+    elseif (token_val == GT) {
+        return "GT";
+    }
+    elseif (token_val == GTE) {
+        return "GTE";
+    }
+    elseif (token_val == LOGICAL_AND) {
+        return "LOGICAL_AND";
+    }
+    elseif (token_val == LOGICAL_OR) {
+        return "LOGICAL_OR";
+    }
+    elseif (token_val == LOGICAL_XOR) {
+        return "LOGICAL_XOR";
+    }
+    elseif (token_val == BITWISE_AND) {
+        return "BITWISE_AND";
+    }
+    elseif (token_val == BITWISE_OR) {
+        return "BITWISE_OR";
+    }
+    elseif (token_val == BITWISE_XOR) {
+        return "BITWISE_XOR";
+    }
+    elseif (token_val == BITWISE_LEFT_SHIFT) {
+        return "BITWISE_LEFT_SHIFT";
+    }
+    elseif (token_val == BITWISE_RIGHT_SHIFT) {
+        return "BITWISE_RIGHT_SHIFT";
+    }
+    elseif (token_val == FUNCTION) {
+        return "FUNCTION";
+    }
+    elseif (token_val == LET) {
+        return "LET";
+    }
+    elseif (token_val == CONST) {
+        return "CONST";
+    }
+    elseif (token_val == RETURN) {
+        return "RETURN";
+    }
+    elseif (token_val == BREAK) {
+        return "BREAK";
+    }
+    elseif (token_val == CONTINUE) {
+        return "CONTINUE";
+    }
+    elseif (token_val == STRUCT) {
+        return "STRUCT";
+    }
+    elseif (token_val == WHILE) {
+        return "WHILE";
+    }
+    elseif (token_val == FOR) {
+        return "FOR";
+    }
+    elseif (token_val == IMPORT) {
+        return "IMPORT";
+    }
+    elseif (token_val == INT_TYPE) {
+        return "INT_TYPE";
+    }
+    elseif (token_val == LONG_TYPE) {
+        return "LONG_TYPE";
+    }
+    elseif (token_val == CHAR_TYPE) {
+        return "CHAR_TYPE";
+    }
+    elseif (token_val == BOOL_TYPE) {
+        return "BOOL_TYPE";
+    }
+    elseif (token_val == STRING_TYPE) {
+        return "STRING_TYPE";
+    }
+    elseif (token_val == PTR_TYPE) {
+        return "PTR_TYPE";
+    }
+    elseif (token_val == NEW) {
+        return "NEW";
+    }
+    elseif (token_val == END) {
+        return "END";
+    }
+}
+
+const {
+    EXPRESSION_NONE,
+    EXPRESSION_INT,
+    EXPRESSION_LONG,
+    EXPRESSION_VARIABLE,
+    EXPRESSION_FUNCTION_CALL,
+    EXPRESSION_BINARY,
+    EXPRESSION_UNARY,
+    EXPRESSION_CONDITIONAL,
+    EXPRESSION_STRING_LITERAL,
+    EXPRESSION_STRUCT_MEMBER,
+    EXPRESSION_CHAR,
+    EXPRESSION_NEW,
+    EXPRESSION_INDEX,
+    EXPRESSION_ARROW,
+    EXPRESSION_AS,
+    EXPRESSION_RANGE,
+    EXPRESSION_TRUE,
+    EXPRESSION_FALSE,
+    STATEMENT_NONE,
+    STATEMENT_LET,
+    STATEMENT_FUNCTION,
+    STATEMENT_IF,
+    STATEMENT_WHILE,
+    STATEMENT_FOR,
+	STATEMENT_ASSIGN,
+    STATEMENT_RETURN,
+    STATEMENT_BREAK,
+    STATEMENT_CONTINUE,
+    STATEMENT_STRUCT,
+    STATEMENT_IMPORT,
+};
+
+fn debug_ast_node_type_name(type: int): str {
+    if (type == EXPRESSION_INT) {
+        return "int";
+    }
+    elseif (type == EXPRESSION_LONG) {
+        return "long";
+    }
+    elseif (type == EXPRESSION_VARIABLE) {
+        return "variable";
+    }
+    elseif (type == EXPRESSION_FUNCTION_CALL) {
+        return "function call";
+    }
+    elseif (type == EXPRESSION_BINARY) {
+        return "binary expression";
+    }
+    elseif (type == EXPRESSION_UNARY) {
+        return "unary expression";
+    }
+    elseif (type == EXPRESSION_CONDITIONAL) {
+        return "conditional expression";
+    }
+    elseif (type == EXPRESSION_STRING_LITERAL) {
+        return "string literal";
+    }
+    elseif (type == EXPRESSION_STRUCT_MEMBER) {
+        return "struct member";
+    }
+    elseif (type == EXPRESSION_CHAR) {
+        return "char";
+    }
+    elseif (type == EXPRESSION_NEW) {
+        return "new";
+    }
+    elseif (type == EXPRESSION_ARROW) {
+        return "arrow";
+    }
+    elseif (type == EXPRESSION_INDEX) {
+        return "index expression";
+    }
+    elseif (type == EXPRESSION_AS) {
+        return "as expression";
+    }
+    elseif (type == EXPRESSION_NONE) {
+        return "none";
+    }
+    elseif (type == EXPRESSION_RANGE) {
+        return "range expression";
+    }
+    elseif (type == EXPRESSION_TRUE) {
+        return "true";
+    }
+    elseif (type == EXPRESSION_FALSE) {
+        return "false";
+    }
+    else {
+        print("Unknown expression type as ast node name " + int_to_str(type) + "\n");
+        return "UNKNOWN";
+    }
+}
+
+const {
+    LVALUE,
+    RVALUE,
+};
+
+const {
+    UNDEFINED_VARIABLE,
+    INT_VARIABLE,
+    LONG_VARIABLE,
+    CHAR_VARIABLE,
+    BOOL_VARIABLE,
+    STRING_VARIABLE,
+    STRING_BUILDER_VARIABLE,
+    STRING_LITERAL_VARIABLE,
+    PTR_VARIABLE,
+    VOID
+};
+

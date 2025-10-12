@@ -1,0 +1,426 @@
+struct Token {
+    type: int,
+    value: ptr,
+}
+
+let tokens: Token*[];
+let token_index = 0;
+let token_count = 0;
+
+let input_text = "";
+let lexer_position = 0;
+let text_size = 0;
+let relative_directory = "";
+
+fn get_curr_character(): char {
+    if (lexer_position >= text_size) {
+        return '\0';
+    }
+    return input_text[lexer_position];
+}
+
+fn get_next_character(): char {
+    if (lexer_position + 1 >= text_size) {
+        return '\0';
+    }
+    return input_text[lexer_position + 1];
+}
+
+fn skip_whitespace() {
+    while ((lexer_position < text_size) &&
+            (input_text[lexer_position] == ' ' || input_text[lexer_position] == '\t' || input_text[lexer_position] == '\n' || input_text[lexer_position] == '\r')) {
+        lexer_position = lexer_position + 1;
+    }
+}
+
+fn isCharacter(): bool {
+    let curr = get_curr_character();
+    return (curr >= 'a' && curr <= 'z') || (curr >= 'A' && curr <= 'Z') ||
+           curr == '_';
+}
+
+fn isDigit(): bool {
+    let curr = get_curr_character();
+    return (curr >= '0' && curr <= '9');
+}
+
+
+fn read_string(): char* {
+    let buffer = new char[];
+    lexer_position = lexer_position + 1;
+    let prev = '\0';
+    let curr = get_curr_character();
+    while (prev == '\\' || curr != '"') {
+        buffer.append(curr);
+        lexer_position = lexer_position + 1;
+        if (prev == '\\') {
+            prev = '\0';
+        } 
+        else {
+            prev = curr;
+        }
+        curr = get_curr_character();
+    }
+
+    buffer.append('\0');
+    return *buffer;
+}
+
+fn read_char(): char* {
+    let value = new char*;
+    lexer_position = lexer_position + 1;
+    let curr = get_curr_character();
+    if (curr == '\\') {
+        lexer_position = lexer_position + 1;
+        let next = get_curr_character();
+        if (next == '\'') {
+            *value = '\'';
+        }
+        elseif (next == '"') {
+            *value = '"';
+        }
+        elseif (next == '\\') {
+            *value = '\\';
+        }
+        elseif (next == 'n') {
+            *value = '\n';
+        }
+        elseif (next == 't') {
+            *value = '\t';
+        }
+        elseif (next == 'r') {
+            *value = '\r';
+        }
+        elseif (next == '0') {
+            *value = '\0';
+        }
+        else {
+            print("Unknown escape sequence \\" + next + "\n");
+        }
+    }
+    else {
+        *value = curr; 
+    }
+    lexer_position = lexer_position + 1;
+    if (get_curr_character() != '\'') {
+        print("Too many characters in char literal\n");
+    }
+    return value;
+}
+
+fn lex_next_token(new_token: Token*) {
+    skip_whitespace();
+    if (isCharacter()) {
+        let token_text = new char[];
+        while (lexer_position < text_size) {
+            let curr = get_curr_character();
+            if (!(isCharacter() || isDigit())) {
+                break;
+            }
+            token_text.append(curr);
+            lexer_position = lexer_position + 1;
+        }
+        token_text.append('\0');
+
+        let token_string = *token_text;
+        if (token_string == "let") {
+            new_token->type = LET;
+        }
+        elseif (token_string == "fn") {
+            new_token->type = FUNCTION;
+        }
+        elseif (token_string == "const") {
+            new_token->type = CONST;
+        }
+        elseif (token_string == "if") {
+            new_token->type = IF;
+        }
+        elseif (token_string == "else") {
+            new_token->type = ELSE;
+        }
+        elseif (token_string == "elseif") {
+            new_token->type = ELSEIF;
+        }
+        elseif (token_string == "return") {
+            new_token->type = RETURN;
+        }
+        elseif (token_string == "break") {
+            new_token->type = BREAK;
+        }
+        elseif (token_string == "continue") {
+            new_token->type = CONTINUE;
+        }
+        elseif (token_string == "while") {
+            new_token->type = WHILE;
+        }
+        elseif (token_string == "for") {
+            new_token->type = FOR;
+        }
+        elseif (token_string == "new") {
+            new_token->type = NEW;
+        }
+        elseif (token_string == "struct") {
+            new_token->type = STRUCT;
+        }
+        elseif (token_string == "int") {
+            new_token->type = INT_TYPE;
+        }
+        elseif (token_string == "long") {
+            new_token->type = LONG_TYPE;
+        }
+        elseif (token_string == "char") {
+            new_token->type = CHAR_TYPE;
+        }
+        elseif (token_string == "bool") {
+            new_token->type = BOOL_TYPE;
+        }
+        elseif (token_string == "str") {
+            new_token->type = STRING_TYPE;
+        }
+        elseif (token_string == "ptr") {
+            new_token->type = PTR_TYPE;
+        }
+        elseif (token_string == "as") {
+            new_token->type = AS;
+        }
+        elseif (token_string == "true") {
+            new_token->type = TRUE;
+        }
+        elseif (token_string == "false") {
+            new_token->type = FALSE;
+        }
+        elseif (token_string == "import") {
+            new_token->type = IMPORT;
+        }
+        else {
+            new_token->type = IDENT;
+            new_token->value = token_string;
+        }
+
+    }
+    elseif (isDigit()) {
+        let value = new int*;
+        *value = 0;
+        while (lexer_position < text_size) {
+            let curr = get_curr_character();
+            if (!isDigit()) {
+                break;
+            }
+
+            let digit = curr - '0';
+            *value = *value * 10 + digit;
+            lexer_position = lexer_position + 1;
+        }
+        new_token->type = INT;
+        new_token->value = value;
+    }
+    else {
+        let curr = get_curr_character();
+        if (curr == '"') {
+            let value = read_string();
+            new_token->type = STRING;
+            new_token->value = value;
+        }
+        elseif (curr == '\'') {
+            let value = read_char();
+            new_token->type = CHAR;
+            new_token->value = value;
+        }
+        elseif (curr == '+') {
+            new_token->type = PLUS;
+        }
+        elseif (curr == '-') {
+            let next = get_next_character();
+            if (next == '>') {
+                lexer_position = lexer_position + 1;
+                new_token->type = ARROW;
+            }
+            else {
+                new_token->type = MINUS;
+            }
+        }
+        elseif (curr == '*') {
+            new_token->type = ASTERISK;
+        }
+        elseif (curr == '/') {
+            new_token->type = SLASH;
+        }
+        elseif (curr == '%') {
+            new_token->type = MODULO;
+        }
+        elseif (curr == ',') {
+            new_token->type = COMMA;
+        }
+        elseif (curr == '.') {
+            let next = get_next_character();
+            if (next == '.') {
+                lexer_position = lexer_position + 1;
+                new_token->type = RANGE;
+            }
+            else {
+                new_token->type = DOT;
+            }
+        }
+        elseif (curr == '(') {
+            new_token->type = LPAREN;
+        }
+        elseif (curr == ')') {
+            new_token->type = RPAREN;
+        }
+        elseif (curr == '{') {
+            new_token->type = LBRACE;
+        }
+        elseif (curr == '}') {
+            new_token->type = RBRACE;
+        }
+        elseif (curr == '[') {
+            new_token->type = LBRACKET;
+        }
+        elseif (curr == ']') {
+            new_token->type = RBRACKET;
+        }
+        elseif (curr == '@') {
+            new_token->type = AT;
+        }
+        elseif (curr == '<') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = LTE;
+                lexer_position = lexer_position + 1;
+            }
+            elseif (next == '<') {
+                new_token->type = BITWISE_LEFT_SHIFT;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = LT;
+            }
+        }
+        elseif (curr == '>') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = GTE;
+                lexer_position = lexer_position + 1;
+            }
+            elseif (next == '>') {
+                new_token->type = BITWISE_RIGHT_SHIFT;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = GT;
+            }
+        }
+        elseif (curr == ':') {
+            new_token->type = COLON;
+        }
+        elseif (curr == ';') {
+            new_token->type = SEMICOLON;
+        }
+        elseif (curr == '=') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = EQ;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = ASSIGN;
+            }
+        }
+        elseif (curr == '!') {
+            let next = get_next_character();
+            if (next == '=') {
+                new_token->type = NEQ;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BANG;
+            }
+        }
+        elseif (curr == '&') {
+            let next = get_next_character();
+            if (next == '&') {
+                new_token->type = LOGICAL_AND;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_AND;
+            }
+        }
+        elseif (curr == '|') {
+            let next = get_next_character();
+            if (next == '|') {
+                new_token->type = LOGICAL_OR;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_OR;
+            }
+        }
+        elseif (curr == '^') {
+            let next = get_next_character();
+            if (next == '^') {
+                new_token->type = LOGICAL_XOR;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = BITWISE_XOR;
+            }
+        }
+        elseif (curr == '\0') {
+            new_token->type = END;
+        }
+        else {
+            print("Unknown character! ");
+            print(curr.char_to_str());
+        }
+
+        lexer_position = lexer_position + 1;
+    }
+}
+
+fn lex_all_tokens(): Token*[]{
+    let new_tokens = new Token*[];
+    while (lexer_position < text_size) {
+        let new_token = new Token*;
+        lex_next_token(new_token);
+        new_tokens.append(new_token);
+    }
+    return new_tokens;
+}
+
+let literal_index = 0;
+fn get_literal_index(): int {
+    literal_index = literal_index + 1;
+    return literal_index;
+}
+
+fn unconsume_token() {
+    token_index = token_index - 1;
+}
+
+fn consume_next_token() {
+    token_index = token_index + 1;
+}
+
+fn get_next_token(): Token* {
+    if (token_index >= token_count) {
+        return 0 as Token*;
+    }
+    token_index = token_index + 1;
+    return tokens[token_index - 1];
+}
+
+fn peek_next_token(): Token* {
+    if (token_index >= token_count) {
+        return 0 as Token*;
+    }
+    return tokens[token_index];
+}
+
+fn expect_token(type: int): Token* {
+    let token = get_next_token();
+    if (token->type != type) {
+        print("Expected token " + debug_token_value_to_str(type) + ", got " + debug_token_value_to_str(token->type) + "\n");
+    }
+    return token;
+}

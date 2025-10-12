@@ -1,0 +1,4 @@
+
+fn imported_function() {
+    print("Hello world from imported file\n");
+}

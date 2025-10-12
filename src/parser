@@ -1,0 +1,738 @@
+struct AstNode {
+    type: int,
+    node: ptr,
+}
+
+struct AstBlock {
+    statements: AstNode*[],
+}
+
+struct AssignNode {
+    name: str,
+    lvalue: AstNode*,
+    rvalue: AstNode*,
+    type: int,
+    is_const: bool,
+}
+struct FunctionSignature {
+    name: str,
+    parameters: StackVariable*[],
+    return_type: int,
+}
+struct FunctionNode {
+    name: str,
+    body: AstBlock*,
+    function_signature: FunctionSignature*,
+}
+
+
+
+struct FunctionCallNode {
+    name: str,
+    arguments: AstNode*[],
+}
+
+struct ReturnNode {
+    value: AstNode*,
+}
+
+struct StringLiteralNode {
+    name: str,
+}
+
+struct CharNode {
+    name: str,
+}
+
+struct NewNode {
+    type: int,
+}
+
+struct BinaryExpressionNode {
+    binary_expression_type: int,
+    left: AstNode*,
+    right: AstNode*,
+}
+
+struct UnaryExpressionNode {
+    unary_expression_type: int,
+    value: AstNode*,
+}
+
+struct ArrowNode {
+    left: AstNode*,
+    member: AstNode*,
+}
+
+struct RangeNode {
+    left: AstNode*,
+    right: AstNode*,
+    is_inclusive: bool,
+}
+
+struct IndexNode {
+    left: AstNode*,
+    index: AstNode*,
+}
+
+struct StructMemberNode {
+    name: str,
+}
+
+struct IfStatementNode {
+    condition: AstNode*,
+    then_block: AstBlock*,
+    else_block: AstBlock*,
+    else_if_conditions: AstBlock*[],
+    else_if_blocks: AstBlock*[],
+    else_if_count: int,
+}
+
+struct LoopSignature {
+    type: int,
+    index: int,
+}
+
+struct WhileStatementNode {
+    condition: AstNode*,
+    body: AstBlock*,
+}
+
+struct ForStatementNode {
+    initializer: AstNode*,
+    condition: AstNode*,
+    increment: AstNode*,
+    body: AstBlock*,
+}
+
+struct VariableNode {
+    name: str,
+}
+
+struct IntNode {
+    value: int,
+}
+
+struct LongNode {
+    value: long,
+}
+
+struct ImportNode {
+    filename: str,
+}
+
+struct AsNode {
+    value: AstNode*,
+    type: int,
+}
+
+struct StructNode {
+    name: str,
+}
+
+struct FunctionRegistry {
+    signatures: FunctionSignature*[],
+}
+
+let function_registry: FunctionRegistry*;
+
+
+fn add_statement(block: AstBlock*, statement: AstNode*) {
+    block->statements.append(statement);
+}
+
+fn add_parameter(function_signature: FunctionSignature*, name: str, type: int) {
+    let parameter = new StackVariable*;
+    parameter->name = name;
+    parameter->type = type;
+    function_signature->parameters.append(parameter);
+}
+
+fn add_argument(function_call_node: FunctionCallNode*, argument: AstNode*) {
+    function_call_node->arguments.append(argument);
+}
+
+fn add_signature(function_registry: FunctionRegistry*): FunctionSignature* {
+    let function_signature = new FunctionSignature*;
+    function_signature->parameters = new StackVariable*[];
+    function_registry->signatures.append(function_signature);
+    return function_signature;
+}
+
+fn get_signature(function_registry: FunctionRegistry*, name: str): FunctionSignature* {
+    for (let i = 0; i < function_registry->signatures.len(); i = i + 1) {
+        if (function_registry->signatures[i]->name == name) {
+            return function_registry->signatures[i];
+        }
+    }
+    print("Function " + name + " not found\n");
+}
+
+fn parse_base_type(): int {
+    let token = get_next_token();
+    if (token->type == IDENT) {
+        let struct_definition = get_struct(struct_registry, token->value);
+        return struct_definition->type;
+    }
+    else {
+        return variable_type_from_token(token);
+    }
+}
+
+fn get_expression(min_precedence: int): AstNode*
+
+fn parse_type(): int {
+    let base_type = parse_base_type();
+    let token: Token*;
+    while (1) {
+        token = peek_next_token();
+        if (token->type == ASTERISK) {
+            consume_next_token();
+            base_type = to_pointer(base_type);
+        }
+        elseif (token->type == LBRACKET) {
+            consume_next_token();
+            expect_token(RBRACKET);
+            base_type = to_array(base_type);
+        }
+        else {
+            break;
+        }
+    }
+    return base_type;
+}
+
+fn parse_primary(): AstNode* {
+    let token = get_next_token();
+    
+    if (token->type == INT) {
+
+        let node = new AstNode*;
+        node->type = EXPRESSION_INT;
+        let int_node = new IntNode*;
+        int_node->value = *(token->value as int*);
+        node->node = int_node;
+        return node;
+    }
+    elseif (token->type == LONG) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_LONG;
+        let long_node = new LongNode*;
+        long_node->value = *(token->value as long*);
+        node->node = long_node;
+        return node;
+    }
+    elseif (token->type == TRUE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_TRUE;
+        return node;
+    }
+    elseif (token->type == FALSE) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_FALSE;
+        return node;
+    }
+    elseif (token->type == IDENT) {
+        if (peek_next_token()->type == LPAREN) {
+            let node = new AstNode*;
+            node->type = EXPRESSION_FUNCTION_CALL;
+            let function_call_node = new FunctionCallNode*;
+            function_call_node->arguments = new AstNode*[];
+            function_call_node->name = token->value as str;
+
+            expect_token(LPAREN);
+
+            while (peek_next_token()->type != RPAREN) {
+                let argument = get_expression(1);
+                add_argument(function_call_node, argument);
+                if (peek_next_token()->type != RPAREN) {
+                    expect_token(COMMA);
+                }
+            }
+
+            expect_token(RPAREN);
+
+            node->node = function_call_node;
+            return node;
+        }
+        else {
+            let node = new AstNode*;
+            node->type = EXPRESSION_VARIABLE;
+            let var_node = new VariableNode*;
+            var_node->name = token->value as str;
+            node->node = var_node;
+            return node;
+        }
+    } elseif (token->type == LPAREN) {
+        let expr = get_expression(1);
+
+        expect_token(RPAREN);
+        return expr;
+    } elseif (token->type == STRING) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_STRING_LITERAL;
+        let string_node = new StringLiteralNode*;
+        string_node->name = "str_" + int_to_str(get_literal_index());
+        add_global_variable(global_scope, string_node->name, token->value, STRING_LITERAL_VARIABLE);
+
+        node->node = string_node;
+        return node;
+    } elseif (token->type == CHAR) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_CHAR;
+        let char_node = new CharNode*;
+        char_node->name = "char_" + int_to_str(get_literal_index());
+        add_global_variable(global_scope, char_node->name, token->value, CHAR_VARIABLE);
+
+        node->node = char_node;
+        return node;
+    } elseif (token->type == NEW) {
+        let node = new AstNode*;
+        node->type = EXPRESSION_NEW;
+        let new_node = new NewNode*;
+
+        let type = parse_type();
+
+        new_node->type = type;
+
+        node->node = new_node;
+        return node;
+    } else {
+        let node = new AstNode*;
+        node->type = EXPRESSION_UNARY;
+        let unary_expression_node = new UnaryExpressionNode*;
+        unary_expression_node->unary_expression_type = token->type;
+        unary_expression_node->value = get_expression(100);
+        node->node = unary_expression_node;
+        return node;
+    }
+}
+
+fn get_precedence(type: int): int {
+    if (type == LOGICAL_OR) {
+        return 1;
+    }
+    elseif (type == LOGICAL_XOR) {
+        return 2;
+    }
+    elseif (type == LOGICAL_AND) {
+        return 3;
+    }
+    elseif (type == RANGE) {
+        return 3;
+    }
+    elseif (type == EQ || type == NEQ || type == LT || type == LTE || type == GT || type == GTE) {
+        return 4;
+    }
+    elseif (type == PLUS || type == MINUS) {
+        return 5;
+    }
+    elseif (type == ASTERISK || type == SLASH || type == MODULO) {
+        return 6;
+    }
+    elseif (type == BITWISE_AND) {
+        return 7;
+    }
+    elseif (type == BITWISE_OR) {
+        return 8;
+    }
+    elseif (type == BITWISE_XOR) {
+        return 9;
+    }
+    elseif (type == BITWISE_LEFT_SHIFT || type == BITWISE_RIGHT_SHIFT) {
+        return 10;
+    }
+    elseif (type == LBRACKET || type == ARROW || type == DOT) {
+        return 11;
+    }
+    elseif (type == AS) {
+        return 12;
+    }
+    else {
+        return 0;
+    }
+}
+
+fn get_expression(min_precedence: int): AstNode* {
+    let left = parse_primary();
+    while (1) {
+        let token = peek_next_token();
+        let precedence = get_precedence(token->type);
+        if (precedence < min_precedence) {
+            break;
+        }
+
+        if (token->type == ARROW) {
+            consume_next_token();
+            let member = new AstNode*;
+            token = get_next_token();
+            if (token->type != IDENT) {
+                print("Expected identifier after arrow\n");
+            }
+            member->type = EXPRESSION_STRUCT_MEMBER;
+            let struct_member_node = new StructMemberNode*;
+            struct_member_node->name = token->value as str;
+            member->node = struct_member_node;
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_ARROW;
+            let arrow_node = new ArrowNode*;
+            arrow_node->left = left;
+            arrow_node->member = member;
+            node->node = arrow_node;
+            left = node;
+        }
+        elseif (token->type == LBRACKET) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_INDEX;
+            let index_node = new IndexNode*;
+            index_node->left = left;
+
+            index_node->index = get_expression(1);
+            expect_token(RBRACKET);
+
+            node->node = index_node;
+            left = node;
+        }
+        elseif (token->type == DOT) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_FUNCTION_CALL;
+            let function_call_node = new FunctionCallNode*;
+
+            token = expect_token(IDENT);
+            function_call_node->name = token->value as str;
+
+            expect_token(LPAREN);
+
+            function_call_node->arguments = new AstNode*[];
+            add_argument(function_call_node, left);
+
+            while (peek_next_token()->type != RPAREN) {
+                let argument = get_expression(1);
+                add_argument(function_call_node, argument);
+                if (peek_next_token()->type != RPAREN) {
+                    expect_token(COMMA);
+                }
+            }
+
+            expect_token(RPAREN);
+
+            node->node = function_call_node;
+            left = node;
+        }
+        elseif (token->type == RANGE) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_RANGE;
+            let range_node = new RangeNode*;
+            range_node->left = left;
+            range_node->right = get_expression(1);
+            if (peek_next_token()->type == ASSIGN) {
+                consume_next_token();
+                range_node->is_inclusive = true;
+            }
+            else {
+                range_node->is_inclusive = false;
+            }
+            node->node = range_node;
+            left = node;
+        }
+        elseif (token->type == AS) {
+            consume_next_token();
+
+            let node = new AstNode*;
+            node->type = EXPRESSION_AS;
+            let as_node = new AsNode*;
+            as_node->value = left;
+            as_node->type = parse_type();
+
+            node->node = as_node;
+            left = node;
+        }
+        else {
+            consume_next_token();
+
+            let right = get_expression(precedence + 1);
+            let node = new AstNode*;
+            node->type = EXPRESSION_BINARY;
+            let binary_expression_node = new BinaryExpressionNode*;
+            binary_expression_node->binary_expression_type = token->type;
+            binary_expression_node->left = left;
+            binary_expression_node->right = right;
+            node->node = binary_expression_node;
+            left = node;
+        }
+    }
+    return left;
+}
+
+fn get_block(): AstBlock*
+
+fn get_statement(): AstNode* {
+    let node = new AstNode*;
+
+    let token = get_next_token();
+
+    if (token->type == LET || token->type == CONST) {
+        if (token->type == CONST && peek_next_token()->type == LBRACE) {
+            consume_next_token();
+
+            let const_value = 0;
+
+            while (peek_next_token()->type != RBRACE) {
+                token = expect_token(IDENT);
+
+                let value = new int*;
+                *value = const_value;
+
+                add_global_variable(global_scope, token->value, value, to_const(INT_VARIABLE));
+                const_value = const_value + 1;
+
+                if (peek_next_token()->type != RBRACE) {
+                    expect_token(COMMA);
+                }
+            }
+            expect_token(RBRACE);
+            expect_token(SEMICOLON);
+            node->type = STATEMENT_NONE;
+            return node;
+        }
+        node->type = STATEMENT_LET;
+
+        let let_node = new AssignNode*;
+        let_node->is_const = (token->type == CONST);
+        let_node->type = UNDEFINED_VARIABLE;
+        let_node->lvalue = 0 as AstNode*;
+        let_node->rvalue = 0 as AstNode*;
+        token = expect_token(IDENT);
+
+        if (peek_next_token()->type == COLON) {
+            consume_next_token();
+            let_node->type = parse_type();
+        }
+
+        let_node->name = token->value as str;
+
+        if (peek_next_token()->type == ASSIGN) {
+            consume_next_token();
+
+            let_node->rvalue = get_expression(1);
+        }
+        node->node = let_node;
+
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == IF) {
+        node->type = STATEMENT_IF;
+        expect_token(LPAREN);
+
+        let if_statement_node = new IfStatementNode*;
+        if_statement_node->else_if_blocks = new AstBlock*[];
+        if_statement_node->else_if_conditions = new AstBlock*[];
+        if_statement_node->condition = get_expression(1);
+        expect_token(RPAREN);
+
+        expect_token(LBRACE);
+        if_statement_node->then_block = get_block();
+        expect_token(RBRACE);
+
+        while (peek_next_token()->type == ELSEIF) {
+            consume_next_token();
+
+            expect_token(LPAREN);
+            let elseif_conditional_node = get_expression(1);
+            expect_token(RPAREN);
+
+            expect_token(LBRACE);
+            let elseif_block = get_block();
+            expect_token(RBRACE);
+
+            if_statement_node->else_if_blocks.append(elseif_block);
+            if_statement_node->else_if_conditions.append(elseif_conditional_node);
+            if_statement_node->else_if_count = if_statement_node->else_if_count + 1;
+        }
+        if (peek_next_token()->type == ELSE) {
+            consume_next_token();
+
+            expect_token(LBRACE);
+            if_statement_node->else_block = get_block();
+            expect_token(RBRACE);
+        }
+
+        node->node = if_statement_node;
+    }
+    elseif (token->type == FUNCTION) {
+        node->type = STATEMENT_FUNCTION;
+        let function_node = new FunctionNode*;
+        let function_signature = add_signature(function_registry);
+
+        token = get_next_token();
+        function_node->name = token->value as str;
+        function_signature->name = token->value as str;
+        function_node->function_signature = function_signature;
+
+        expect_token(LPAREN);
+        while (peek_next_token()->type != RPAREN) {
+            let name = expect_token(IDENT)->value;
+            expect_token(COLON);
+
+            let type = parse_type();
+            add_parameter(function_signature, name, type);
+            if (peek_next_token()->type != RPAREN) {
+                expect_token(COMMA);
+            }
+        }
+
+        token = expect_token(RPAREN);
+
+        let return_type = VOID;
+        if (peek_next_token()->type == COLON) {
+            consume_next_token();
+            return_type = parse_type();
+        }
+
+        function_signature->return_type = return_type;
+
+        let total_offset = 16;
+        for (let i = function_signature->parameters.len() - 1; i >= 0; i = i - 1) {
+            let parameter = function_signature->parameters[i];
+            parameter->offset = total_offset;
+            total_offset = total_offset + get_size(parameter->type);
+        }
+
+        if (peek_next_token()->type == LBRACE) {
+            expect_token(LBRACE);
+            function_node->body = get_block();
+            expect_token(RBRACE);
+        }
+
+        node->node = function_node;
+
+    }
+    elseif (token->type == RETURN) {
+        node->type = STATEMENT_RETURN;
+        let return_node = new ReturnNode*;
+        if (peek_next_token()->type == SEMICOLON) {
+            return_node->value = (0 as AstNode*);
+        }
+        else {
+            return_node->value = get_expression(1);
+        }
+        node->node = return_node;
+
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == BREAK) {
+        node->type = STATEMENT_BREAK;
+        node->node = 0 as AstNode*;
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == CONTINUE) {
+        node->type = STATEMENT_CONTINUE;
+        node->node = 0 as AstNode*;
+        expect_token(SEMICOLON);
+    }
+    elseif (token->type == STRUCT) {
+        node->type = STATEMENT_STRUCT;
+        let struct_node = new StructNode*;
+        let struct_definition = add_struct(struct_registry);
+
+        token = get_next_token();
+        struct_node->name = token->value as str;
+        struct_definition->name = token->value as str;
+
+        expect_token(LBRACE);
+        while (peek_next_token()->type != RBRACE) {
+            let member = new StructMember*;
+            token = expect_token(IDENT);
+            member->name = token->value as str;
+            expect_token(COLON);
+            let type = parse_type();
+            add_member(struct_definition, member->name, type);
+            if (peek_next_token()->type != RBRACE) {
+                expect_token(COMMA);
+            }
+        }
+        expect_token(RBRACE);
+
+        node->node = struct_node;
+    }
+    elseif (token->type == WHILE) {
+        node->type = STATEMENT_WHILE;
+        let while_statement_node = new WhileStatementNode*;
+        expect_token(LPAREN);
+        while_statement_node->condition = get_expression(1);
+        expect_token(RPAREN);
+        expect_token(LBRACE);
+        while_statement_node->body = get_block();
+        expect_token(RBRACE);
+        node->node = while_statement_node;
+    }
+    elseif (token->type == FOR) {
+        node->type = STATEMENT_FOR;
+        let for_statement_node = new ForStatementNode*;
+        expect_token(LPAREN);
+        for_statement_node->initializer = get_statement();
+        for_statement_node->condition = get_expression(1);
+        expect_token(SEMICOLON);
+        for_statement_node->increment = get_statement();
+        expect_token(RPAREN);
+        expect_token(LBRACE);
+        for_statement_node->body = get_block();
+        expect_token(RBRACE);
+        node->node = for_statement_node;
+    }
+    elseif (token->type == IMPORT) {
+        node->type = STATEMENT_IMPORT;
+        let import_node = new ImportNode*;
+        token = expect_token(STRING);
+        import_node->filename = token->value as str;
+        node->node = import_node;
+    }
+    else {
+        unconsume_token();
+        let lvalue = get_expression(1);
+        if (peek_next_token()->type == ASSIGN) {
+            consume_next_token();
+            node->type = STATEMENT_ASSIGN;
+
+            let assign_node = new AssignNode*;
+
+            assign_node->name = "";
+            assign_node->type = UNDEFINED_VARIABLE;
+            assign_node->lvalue = lvalue;
+            assign_node->rvalue = get_expression(1);
+            node->node = assign_node;
+
+            if (peek_next_token()->type == SEMICOLON) {
+                consume_next_token();
+            }
+        }
+        else {
+            if (lvalue->type == EXPRESSION_FUNCTION_CALL) {
+                expect_token(SEMICOLON);
+                return lvalue;
+            }
+            else {
+                print("Unknown statement. Found lvalue with type: " + int_to_str(lvalue->type) + "\n");
+            }
+        }
+    }
+
+    return node;
+}
+
+fn get_block(): AstBlock* {
+    let block = new AstBlock*;
+    block->statements = new AstNode*[];
+    while (peek_next_token()->type != RBRACE) {
+        let statement = get_statement();
+        add_statement(block, statement);
+    }
+    return block;
+}

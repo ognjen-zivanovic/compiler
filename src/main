@@ -1,0 +1,179 @@
+import "enum"
+import "lexer"
+import "variable"
+import "parser"
+import "codegen"
+
+fn get_index_of_last_slash(filepath: str): int {
+    let index = filepath.len() - 1;
+    while (index >= 0) {
+        if (filepath[index] == '/') {
+            return index;
+        }
+        index = index - 1;
+    }
+    return -1;
+}
+
+fn compile_file(file_name: str) {
+    file_name = relative_directory + file_name;
+
+    let old_token_index = token_index;
+    token_index = 0;
+    let old_lexer_position = lexer_position;
+    lexer_position = 0;
+
+    let old_input_text = input_text;
+    input_text = read_file(file_name);
+    text_size = len(input_text);
+
+    let old_tokens = tokens;
+    tokens = lex_all_tokens();
+    token_count = tokens.len();
+
+    let old_relative_directory = relative_directory;
+    let index = get_index_of_last_slash(file_name);
+    if (index != -1) {
+        relative_directory = file_name[0..index + 1];
+    }
+    else {
+        relative_directory = "";
+    }
+ 
+    while (peek_next_token() != (0 as Token*)) {
+        if (peek_next_token()->type == END) {
+            break;
+        }
+        let node = get_statement();
+
+        compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
+    }
+    input_text = old_input_text;
+    text_size = len(input_text);
+
+    tokens = old_tokens;
+    if (tokens) {
+        token_count = tokens.len();
+    }
+    token_index = old_token_index;
+    lexer_position = old_lexer_position;
+    relative_directory = old_relative_directory;
+}
+
+
+let print_asm_code = ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n";
+
+let strlen_internal_asm_code = ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n";
+    
+let long_to_str_asm_code = ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n";
+
+let int_to_str_asm_code = ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n";
+
+let char_to_str_asm_code = ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n";
+
+let read_file_asm_code = ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n";
+
+
+fn main(): int {
+    if (argc != 2) {
+        print("Usage: ./compiler input_file\n");
+        return 1;
+    }
+
+    global_scope = new_global_scope();
+
+    struct_registry = new StructRegistry*;
+    struct_registry->definitions = new StructDefinition*[];
+    function_registry = new FunctionRegistry*;
+    function_registry->signatures = new FunctionSignature*[];
+
+    let print_signature = add_signature(function_registry);
+    print_signature->name = "print";
+    print_signature->return_type = VOID;
+    add_parameter(print_signature, "str_var", STRING_VARIABLE);
+
+    let int_to_str_signature = add_signature(function_registry);
+    int_to_str_signature->name = "int_to_str";
+    int_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
+
+    let long_to_str_signature = add_signature(function_registry);
+    long_to_str_signature->name = "long_to_str";
+    long_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
+
+    let char_to_str_signature = add_signature(function_registry);
+    char_to_str_signature->name = "char_to_str";
+    char_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
+
+    let read_file_signature = add_signature(function_registry);
+    read_file_signature->name = "read_file";
+    read_file_signature->return_type = STRING_VARIABLE;
+    add_parameter(read_file_signature, "str", STRING_VARIABLE);
+
+
+    print(".section .text\n");
+    print(".extern malloc\n");
+    print(".extern realloc\n");
+    print(".extern snprintf\n");
+    print(".extern strcmp\n");
+
+    compile_file(argv[1]); 
+
+    print(print_asm_code);
+    print(strlen_internal_asm_code);
+    print(long_to_str_asm_code);
+    print(int_to_str_asm_code);
+    print(char_to_str_asm_code);
+    print(read_file_asm_code);
+
+
+    print(".section .data\n");
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        let variable_type = global_scope->variables[i]->type;
+
+        if (is_const(variable_type)) {
+            continue;
+        }
+
+        if (variable_type == STRING_LITERAL_VARIABLE) {
+            continue;
+        }
+
+        print("\t." + global_scope->variables[i]->name + ":\t");
+        if (is_pointer(variable_type) || is_array(variable_type)) {
+            print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
+        }
+        elseif (variable_type == STRING_VARIABLE) {
+            print(".quad ." + (global_scope->variables[i]->value as char*) + "\n");
+        }
+        elseif (variable_type == INT_VARIABLE) {
+            print(".quad " + (*(global_scope->variables[i]->value as int*)).int_to_str() + "\n");
+        }
+        elseif (variable_type == LONG_VARIABLE) {
+            print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
+        }
+        elseif (variable_type == CHAR_VARIABLE) {
+            print(".byte " + (*(global_scope->variables[i]->value as char*) as int).int_to_str() + "\n");
+        }
+    }
+    
+    print(".section .rodata\n");
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        let variable_type = global_scope->variables[i]->type;
+        if (is_const(variable_type)) {
+            continue;
+        }
+        if (variable_type == STRING_LITERAL_VARIABLE) {
+            print("\t." + global_scope->variables[i]->name + ":\t");
+            print(".string \"" + ((global_scope->variables[i]->value) as char*) + "\"\n");
+        }
+    }
+    print("\t.long_fmt:\t.string \"%ld\"\n");
+    print("\t.int_fmt:\t.string \"%d\"\n");
+    print(".section .bss\n");
+    print("\tfile_statbuf:\t.skip 144\n");
+
+    return 0;
+}

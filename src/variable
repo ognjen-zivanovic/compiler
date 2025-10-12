@@ -1,0 +1,375 @@
+fn variable_type_from_token(token: Token*): int {
+    if (token->type == INT_TYPE) {
+        return INT_VARIABLE;
+    }
+    elseif (token->type == LONG_TYPE) {
+        return LONG_VARIABLE;
+    }
+    elseif (token->type == CHAR_TYPE) {
+        return CHAR_VARIABLE;
+    }
+    elseif (token->type == BOOL_TYPE) {
+        return BOOL_VARIABLE;
+    }
+    elseif (token->type == STRING_TYPE) {
+        return STRING_VARIABLE;
+    }
+    elseif (token->type == PTR_TYPE) {
+        return PTR_VARIABLE;
+    }
+    else {
+        print("Variable type from token: Unknown type: " + int_to_str(token->type) + "\n");
+        return UNDEFINED_VARIABLE;
+    }
+}
+
+struct StackVariable {
+    name: str,
+    offset: int,
+    type: int,
+}
+
+struct GlobalVariable {
+    name: str,
+    value: ptr,
+    type: int,
+}
+
+struct StackFrame {
+    variables: StackVariable*[],
+    stack_size: int,
+    parent: StackFrame*,
+}
+
+struct GlobalScope {
+    variables: GlobalVariable*[],
+}
+
+let global_scope: GlobalScope*;
+
+struct StructMember {
+    name: str,
+    offset: int,
+    type: int,
+}
+
+struct StructDefinition {
+    name: str,
+    size: int,
+    type: int,
+    members: StructMember*[],
+}
+
+struct StructRegistry {
+    definitions: StructDefinition*[],
+}
+
+let struct_registry: StructRegistry*;
+
+
+fn is_const(type: int): bool {
+    return (type & (1 << 24)) != 0;
+}
+
+fn is_pointer(type: int): bool {
+    return (type & (1 << 16)) != 0;
+}
+
+fn is_array(type: int): bool {
+    return (type & (1 << 8)) != 0;
+}
+
+fn is_struct(type: int): bool {
+    return (type & (1 << 7)) != 0;
+}
+
+fn dereference_type(type: int): int {
+    let type_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let array_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let pointer_bits = type & ((1 << 8) - 1);
+
+    if ((array_bits & 1) != 0) {
+        array_bits = array_bits & (!1);
+        pointer_bits = pointer_bits | 1;
+    }
+    else {
+        pointer_bits = pointer_bits >> 1;
+        array_bits = array_bits >> 1;
+    }
+    let result = (pointer_bits << 16) | (array_bits << 8) | type_bits;
+    return result;
+}
+
+fn get_struct_with_index(struct_registry: StructRegistry*, index: int): StructDefinition* {
+    if (index >= struct_registry->definitions.len()) {
+        print("Struct index " + int_to_str(index) + " out of bounds\n");
+    }
+    return struct_registry->definitions[index];
+}
+
+fn debug_variable_non_pointer_type_name(type: int): str {
+    if (is_struct(type)) {
+        let struct_definition = get_struct_with_index(struct_registry, type ^ (1 << 7));
+        return struct_definition->name;
+    }
+    elseif (type == INT_VARIABLE) {
+        return "int";
+    }
+    elseif (type == LONG_VARIABLE) {
+        return "long";
+    }
+    elseif (type == CHAR_VARIABLE) {
+        return "char";
+    }
+    elseif (type == STRING_VARIABLE) {
+        return "string";
+    }
+    elseif (type == STRING_LITERAL_VARIABLE) {
+        return "string literal";
+    }
+    elseif (type == STRING_BUILDER_VARIABLE) {
+        return "string builder";
+    }
+    elseif (type == BOOL_VARIABLE) {
+        return "bool";
+    }
+    elseif (type == VOID) {
+        return "void";
+    }
+    elseif (type == PTR_VARIABLE) {
+        return "ptr";
+    }
+    else {
+        print("Unknown type " + int_to_str(type) + "\n");
+        return "UNKNOWN";
+    }
+}
+
+fn debug_variable_type_name(type: int): str {
+    if (is_const(type)) {
+        let non_const_type = type ^ (1 << 24);
+        return debug_variable_type_name(non_const_type) + " const";
+    }
+    if (is_pointer(type)) {
+        let non_pointer_type = dereference_type(type);
+        return debug_variable_type_name(non_pointer_type) + "*";
+    }
+    if (is_array(type)) {
+        let non_pointer_type = dereference_type(dereference_type(type));
+        return debug_variable_type_name(non_pointer_type) + "[]";
+    }
+
+    return debug_variable_non_pointer_type_name(type);
+}
+
+
+
+fn get_size(type: int): int {
+    if (is_const(type)) {
+        return get_size(type ^ (1 << 24)); 
+    }
+    if (is_pointer(type)) {
+        return 8;
+    }
+    if (is_array(type)) {
+        return 8;
+    }
+    if (is_struct(type)) {
+        let struct_definition = get_struct_with_index(struct_registry, type ^ (1 << 7));
+        return struct_definition->size;
+    }
+
+    if (type == INT_VARIABLE) {
+        return 4;
+    }
+    elseif (type == LONG_VARIABLE) {
+        return 8;
+    }
+    elseif (type == CHAR_VARIABLE) {
+        return 1;
+    }
+    elseif (type == BOOL_VARIABLE) {
+        return 1;
+    }
+    elseif (type == STRING_VARIABLE) {
+        return 8;
+    }
+    elseif (type == STRING_LITERAL_VARIABLE) {
+        return 8;
+    }
+    elseif (type == STRING_BUILDER_VARIABLE) {
+        return 8;
+    }
+    elseif (type == PTR_VARIABLE) {
+        return 8;
+    }
+    else {
+        print("Get size: Unknown type " + int_to_str(type) + "\n");
+        print("Get size: Unknown type " + debug_variable_type_name(type) + "\n");
+    }
+}
+
+fn get_word_size(size: int): char {
+    if (size == 1) {
+        return 'b';
+    }
+    elseif (size == 4) {
+        return 'l';
+    }
+    elseif (size == 8) {
+        return 'q';
+    }
+    else {
+        print("Unknown size " + int_to_str(size) + "\n");
+    }
+}
+
+fn add_member(struct_definition: StructDefinition*, name: str, type: int) {
+    let member = new StructMember*;
+    member->name = name;
+    member->type = type;
+    member->offset = struct_definition->size;
+    struct_definition->size = struct_definition->size + get_size(type);
+    struct_definition->members.append(member);
+}
+
+fn get_struct_member(struct_definition: StructDefinition*, name: str): StructMember* {
+    for (let i = 0; i < struct_definition->members.len(); i = i + 1) {
+        if (struct_definition->members[i]->name == name) {
+            return struct_definition->members[i];
+        }
+    }
+    print("Struct member " + name + " not found\n");
+}
+
+fn add_struct(struct_registry: StructRegistry*): StructDefinition* {
+    let struct_definition = new StructDefinition*;
+    struct_definition->size = 0;
+    struct_definition->type = 1 << 7 | struct_registry->definitions.len();
+    struct_definition->members = new StructMember*[];
+    struct_registry->definitions.append(struct_definition);
+    return struct_definition;
+}
+
+fn get_struct(struct_registry: StructRegistry*, name: str): StructDefinition* {
+    for (let i = 0; i < struct_registry->definitions.len(); i = i + 1) {
+        if (struct_registry->definitions[i]->name == name) {
+            return struct_registry->definitions[i];
+        }
+    }
+    print("Struct " + name + " not found\n");
+}
+
+
+
+fn add_global_variable(global_scope: GlobalScope*, name: str, value: ptr, type: int) {
+    let global_variable = new GlobalVariable*;
+    global_variable->name = name;
+    global_variable->value = value;
+    global_variable->type = type;
+
+    global_scope->variables.append(global_variable);
+}
+
+fn get_global_variable(global_scope: GlobalScope*, name: str): GlobalVariable* {
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        if (global_scope->variables[i]->name == name) {
+            return global_scope->variables[i];
+        }
+    }
+    return 0 as GlobalVariable*;
+}
+
+fn new_global_scope(): GlobalScope* {
+    let global_scope = new GlobalScope*;
+    global_scope->variables = new GlobalVariable*[];
+    return global_scope;
+}
+
+fn new_stack_frame(parent: StackFrame*): StackFrame* {
+    let stack_frame = new StackFrame*;
+    stack_frame->variables = new StackVariable*[];
+    stack_frame->stack_size = 0;
+    stack_frame->parent = parent;
+    if (parent) {
+        stack_frame->stack_size = parent->stack_size;
+    }
+    return stack_frame;
+}
+
+fn add_variable(stack_frame: StackFrame*, name: str, type: int, offset: int): StackVariable* {
+    let size = get_size(type);
+    if (offset == 0) {
+        stack_frame->stack_size = stack_frame->stack_size - size;
+    }
+    let new_variable = new StackVariable*;
+    new_variable->name = name;
+    if (offset == 0) {
+        new_variable->offset = stack_frame->stack_size;
+    }
+    else {
+        new_variable->offset = offset;
+    }
+    new_variable->type = type;
+    stack_frame->variables.append(new_variable);
+    return new_variable;
+}
+
+fn get_variable(stack_frame: StackFrame*, name: str): StackVariable* {
+    if (stack_frame) {
+        for (let i = 0; i < stack_frame->variables.len(); i = i + 1) {
+            if (stack_frame->variables[i]->name == name) {
+                return stack_frame->variables[i];
+            }
+        }
+
+        if (stack_frame->parent) {
+            return get_variable(stack_frame->parent, name);
+        }
+    }
+    return 0 as StackVariable*;
+}
+
+fn set_bits(type: int, pointer_bit: int, array_bit: int, const_bit: int): int {
+    let type_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let array_bits = type & ((1 << 8) - 1);
+    type = type >> 8;
+    let pointer_bits = type & ((1 << 8) - 1);
+
+    pointer_bits = pointer_bits << 1;
+    array_bits = array_bits << 1;
+    if (pointer_bits > 256) {
+        print("Too many levels of pointers\n");
+    }
+    if (array_bits > 256) {
+        print("Too many levels of arrays\n");
+    }
+    array_bits = array_bits | array_bit;
+    pointer_bits = pointer_bits | pointer_bit;
+    return (const_bit << 24) | (pointer_bits << 16) | (array_bits << 8) | type_bits;
+}
+fn to_pointer(type: int): int {
+    return set_bits(type, 1, 0, 0);
+}
+fn to_array(type: int): int {
+    return set_bits(type, 0, 1, 0);
+}
+fn to_const (type: int): int {
+    return set_bits(type, 0, 0, 1);
+}
+
+fn get_underlying_type(type: int): int {
+    type = type & (!(1 << 24));
+    if (is_array(type)) {
+        type = dereference_type(type);
+        type = to_pointer(type);
+    }
+    if (type == STRING_VARIABLE || type == STRING_LITERAL_VARIABLE || type == STRING_BUILDER_VARIABLE) {
+        type = CHAR_VARIABLE;
+        type = to_pointer(type);
+    }
+    return type;
+}
