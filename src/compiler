@@ -63,6 +63,7 @@ const {
     STRUCT,
     WHILE,
     FOR,
+    IMPORT,
 
     INT_TYPE,
     LONG_TYPE,
@@ -236,6 +237,9 @@ fn debug_token_value_to_str(token_val: int): str {
     elseif (token_val == FOR) {
         return "FOR";
     }
+    elseif (token_val == IMPORT) {
+        return "IMPORT";
+    }
     elseif (token_val == INT_TYPE) {
         return "INT_TYPE";
     }
@@ -292,6 +296,7 @@ const {
     STATEMENT_BREAK,
     STATEMENT_CONTINUE,
     STATEMENT_STRUCT,
+    STATEMENT_IMPORT,
 };
 
 fn debug_ast_node_type_name(type: int): str {
@@ -385,6 +390,7 @@ let token_count = 0;
 let input_text = "";
 let lexer_position = 0;
 let text_size = 0;
+let relative_directory = "";
 
 fn get_curr_character(): char {
     if (lexer_position >= text_size) {
@@ -562,6 +568,9 @@ fn lex_next_token(new_token: Token*) {
         }
         elseif (token_string == "false") {
             new_token->type = FALSE;
+        }
+        elseif (token_string == "import") {
+            new_token->type = IMPORT;
         }
         else {
             new_token->type = IDENT;
@@ -1291,6 +1300,10 @@ struct LongNode {
     value: long,
 }
 
+struct ImportNode {
+    filename: str,
+}
+
 struct AsNode {
     value: AstNode*,
     type: int,
@@ -1856,6 +1869,13 @@ fn get_statement(): AstNode* {
         for_statement_node->body = get_block();
         expect_token(RBRACE);
         node->node = for_statement_node;
+    }
+    elseif (token->type == IMPORT) {
+        node->type = STATEMENT_IMPORT;
+        let import_node = new ImportNode*;
+        token = expect_token(STRING);
+        import_node->filename = token->value as str;
+        node->node = import_node;
     }
     else {
         unconsume_token();
@@ -3192,6 +3212,8 @@ fn compile_for(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame
     add_to_text_buffer(text_buffer, *(for_text_buffer->buffer));
 }
 
+fn compile_file(file_name: str)
+
 fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, statement: AstNode*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
 
     if (statement->type == STATEMENT_LET) {
@@ -3230,10 +3252,64 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
     elseif (statement->type == STATEMENT_STRUCT || statement->type == STATEMENT_NONE) {
 
     }
+    elseif (statement->type == STATEMENT_IMPORT) {
+        let import_node = (statement->node as ImportNode*);
+        compile_file(import_node->filename);
+    }
     else {
         print("Unknown statement type " + int_to_str(statement->type) + "\n");
     }
 }
+
+fn get_index_of_last_slash(filepath: str): int {
+    let index = filepath.len() - 1;
+    while (index >= 0) {
+        if (filepath[index] == '/') {
+            return index;
+        }
+        index = index - 1;
+    }
+    return -1;
+}
+
+fn compile_file(file_name: str) {
+    file_name = relative_directory + file_name;
+
+    let old_input_text = input_text;
+    input_text = read_file(file_name);
+    text_size = len(input_text);
+
+    let old_tokens = tokens;
+    tokens = lex_all_tokens();
+    token_count = tokens.len();
+
+    let old_relative_directory = relative_directory;
+    let index = get_index_of_last_slash(file_name);
+    if (index != -1) {
+        relative_directory = file_name[0..index];
+    }
+    else {
+        relative_directory = "";
+    }
+ 
+    while (peek_next_token() != (0 as Token*)) {
+        if (peek_next_token()->type == END) {
+            break;
+        }
+        let node = get_statement();
+
+        compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
+    }
+    input_text = old_input_text;
+    text_size = len(input_text);
+
+    tokens = old_tokens;
+    if (tokens) {
+        token_count = tokens.len();
+    }
+    relative_directory = old_relative_directory;
+}
+
 
 let print_asm_code = ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n";
 
@@ -3293,29 +3369,7 @@ fn main(): int {
     print(".extern snprintf\n");
     print(".extern strcmp\n");
 
-    let old_input_text = input_text;
-    input_text = read_file(argv[1]);
-    text_size = len(input_text);
-
-    let old_tokens = tokens;
-    tokens = lex_all_tokens();
-    token_count = tokens.len();
-
-    while (peek_next_token() != (0 as Token*)) {
-        if (peek_next_token()->type == END) {
-            break;
-        }
-        let node = get_statement();
-
-        compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
-    }
-    input_text = old_input_text;
-    text_size = len(input_text);
-
-    tokens = old_tokens;
-    if (tokens) {
-        token_count = tokens.len();
-    }
+    compile_file(argv[1]); 
 
     print(print_asm_code);
     print(strlen_internal_asm_code);
