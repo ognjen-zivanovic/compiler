@@ -497,31 +497,20 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
         add_to_text_buffer(text_buffer, "\tpopq %rax\n");
         rsp_offset = rsp_offset + 8;
 
-        let index = get_label_index();
+        let ___index = get_label_index();
 
-        add_to_text_buffer(text_buffer, "\tmovq %rax, %r12\n");
-        add_to_text_buffer(text_buffer, "\tmovl 12(%r12), %edx\n");
-        add_to_text_buffer(text_buffer, "\tmovl 8(%r12), %ecx\n");
-        add_to_text_buffer(text_buffer, "\taddl $1, %ecx\n");
-        add_to_text_buffer(text_buffer, "\tcmpl %ecx, %edx\n");
-        add_to_text_buffer(text_buffer, "\tjge .L" + int_to_str(index) + "_after_grow\n");
+        let size = get_size(element_type);
+        if (size == 1) {
+            add_to_text_buffer(text_buffer, "\tcall __append_char\n");
+        }
+        elseif (size == 4) {
+            add_to_text_buffer(text_buffer, "\tcall __append_long\n");
+        }
+        elseif (size == 8) {
+            add_to_text_buffer(text_buffer, "\tcall __append_quad\n");
+        }
+
         
-        add_to_text_buffer(text_buffer, "\taddl %edx, %edx\n");
-        add_to_text_buffer(text_buffer, "\tmovl %edx, 12(%r12)\n");
-        add_to_text_buffer(text_buffer, "\tmovslq %edx, %rsi\n");
-        add_to_text_buffer(text_buffer, "\timulq $" + int_to_str(get_size(element_type)) + ", %rsi\n");
-        add_to_text_buffer(text_buffer, "\tmovq (%r12), %rdi\n");
-        add_to_text_buffer(text_buffer, "\tcall realloc\n");
-
-        add_to_text_buffer(text_buffer, "\tmovq %rax, (%r12)\n");
-        add_to_text_buffer(text_buffer, "\tmovq %r12, %rax\n");
-
-        add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
-        add_to_text_buffer(text_buffer, "\tmovslq 8(%rax), %rdx\n");
-        add_to_text_buffer(text_buffer, "\tmovq (%rax), %rax\n");
-        add_to_text_buffer(text_buffer, "\tleaq (%rax, %rdx, " + int_to_str(get_size(element_type)) + "), %rax\n");
-        add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(element_type)) + " " + get_register_for_type('b', element_type) + ", (%rax)\n");
-
         if (type == LVALUE) {
             element_type = to_pointer(element_type);
         }
