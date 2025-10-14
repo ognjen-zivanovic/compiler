@@ -83,7 +83,7 @@ struct IfStatementNode {
     condition: AstNode*,
     then_block: AstBlock*,
     else_block: AstBlock*,
-    else_if_conditions: AstBlock*[],
+    else_if_conditions: AstNode*[],
     else_if_blocks: AstBlock*[],
     else_if_count: int,
 }
@@ -533,7 +533,7 @@ fn get_statement(): AstNode* {
 
         let if_statement_node = new IfStatementNode*;
         if_statement_node->else_if_blocks = new AstBlock*[];
-        if_statement_node->else_if_conditions = new AstBlock*[];
+        if_statement_node->else_if_conditions = new AstNode*[];
         if_statement_node->condition = get_expression(1);
         expect_token(RPAREN);
 

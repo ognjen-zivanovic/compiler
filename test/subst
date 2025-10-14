@@ -1,5 +1,0 @@
-import "test"
-
-fn main() {
-   imported_function(); 
-}

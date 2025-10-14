@@ -117,7 +117,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
             add_to_text_buffer(text_buffer, "\tmov" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
         }
         elseif (type == LVALUE) {
-            add_to_text_buffer(text_buffer, "\tlea" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
+            add_to_text_buffer(text_buffer, "\tleaq" + " (" + pointer_register_name + "), " + register_name + "\n");
         }
     }
     elseif (unary_expression_node->unary_expression_type == BANG) {
@@ -363,11 +363,11 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
     elseif (operator == BITWISE_LEFT_SHIFT) {
         add_to_text_buffer(text_buffer, "\tmovb %dl, %cl\n");
-        add_to_text_buffer(text_buffer, "\tshll %cl, " + left_register + "\n");
+        add_to_text_buffer(text_buffer, "\tsal" + word_size + " %cl, " + left_register + "\n");
     }
     elseif (operator == BITWISE_RIGHT_SHIFT) {
         add_to_text_buffer(text_buffer, "\tmovb %dl, %cl\n");
-        add_to_text_buffer(text_buffer, "\tshrl %cl, " + left_register + "\n");
+        add_to_text_buffer(text_buffer, "\tsar" + word_size + " %cl, " + left_register + "\n");
     }
     else {
         print("Unknown binary expression type " + int_to_str(operator) + "\n");
@@ -568,7 +568,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                 add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
             }
             elseif (type == LVALUE) {
-                add_to_text_buffer(text_buffer, "\tlea" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
+                add_to_text_buffer(text_buffer, "\tleaq" + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
             }
             return variable_type;
         }
@@ -603,7 +603,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                     if (is_const(variable_type)) {
                         print("Const variables cannot be lvalues\n");
                     }
-                    add_to_text_buffer(text_buffer, "\tlea" + word_size + " ." + global_variable->name + "(%rip), " + register_name + "\n");
+                    add_to_text_buffer(text_buffer, "\tleaq" + " ." + global_variable->name + "(%rip), " + register_name + "\n");
                 }
             }
             else {
@@ -720,12 +720,12 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         let member_offset = member->offset;
         let register_name = get_register_for_type(reg, member_type);
-        let word_size = get_word_size(get_size(member_type));
         if (type == RVALUE) {
+            let word_size = get_word_size(get_size(member_type));
             add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
         }
         elseif (type == LVALUE) {
-            add_to_text_buffer(text_buffer, "\tlea" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
+            add_to_text_buffer(text_buffer, "\tleaq" + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
         }
         return member_type;
     }
