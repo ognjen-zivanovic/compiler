@@ -18,6 +18,7 @@ const {
     RANGE,
     SEMICOLON,
     COLON,
+    DOUBLE_COLON,
     AT,
     AS,
 
@@ -123,8 +124,8 @@ fn debug_token_value_to_str(token_val: int): str {
     elseif (token_val == SEMICOLON) {
         return "SEMICOLON";
     }
-    elseif (token_val == COLON) {
-        return "COLON";
+    elseif (token_val == DOUBLE_COLON) {
+        return "DOUBLE_COLON";
     }
     elseif (token_val == AT) {
         return "AT";
@@ -134,6 +135,9 @@ fn debug_token_value_to_str(token_val: int): str {
     }
     elseif (token_val == ARROW) {
         return "ARROW";
+    }
+    elseif (token_val == COLON) {
+        return "COLON";
     }
     elseif (token_val == LPAREN) {
         return "LPAREN";
@@ -281,6 +285,7 @@ const {
     EXPRESSION_NEW,
     EXPRESSION_INDEX,
     EXPRESSION_ARROW,
+    EXPRESSION_DOUBLE_COLON,
     EXPRESSION_AS,
     EXPRESSION_RANGE,
     EXPRESSION_TRUE,
@@ -335,6 +340,9 @@ fn debug_ast_node_type_name(type: int): str {
     }
     elseif (type == EXPRESSION_ARROW) {
         return "arrow";
+    }
+    elseif (type == EXPRESSION_DOUBLE_COLON) {
+        return "double colon";
     }
     elseif (type == EXPRESSION_INDEX) {
         return "index expression";

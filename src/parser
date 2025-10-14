@@ -59,7 +59,7 @@ struct UnaryExpressionNode {
     value: AstNode*,
 }
 
-struct ArrowNode {
+struct AccessNode {
     left: AstNode*,
     member: AstNode*,
 }
@@ -342,7 +342,7 @@ fn get_precedence(type: int): int {
     elseif (type == BITWISE_LEFT_SHIFT || type == BITWISE_RIGHT_SHIFT) {
         return 10;
     }
-    elseif (type == LBRACKET || type == ARROW || type == DOT) {
+    elseif (type == LBRACKET || type == ARROW || type == DOT || type == DOUBLE_COLON) {
         return 11;
     }
     elseif (type == AS) {
@@ -362,24 +362,29 @@ fn get_expression(min_precedence: int): AstNode* {
             break;
         }
 
-        if (token->type == ARROW) {
+        if (token->type == ARROW || token->type == DOUBLE_COLON) {
+            let node = new AstNode*;
+            if (token->type == ARROW) {
+                node->type = EXPRESSION_ARROW;
+            }
+            elseif (token->type == DOUBLE_COLON) {
+                node->type = EXPRESSION_DOUBLE_COLON;
+            }
             consume_next_token();
             let member = new AstNode*;
             token = get_next_token();
             if (token->type != IDENT) {
-                print("Expected identifier after arrow\n");
+                print("Expected identifier after arrow/double colon.\n");
             }
             member->type = EXPRESSION_STRUCT_MEMBER;
             let struct_member_node = new StructMemberNode*;
             struct_member_node->name = token->value as str;
             member->node = struct_member_node;
 
-            let node = new AstNode*;
-            node->type = EXPRESSION_ARROW;
-            let arrow_node = new ArrowNode*;
-            arrow_node->left = left;
-            arrow_node->member = member;
-            node->node = arrow_node;
+            let access_node = new AccessNode*;
+            access_node->left = left;
+            access_node->member = member;
+            node->node = access_node;
             left = node;
         }
         elseif (token->type == LBRACKET) {

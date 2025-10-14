@@ -156,7 +156,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     let operator = binary_expression_node->binary_expression_type;
     let right_expression_type = binary_expression_node->right->type;
 
-    let preserve_rax = right_expression_type == EXPRESSION_BINARY || right_expression_type == EXPRESSION_FUNCTION_CALL || right_expression_type == EXPRESSION_ARROW || right_expression_type == EXPRESSION_UNARY || right_expression_type == EXPRESSION_INDEX || right_expression_type == EXPRESSION_AS;
+    let preserve_rax = right_expression_type == EXPRESSION_BINARY || right_expression_type == EXPRESSION_FUNCTION_CALL || right_expression_type == EXPRESSION_ARROW || right_expression_type == EXPRESSION_UNARY || right_expression_type == EXPRESSION_INDEX || right_expression_type == EXPRESSION_AS || right_expression_type == EXPRESSION_DOUBLE_COLON;
 
     let left_type = compile_expression_into_register(text_buffer, binary_expression_node->left, stack_frame, 'a', RVALUE);
 
@@ -700,9 +700,13 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         dealign_stack(text_buffer, alignment_offset);
         return node_type;
     }
-    elseif (node->type == EXPRESSION_ARROW) {
-        let arrow_node = (node->node as ArrowNode*);
-        let left_type = compile_expression_into_register(text_buffer, arrow_node->left, stack_frame, 'a', RVALUE);
+    elseif (node->type == EXPRESSION_ARROW || node->type == EXPRESSION_DOUBLE_COLON) {
+        let access_node = (node->node as AccessNode*);
+        let lrtype = RVALUE;
+        if (node->type == EXPRESSION_DOUBLE_COLON) {
+            lrtype = LVALUE;
+        }
+        let left_type = compile_expression_into_register(text_buffer, access_node->left, stack_frame, 'a', lrtype);
         let pointer_register_name = get_register_for_type('a', left_type);
         if (!is_pointer(left_type)) {
             print("Expected pointer type, got " + debug_variable_type_name(left_type) + "\n");
@@ -713,7 +717,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             print("Expected struct type, got " + debug_variable_type_name(left_type) + "\n");
         }
         let struct_definition = get_struct_with_index(struct_registry, left_type ^ (1 << 7));
-        let member = get_struct_member(struct_definition, (arrow_node->member->node as StructMemberNode*)->name);
+        let member = get_struct_member(struct_definition, (access_node->member->node as StructMemberNode*)->name);
         let member_type = member->type;
         if (type == LVALUE) {
             member_type = to_pointer(member_type);
@@ -936,7 +940,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
         elseif (rvalue_type == EXPRESSION_UNARY) {
             expression_type = compile_unary_expression(text_buffer, assign_node->rvalue, stack_frame, RVALUE);
         }
-        elseif (rvalue_type == EXPRESSION_VARIABLE || rvalue_type == EXPRESSION_INDEX || rvalue_type == EXPRESSION_AS || rvalue_type == EXPRESSION_NEW || rvalue_type == EXPRESSION_ARROW || rvalue_type == EXPRESSION_TRUE || rvalue_type == EXPRESSION_FALSE) {
+        elseif (rvalue_type == EXPRESSION_VARIABLE || rvalue_type == EXPRESSION_INDEX || rvalue_type == EXPRESSION_AS || rvalue_type == EXPRESSION_NEW || rvalue_type == EXPRESSION_ARROW || rvalue_type == EXPRESSION_TRUE || rvalue_type == EXPRESSION_FALSE || rvalue_type == EXPRESSION_DOUBLE_COLON) {
             expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
         }
         else {

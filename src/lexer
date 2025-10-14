@@ -311,7 +311,14 @@ fn lex_next_token(new_token: Token*) {
             }
         }
         elseif (curr == ':') {
-            new_token->type = COLON;
+            let next = get_next_character();
+            if (next == ':') {
+                new_token->type = DOUBLE_COLON;
+                lexer_position = lexer_position + 1;
+            }
+            else {
+                new_token->type = COLON;
+            }
         }
         elseif (curr == ';') {
             new_token->type = SEMICOLON;
