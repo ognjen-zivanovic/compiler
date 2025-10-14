@@ -139,65 +139,15 @@ fn compile_char_into_builder(text_buffer: TextBuffer*) {
     let index = get_label_index();
 
     let alignment_offset = align_stack(text_buffer, rsp_offset);
-    add_to_text_buffer(text_buffer, "\tmovq $1, %rbx\n");
-    add_to_text_buffer(text_buffer, "\tmovq %r14, %rax\n");
-    add_to_text_buffer(text_buffer, "\taddq %rbx, %rax\n");
-    add_to_text_buffer(text_buffer, "\tincq %rax\n");
-    add_to_text_buffer(text_buffer, "\tcmpq %r13, %rax\n");
-    add_to_text_buffer(text_buffer, "\tjbe .L" + int_to_str(index) + "_after_grow\n");
-
-    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_grow:\n");
-    add_to_text_buffer(text_buffer, "\taddq %r13, %r13\n");
-    add_to_text_buffer(text_buffer, "\tcmpq %rax, %r13\n");
-    add_to_text_buffer(text_buffer, "\tjb .L" + int_to_str(index) + "_grow\n");
-
-    add_to_text_buffer(text_buffer, "\tmovq %r13, %rsi\n");
-    add_to_text_buffer(text_buffer, "\tmovq %r15, %rdi\n");
-    add_to_text_buffer(text_buffer, "\tcall realloc\n");
-    add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
-
-    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
-    add_to_text_buffer(text_buffer, "\tleaq (%r15,%r14), %rdi\n");
-    add_to_text_buffer(text_buffer, "\tmovb %r12b, (%r15,%r14)\n");
-    add_to_text_buffer(text_buffer, "\taddq %rbx, %r14\n");
-    add_to_text_buffer(text_buffer, "\tmovb $0, (%r15,%r14)\n");
-
+    add_to_text_buffer(text_buffer, "\tcall __append_char_to_builder\n");
     dealign_stack(text_buffer, alignment_offset);
 }
 
 fn compile_string_into_builder(text_buffer: TextBuffer*) {
-    let index = get_label_index();
+    let ___index = get_label_index();
     
     let alignment_offset = align_stack(text_buffer, rsp_offset);
-    add_to_text_buffer(text_buffer, "\tmovq %r12, %rdi\n");
-    add_to_text_buffer(text_buffer, "\tcall strlen\n");
-    add_to_text_buffer(text_buffer, "\tmovq %rax, %rbx\n");
-
-    add_to_text_buffer(text_buffer, "\tmovq %r14, %rax\n");
-    add_to_text_buffer(text_buffer, "\taddq %rbx, %rax\n");
-    add_to_text_buffer(text_buffer, "\tincq %rax\n");
-
-    add_to_text_buffer(text_buffer, "\tcmpq %r13, %rax\n");
-    add_to_text_buffer(text_buffer, "\tjbe .L" + int_to_str(index) + "_after_grow\n");
-
-    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_grow:\n");
-    add_to_text_buffer(text_buffer, "\taddq %r13, %r13\n");
-    add_to_text_buffer(text_buffer, "\tcmpq %rax, %r13\n");
-    add_to_text_buffer(text_buffer, "\tjb .L" + int_to_str(index) + "_grow\n");
-
-    add_to_text_buffer(text_buffer, "\tmovq %r13, %rsi\n");
-    add_to_text_buffer(text_buffer, "\tmovq %r15, %rdi\n");
-    add_to_text_buffer(text_buffer, "\tcall realloc\n");
-    add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
-
-    add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_after_grow:\n");
-    add_to_text_buffer(text_buffer, "\tleaq (%r15,%r14), %rdi\n");
-    add_to_text_buffer(text_buffer, "\tmovq %r12, %rsi\n");
-    add_to_text_buffer(text_buffer, "\tmovq %rbx, %rdx\n");
-    add_to_text_buffer(text_buffer, "\taddq %rbx, %r14\n");
-    add_to_text_buffer(text_buffer, "\tcall memcpy\n");
-    add_to_text_buffer(text_buffer, "\tmovb $0, (%r15,%r14)\n");
-
+    add_to_text_buffer(text_buffer, "\tcall __append_string_to_builder\n");
     dealign_stack(text_buffer, alignment_offset);
 }
 
