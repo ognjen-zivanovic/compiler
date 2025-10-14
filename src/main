@@ -89,6 +89,62 @@ fn main(): int {
         return 1;
     }
 
+    instructions = new Instruction*[];
+    register_names_byte = new str[];
+    register_names_dword = new str[];
+    register_names_qword = new str[];
+
+    register_names_byte.append("%al");
+    register_names_byte.append("%bl");
+    register_names_byte.append("%cl");
+    register_names_byte.append("%dl");
+    register_names_byte.append("%sil");
+    register_names_byte.append("%dil");
+    register_names_byte.append("%bpl");
+    register_names_byte.append("%spl");
+    register_names_byte.append("%r8b");
+    register_names_byte.append("%r9b");
+    register_names_byte.append("%r10b");
+    register_names_byte.append("%r11b");
+    register_names_byte.append("%r12b");
+    register_names_byte.append("%r13b");
+    register_names_byte.append("%r14b");
+    register_names_byte.append("%r15b");
+
+    register_names_dword.append("%eax");
+    register_names_dword.append("%ebx");
+    register_names_dword.append("%ecx");
+    register_names_dword.append("%edx");
+    register_names_dword.append("%esi");
+    register_names_dword.append("%edi");
+    register_names_dword.append("%ebp");
+    register_names_dword.append("%esp");
+    register_names_dword.append("%r8d");
+    register_names_dword.append("%r9d");
+    register_names_dword.append("%r10d");
+    register_names_dword.append("%r11d");
+    register_names_dword.append("%r12d");
+    register_names_dword.append("%r13d");
+    register_names_dword.append("%r14d");
+    register_names_dword.append("%r15d");
+
+    register_names_qword.append("%rax");
+    register_names_qword.append("%rbx");
+    register_names_qword.append("%rcx"); 
+    register_names_qword.append("%rdx");
+    register_names_qword.append("%rsi");
+    register_names_qword.append("%rdi");
+    register_names_qword.append("%rbp");
+    register_names_qword.append("%rsp");
+    register_names_qword.append("%r8");
+    register_names_qword.append("%r9");
+    register_names_qword.append("%r10");
+    register_names_qword.append("%r11");
+    register_names_qword.append("%r12");
+    register_names_qword.append("%r13");
+    register_names_qword.append("%r14");
+    register_names_qword.append("%r15");
+
     global_scope = new_global_scope();
 
     struct_registry = new StructRegistry*;

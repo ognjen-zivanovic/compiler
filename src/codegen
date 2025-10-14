@@ -19,6 +19,175 @@ fn terminate_buffer(buffer: TextBuffer*) {
     buffer->buffer.append('\0');
 }
 
+
+const {
+    REG,
+    IMM,
+    LABEL,
+    MEM,
+};
+
+const {
+    MOV,
+    MOVS,
+    LEA,
+    ADD,
+    SUB,
+    IMUL,
+    SDIV,
+    SREM,
+    SAL,
+    SAR,
+    AND,
+    OR,
+    XOR,
+    CMP,
+    TEST,
+};
+
+const {
+    RAX,
+    RBX,
+    RCX,
+    RDX,
+    RSI,
+    RDI,
+    RBP,
+    RSP,
+    R8,
+    R9,
+    R10,
+    R11,
+    R12,
+    R13,
+    R14,
+    R15,
+};
+
+const {
+    REGISTER_RELATIVE,
+};
+
+struct Operand {
+    value: long,
+    type: int,
+}
+
+struct Instruction {
+    src: Operand*,
+    dest: Operand*,
+    opcode: int,
+    type: int,
+}
+
+let instructions: Instruction*[];
+
+fn make_reg(reg: long): Operand* {
+    let operand = new Operand*;
+    operand->value = reg;
+    operand->type = REG;
+    return operand;
+}
+
+
+fn make_imm(imm: long): Operand* {
+    let operand = new Operand*;
+    operand->value = imm;
+    operand->type = IMM;
+    return operand;
+}
+
+fn make_label(label: ptr): Operand* {
+    let operand = new Operand*;
+    operand->value = label as long;
+    operand->type = LABEL;
+    return operand;
+}
+
+fn make_mem(base_register: Operand*, index_register: Operand*, scale_log_2: int, offset: int, mode: int): Operand* {
+    let operand = new Operand*;
+    operand->value = (offset & (((1 as long) << 32) - 1));
+    operand->value = operand->value | ((scale_log_2 & 3) << 32);
+    if (index_register) {
+        operand->value = operand->value | ((index_register->value & 31) << 34);
+    } else {
+        operand->value = operand->value | (31 as long << 34);
+    }
+    operand->value = operand->value | ((base_register->value & 31) << 39);
+    operand->value = operand->value | ((mode & 3) as long << 44);
+    operand->type = MEM;
+    return operand;
+}
+
+fn make_stack(offset: int): Operand* {
+    return make_mem(make_reg(RBP as long), 0 as Operand*, 0, offset, REGISTER_RELATIVE);
+}
+
+fn add_instruction(src: Operand*, dest: Operand*, opcode: int, type: int) {
+    let instruction = new Instruction*;
+    instruction->src = src;
+    instruction->dest = dest;
+    instruction->opcode = opcode;
+    instruction->type = type;
+    instructions.append(instruction);
+}
+
+let register_names_byte: str[];
+let register_names_dword: str[];
+let register_names_qword: str[];
+
+fn emit_operand_x86(text_buffer: TextBuffer*, operand: Operand*, size: int) {
+    if (operand->type == REG) {
+        if (size == 1) {
+            add_to_text_buffer(text_buffer, register_names_byte[operand->value]);
+        }
+        elseif (size == 4) {
+            add_to_text_buffer(text_buffer, register_names_dword[operand->value]);
+        }
+        elseif (size == 8) {
+            add_to_text_buffer(text_buffer, register_names_qword[operand->value]);
+        }
+    }
+    elseif (operand->type == MEM) {
+        let mode = (operand->value >> 44) & 3;
+        let offset = (operand->value & (((1 as long) << 32) - 1)) as int;
+        let longoffset = (operand->value & (((1 as long) << 32) - 1)) ;
+        let base_register = (operand->value >> 39) & 31;
+
+        if (mode == REGISTER_RELATIVE) {
+            add_to_text_buffer(text_buffer, offset.int_to_str());
+            add_to_text_buffer(text_buffer, "(");
+            emit_operand_x86(text_buffer, make_reg(base_register), 8);
+            add_to_text_buffer(text_buffer, ")");
+        }
+    }
+}
+
+fn emit_instruction_x86(text_buffer: TextBuffer*, instruction: Instruction*) {
+    if (instruction->opcode == MOV) {
+        add_to_text_buffer(text_buffer, "\tmov");
+        let size = get_size(instruction->type);
+        if (size == 1) {
+            add_to_text_buffer(text_buffer, "b");
+        }
+        elseif (size == 4) {
+            add_to_text_buffer(text_buffer, "l");
+        }
+        elseif (size == 8) {
+            add_to_text_buffer(text_buffer, "q");
+        }
+        add_to_text_buffer(text_buffer, " ");
+        emit_operand_x86(text_buffer, instruction->src, size);
+        add_to_text_buffer(text_buffer, ", ");
+        emit_operand_x86(text_buffer, instruction->dest, size);
+        add_to_text_buffer(text_buffer, "\n");
+    }
+}
+
+fn emit_instruction(text_buffer: TextBuffer*, instruction: Instruction*) {
+    emit_instruction_x86(text_buffer, instruction);
+}
+
 let rsp_offset = 0;
 
 fn align_stack(text_buffer: TextBuffer*, offset: int): int {
@@ -26,6 +195,7 @@ fn align_stack(text_buffer: TextBuffer*, offset: int): int {
 
     if (alignment_offset != 0) {
         add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(alignment_offset) + ", %rsp\n");
+        add_instruction(make_reg(RSP as long), make_imm(alignment_offset as long), SUB, LONG_VARIABLE);
         rsp_offset = rsp_offset - alignment_offset;
     }
     return alignment_offset;
@@ -491,12 +661,20 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
         let alignment_offset = align_stack(text_buffer, rsp_offset - arguments_size);
 
+        if (function_signature->parameters.len() != function_call_node->arguments.len()) {
+            print("Mismatch in number of arguments. Expected " + int_to_str(function_signature->parameters.len()) + ", got " + int_to_str(function_call_node->arguments.len()) + "\n");
+        }
+
         for (let i = 0; i < function_call_node->arguments.len(); i = i + 1) {
             let argument = function_call_node->arguments[i];
             let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
 
             let size = get_size(argument_type);
             let word_size = get_word_size(size);
+
+            if (size != get_size(function_signature->parameters[i]->type)) {
+                print("Mismatch in argument size. Expected " + debug_variable_type_name(function_signature->parameters[i]->type) + ", got " + debug_variable_type_name(argument_type) + "\n");
+            }
 
             add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(size) + ", %rsp\n");
             add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + get_register_for_type('a', argument_type) + ", (%rsp)\n");
@@ -846,7 +1024,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(value_size) + get_word_size(cast_size) + " " + get_register_for_type(reg, value_type) + ", " + get_register_for_type(reg, cast_type) + "\n");
         }
         else {
-            print("Narrowing conversion from " + debug_variable_type_name(value_type) + " to " + debug_variable_type_name(cast_type) + "\n");
+            print("# Narrowing conversion from " + debug_variable_type_name(value_type) + " to " + debug_variable_type_name(cast_type) + "\n");
         }
         return cast_type;
     }
@@ -968,7 +1146,10 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
                 print("Variable named: " + name + " already declared\n");
             }
             variable_node = add_variable(stack_frame, name, expression_type, 0);
-            add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + int_to_str(variable_node->offset) + "(%rbp)\n");
+
+            let stack_variable = make_stack(variable_node->offset);
+            add_instruction(make_reg(RAX as long), stack_variable, MOV, expression_type);
+            emit_instruction(text_buffer, instructions[instructions.len() - 1]);
         }
     }
     else {
