@@ -226,7 +226,7 @@ fn get_word_size(size: int): char {
         return 'q';
     }
     else {
-        print("Unknown size " + int_to_str(size) + "\n");
+        print("Unknown size for word " + int_to_str(size) + "\n");
     }
 }
 
