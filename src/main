@@ -84,6 +84,8 @@ let append_string_to_builder_asm_code = ".globl __append_string_to_builder\n__ap
 let append_char_to_builder_asm_code = ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n";
 
 fn main(): int {
+    current_target = X86_64;
+
     if (argc != 2) {
         print("Usage: ./compiler input_file\n");
         return 1;
@@ -93,57 +95,93 @@ fn main(): int {
     register_names_byte = new str[];
     register_names_dword = new str[];
     register_names_qword = new str[];
+    if (current_target == X86_64) {
+        register_names_byte.append("%al");
+        register_names_byte.append("%bl");
+        register_names_byte.append("%cl");
+        register_names_byte.append("%dl");
+        register_names_byte.append("%sil");
+        register_names_byte.append("%dil");
+        register_names_byte.append("%bpl");
+        register_names_byte.append("%spl");
+        register_names_byte.append("%r8b");
+        register_names_byte.append("%r9b");
+        register_names_byte.append("%r10b");
+        register_names_byte.append("%r11b");
+        register_names_byte.append("%r12b");
+        register_names_byte.append("%r13b");
+        register_names_byte.append("%r14b");
+        register_names_byte.append("%r15b");
 
-    register_names_byte.append("%al");
-    register_names_byte.append("%bl");
-    register_names_byte.append("%cl");
-    register_names_byte.append("%dl");
-    register_names_byte.append("%sil");
-    register_names_byte.append("%dil");
-    register_names_byte.append("%bpl");
-    register_names_byte.append("%spl");
-    register_names_byte.append("%r8b");
-    register_names_byte.append("%r9b");
-    register_names_byte.append("%r10b");
-    register_names_byte.append("%r11b");
-    register_names_byte.append("%r12b");
-    register_names_byte.append("%r13b");
-    register_names_byte.append("%r14b");
-    register_names_byte.append("%r15b");
+        register_names_dword.append("%eax");
+        register_names_dword.append("%ebx");
+        register_names_dword.append("%ecx");
+        register_names_dword.append("%edx");
+        register_names_dword.append("%esi");
+        register_names_dword.append("%edi");
+        register_names_dword.append("%ebp");
+        register_names_dword.append("%esp");
+        register_names_dword.append("%r8d");
+        register_names_dword.append("%r9d");
+        register_names_dword.append("%r10d");
+        register_names_dword.append("%r11d");
+        register_names_dword.append("%r12d");
+        register_names_dword.append("%r13d");
+        register_names_dword.append("%r14d");
+        register_names_dword.append("%r15d");
 
-    register_names_dword.append("%eax");
-    register_names_dword.append("%ebx");
-    register_names_dword.append("%ecx");
-    register_names_dword.append("%edx");
-    register_names_dword.append("%esi");
-    register_names_dword.append("%edi");
-    register_names_dword.append("%ebp");
-    register_names_dword.append("%esp");
-    register_names_dword.append("%r8d");
-    register_names_dword.append("%r9d");
-    register_names_dword.append("%r10d");
-    register_names_dword.append("%r11d");
-    register_names_dword.append("%r12d");
-    register_names_dword.append("%r13d");
-    register_names_dword.append("%r14d");
-    register_names_dword.append("%r15d");
+        register_names_qword.append("%rax");
+        register_names_qword.append("%rbx");
+        register_names_qword.append("%rcx"); 
+        register_names_qword.append("%rdx");
+        register_names_qword.append("%rsi");
+        register_names_qword.append("%rdi");
+        register_names_qword.append("%rbp");
+        register_names_qword.append("%rsp");
+        register_names_qword.append("%r8");
+        register_names_qword.append("%r9");
+        register_names_qword.append("%r10");
+        register_names_qword.append("%r11");
+        register_names_qword.append("%r12");
+        register_names_qword.append("%r13");
+        register_names_qword.append("%r14");
+        register_names_qword.append("%r15");
+    }
+    elseif (current_target == AARCH64) {
+        register_names_dword.append("w0");
+        register_names_dword.append("w19");
+        register_names_dword.append("w2");
+        register_names_dword.append("w1");
+        register_names_dword.append("w3");
+        register_names_dword.append("w4");
+        register_names_dword.append("w29");
+        register_names_dword.append("wsp");   // 32-bit view of sp
+        register_names_dword.append("w5");
+        register_names_dword.append("w6");
+        register_names_dword.append("w7");
+        register_names_dword.append("w8");
+        register_names_dword.append("w20");
+        register_names_dword.append("w21");
+        register_names_dword.append("w22");
+        register_names_dword.append("w23");
 
-    register_names_qword.append("%rax");
-    register_names_qword.append("%rbx");
-    register_names_qword.append("%rcx"); 
-    register_names_qword.append("%rdx");
-    register_names_qword.append("%rsi");
-    register_names_qword.append("%rdi");
-    register_names_qword.append("%rbp");
-    register_names_qword.append("%rsp");
-    register_names_qword.append("%r8");
-    register_names_qword.append("%r9");
-    register_names_qword.append("%r10");
-    register_names_qword.append("%r11");
-    register_names_qword.append("%r12");
-    register_names_qword.append("%r13");
-    register_names_qword.append("%r14");
-    register_names_qword.append("%r15");
+        register_names_qword.append("x0");
+        register_names_qword.append("x19");
+        register_names_qword.append("x2");
+        register_names_qword.append("x1");
+        register_names_qword.append("x3");
+        register_names_qword.append("x4");
+        register_names_qword.append("x29");
+        register_names_qword.append("sp");
+        register_names_qword.append("x5");
+        register_names_qword.append("x6");
+        register_names_qword.append("x7");
+        register_names_qword.append("x8");
+        register_names_qword.append("x20"); 
+        register_names_qword.append("x21"); 
+        register_names_qword.append("x22"); 
+        register_names_qword.append("x23"); 
+    }
 
     global_scope = new_global_scope();
 

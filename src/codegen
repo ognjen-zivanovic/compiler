@@ -1,3 +1,10 @@
+const {
+    X86_64,
+    AARCH64,
+};
+
+let current_target: int;
+
 struct TextBuffer {
     buffer: char[],
 }
@@ -479,8 +486,20 @@ fn emit_instruction_x86(text_buffer: TextBuffer*, instruction: Instruction*) {
     }
 }
 
+fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*) {
+
+}
+
 fn emit_instruction(text_buffer: TextBuffer*, instruction: Instruction*) {
-    emit_instruction_x86(text_buffer, instruction);
+    if (current_target == X86_64) {
+        emit_instruction_x86(text_buffer, instruction);
+    }
+    elseif (current_target == AARCH64) {
+        emit_instruction_aarch64(text_buffer, instruction);
+    }
+    else {
+        print("Unknown target " + int_to_str(current_target) + "\n");
+    }
 }
 
 fn encode_sizes_in_opcode(opcode: int, src_type: int, dst_type: int): int {
@@ -533,25 +552,6 @@ fn get_label_index(): int {
     return label_index;
 }
 
-fn get_register_for_size(reg: char, size: int): str {
-    if (size == 1) {
-        return "%" + reg + "l";
-    }
-    elseif (size == 4) {
-        return "%e" + reg + "x";
-    }
-    elseif (size == 8) {
-        return "%r" + reg + "x";
-    }
-    else {
-        print("Unknown size for register " + int_to_str(size) + "\n");
-    }
-}
-
-fn get_register_for_type(reg: char, type: int): str {
-    let size = get_size(type);
-    return get_register_for_size(reg, size);
-}
 
 fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: char, type: int): int
 
@@ -562,7 +562,6 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
         lrtype = LVALUE;
     }
     let value_type = compile_expression_into_register(text_buffer, unary_expression_node->value, stack_frame, 'a', lrtype);
-    let pointer_register_name = get_register_for_type('a', value_type);
 
     if (unary_expression_node->unary_expression_type == ASTERISK && type == RVALUE) {
         if (is_pointer(value_type) || is_array(value_type)) {
@@ -573,8 +572,6 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
         }
     }
 
-    let register_name = get_register_for_type('a', value_type);
-    let word_size = get_word_size(get_size(value_type));
 
     if (unary_expression_node->unary_expression_type == MINUS) {
         if (type == LVALUE) {
@@ -762,18 +759,12 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             let right_size = get_size(right_type);
 
             if (left_size < right_size) {
-                let source_register = get_register_for_type('a', left_type);
-                let destination_register = get_register_for_type('a', right_type);
-
                 //add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(left_size) + get_word_size(right_size) + " " + source_register + ", " + destination_register + "\n");
                 add_instruction(text_buffer, make_reg(RAX as long), make_reg(RAX as long), encode_sizes_in_opcode(MOVS, left_type, right_type), VOID);
                 left_type = right_type;
 
             }
             elseif (right_size < left_size) {
-                let source_register = get_register_for_type('d', right_type);
-                let destination_register = get_register_for_type('d', left_type);
-
                 //add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(right_size) + get_word_size(left_size) + " " + source_register + ", " + destination_register + "\n");
                 add_instruction(text_buffer, make_reg(RDX as long), make_reg(RDX as long), encode_sizes_in_opcode(MOVS, right_type, left_type), VOID);
                 right_type = left_type;
@@ -790,10 +781,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
   
     let type = left_type;
 
-    let left_register = get_register_for_type('a', left_type);
-    let right_register = get_register_for_type('d', right_type);
 
-    let word_size = get_word_size(get_size(left_type));
     if (operator == PLUS) {
         //add_to_text_buffer(text_buffer, "\tadd" + word_size + " " + right_register + ", " + left_register + "\n");
         add_instruction(text_buffer, make_reg(RDX as long), make_reg(RAX as long), ADD, type);
@@ -1087,7 +1075,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         if (type == LVALUE) {
             print("Int expression is not allowed as lvalue\n");
         }
-        let register_name = get_register_for_size(reg, 4);
         //add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str((node->node as IntNode*)->value) + ", " + register_name + "\n");
         add_instruction(text_buffer, make_imm((node->node as IntNode*)->value as long), make_reg(REGREG as long), MOV, INT_VARIABLE);
         return INT_VARIABLE;
@@ -1096,7 +1083,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         if (type == LVALUE) {
             print("Long expression is not allowed as lvalue\n");
         }
-        let register_name = get_register_for_size(reg, 8);
         //add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str((node->node as LongNode*)->value) + ", " + register_name + "\n");
         add_instruction(text_buffer, make_imm((node->node as LongNode*)->value as long), make_reg(REGREG as long), MOV, LONG_VARIABLE);
         return LONG_VARIABLE;
@@ -1127,8 +1113,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             if (type == LVALUE) { 
                 variable_type = to_pointer(variable_type);
             }
-            let register_name = get_register_for_type(reg, variable_type);
-            let word_size = get_word_size(get_size(variable_type));
             if (type == RVALUE) {
                 //add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
                 add_instruction(text_buffer, make_mem(make_reg(RBP as long), 0 as Operand*, 0, variable->offset, REGISTER_RELATIVE), make_reg(REGREG as long), MOV, variable_type);
@@ -1147,8 +1131,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                 if (type == LVALUE) {
                     variable_type = to_pointer(variable_type);
                 }
-                let register_name = get_register_for_type(reg, variable_type);
-                let word_size = get_word_size(get_size(variable_type));
                 if (type == RVALUE) {
                     if (is_const(variable_type)) {
                         variable_type = variable_type ^ (1 << 24);
@@ -1187,7 +1169,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             print("Binary expression is not allowed as lvalue\n");
         }
         let expression_type = compile_binary_expression(text_buffer, node, stack_frame);
-        let register_name = get_register_for_type(reg, expression_type);
         //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
         add_instruction(text_buffer, make_reg(RAX as long), make_reg(REGREG as long), MOV, expression_type);
 
@@ -1195,7 +1176,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_UNARY) {
         let expression_type = compile_unary_expression(text_buffer, node, stack_frame, type);
-        let register_name = get_register_for_type(reg, expression_type);
         //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
         add_instruction(text_buffer, make_reg(RAX as long), make_reg(REGREG as long), MOV, expression_type);
         return expression_type;
@@ -1206,7 +1186,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         let string_node = (node->node as StringLiteralNode*)->name;
         let global_variable = get_global_variable(global_scope, string_node);
-        let register_name = get_register_for_type(reg, global_variable->type);
         //add_to_text_buffer(text_buffer, "\tleaq ." + global_variable->name + "(%rip), " + register_name + "\n");
         add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG as long), LEA, LONG_VARIABLE);
         return global_variable->type;
@@ -1217,7 +1196,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         let char_node = (node->node as CharNode*)->name;
         let global_variable = get_global_variable(global_scope, char_node);
-        let register_name = get_register_for_type(reg, global_variable->type);
         //add_to_text_buffer(text_buffer, "\tmovb ." + global_variable->name + "(%rip), " + register_name + "\n");
         add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG as long), MOV, CHAR_VARIABLE);
         return global_variable->type;
@@ -1303,7 +1281,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             lrtype = LVALUE;
         }
         let left_type = compile_expression_into_register(text_buffer, access_node->left, stack_frame, 'a', lrtype);
-        let pointer_register_name = get_register_for_type('a', left_type);
         if (!is_pointer(left_type)) {
             print("Expected pointer type, got " + debug_variable_type_name(left_type) + "\n");
         }
@@ -1319,15 +1296,14 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             member_type = to_pointer(member_type);
         }
         let member_offset = member->offset;
-        let register_name = get_register_for_type(reg, member_type);
         if (type == RVALUE) {
             let word_size = get_word_size(get_size(member_type));
             //add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(pointer_register_name as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), MOV, member_type);
+            add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), MOV, member_type);
         }
         elseif (type == LVALUE) {
             //add_to_text_buffer(text_buffer, "\tleaq" + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(pointer_register_name as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), LEA, LONG_VARIABLE);
+            add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), LEA, LONG_VARIABLE);
         }
         return member_type;
     }
@@ -1371,8 +1347,6 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             if (type == LVALUE) {
                 element_type = to_pointer(element_type);
             }
-            let register_name = get_register_for_type(reg, element_type);
-            let word_size = get_word_size(get_size(element_type));
             if (type == RVALUE) {
                 //add_to_text_buffer(text_buffer, "\tmov" + word_size + " (%rax), " + register_name + "\n");
                 add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(REGREG as long), MOV, element_type);
@@ -1755,22 +1729,40 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
 
     print(".globl " + name + "\n");
     print(name + ":\n");
-    print("\tpushq %rbp\n");
-    print("\tmovq %rsp, %rbp\n");
+    if (current_target == X86_64) {
+        print("\tpushq %rbp\n");
+        print("\tmovq %rsp, %rbp\n");
+    }
+    elseif (current_target == AARCH64) {
+        print("\tstp x29, x30, [%sp, #-16]!\n");
+        print("\tmov x29, sp\n");
+    }
     rsp_offset = 0;
 
     if (name == "main") {
         rsp_offset = -16;
-        print("\tsubq $16, %rsp\n");
-        print("\tmovl %edi, -4(%rbp)\n");
-        print("\tmovq %rsi, -12(%rbp)\n");
+        if (current_target == X86_64) {
+            print("\tsubq $16, %rsp\n");
+            print("\tmovl %edi, -4(%rbp)\n");
+            print("\tmovq %rsi, -12(%rbp)\n");
+        } 
+        elseif (current_target == AARCH64) {
+            print("\tsub sp, sp, #16\n");
+            print("\tstr w0, [fp, #-4]\n");
+            print("\tstr x1, [fp, #-12]\n");
+        }
     }
 
     print_stack_frame_size(0 as TextBuffer*, function_stack_frame);
     terminate_buffer(function_text_buffer);
     print(*(function_text_buffer->buffer));
 
-    print("\tleave\n\tret\n");
+    if (current_target == X86_64) {
+        print("\tleave\n\tret\n");
+    }
+    elseif (current_target == AARCH64) {
+        print("\tldp fp, lr, [sp], #16\n\tret\n");
+    } 
 }
 
 fn compile_break(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
