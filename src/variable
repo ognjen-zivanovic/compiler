@@ -167,6 +167,10 @@ fn debug_variable_type_name(type: int): str {
 
 
 fn get_size(type: int): int {
+    if (type == VOID) {
+        return 0;
+    }
+
     if (is_const(type)) {
         return get_size(type ^ (1 << 24)); 
     }

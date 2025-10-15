@@ -29,7 +29,6 @@ const {
 
 const {
     MOV,
-    MOVS,
     LEA,
     ADD,
     SUB,
@@ -42,7 +41,15 @@ const {
     OR,
     XOR,
     CMP,
-    TEST,
+    TESTZ, // find better name
+    NEG,
+    NOT,
+    CALL,
+    PUSH,
+    POP,
+    SETE,
+    SETNE,
+    MOVS,
 };
 
 const {
@@ -123,13 +130,16 @@ fn make_stack(offset: int): Operand* {
     return make_mem(make_reg(RBP as long), 0 as Operand*, 0, offset, REGISTER_RELATIVE);
 }
 
-fn add_instruction(src: Operand*, dest: Operand*, opcode: int, type: int) {
+fn emit_instruction(text_buffer: TextBuffer*, instruction: Instruction*)
+
+fn add_instruction(text_buffer: TextBuffer*, src: Operand*, dest: Operand*, opcode: int, type: int) {
     let instruction = new Instruction*;
     instruction->src = src;
     instruction->dest = dest;
     instruction->opcode = opcode;
     instruction->type = type;
     instructions.append(instruction);
+    emit_instruction(text_buffer, instruction);
 }
 
 let register_names_byte: str[];
@@ -147,6 +157,9 @@ fn emit_operand_x86(text_buffer: TextBuffer*, operand: Operand*, size: int) {
         elseif (size == 8) {
             add_to_text_buffer(text_buffer, register_names_qword[operand->value]);
         }
+        else {
+            print("Unknown size " + int_to_str(size) + "\n");
+        }
     }
     elseif (operand->type == MEM) {
         let mode = (operand->value >> 44) & 3;
@@ -155,37 +168,156 @@ fn emit_operand_x86(text_buffer: TextBuffer*, operand: Operand*, size: int) {
         let base_register = (operand->value >> 39) & 31;
 
         if (mode == REGISTER_RELATIVE) {
-            add_to_text_buffer(text_buffer, offset.int_to_str());
+            if (offset != 0) {
+                add_to_text_buffer(text_buffer, offset.int_to_str());
+            }
             add_to_text_buffer(text_buffer, "(");
             emit_operand_x86(text_buffer, make_reg(base_register), 8);
             add_to_text_buffer(text_buffer, ")");
         }
+        else {
+            print("Unknown mode " + int_to_str(mode as int) + "\n");
+        }
+    }
+    elseif (operand->type == IMM) {
+        add_to_text_buffer(text_buffer, "$" + long_to_str(operand->value));
+    }
+    elseif (operand->type == LABEL) {
+        add_to_text_buffer(text_buffer, operand->value);
+    }
+    else {
+        print("Unknown operand type " + int_to_str(operand->type) + "\n");
+    }
+}
+
+fn add_size_letter(text_buffer: TextBuffer*, size: int) {
+    if (size == 1) {
+        add_to_text_buffer(text_buffer, "b");
+    }
+    elseif (size == 4) {
+        add_to_text_buffer(text_buffer, "l");
+    }
+    elseif (size == 8) {
+        add_to_text_buffer(text_buffer, "q");
     }
 }
 
 fn emit_instruction_x86(text_buffer: TextBuffer*, instruction: Instruction*) {
-    if (instruction->opcode == MOV) {
-        add_to_text_buffer(text_buffer, "\tmov");
-        let size = get_size(instruction->type);
-        if (size == 1) {
-            add_to_text_buffer(text_buffer, "b");
+    let opcode = instruction->opcode;
+    let size = get_size(instruction->type);
+    let two_operand_instruction = opcode == MOV || opcode == SUB || opcode == ADD || opcode == CMP || opcode == IMUL;
+    if (two_operand_instruction) {
+        if (opcode == MOV) {
+            add_to_text_buffer(text_buffer, "\tmov");
         }
-        elseif (size == 4) {
-            add_to_text_buffer(text_buffer, "l");
+        elseif (opcode == SUB) {
+            add_to_text_buffer(text_buffer, "\tsub");
         }
-        elseif (size == 8) {
-            add_to_text_buffer(text_buffer, "q");
+        elseif (opcode == ADD) {
+            add_to_text_buffer(text_buffer, "\tadd");
         }
+        elseif (opcode == CMP) {
+            add_to_text_buffer(text_buffer, "\tcmp");
+        }
+        elseif (opcode == IMUL) {
+            add_to_text_buffer(text_buffer, "\timul");
+        }
+        else {
+            print("Unknown opcode " + int_to_str(opcode as int) + "\n");
+        }
+
+        add_size_letter(text_buffer, size);
+
         add_to_text_buffer(text_buffer, " ");
         emit_operand_x86(text_buffer, instruction->src, size);
         add_to_text_buffer(text_buffer, ", ");
         emit_operand_x86(text_buffer, instruction->dest, size);
         add_to_text_buffer(text_buffer, "\n");
     }
+    else {
+        if (opcode == NEG) {
+            add_to_text_buffer(text_buffer, "\tneg");
+            add_size_letter(text_buffer, size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->dest, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == NOT) {
+            add_to_text_buffer(text_buffer, "\tnot");
+            add_size_letter(text_buffer, size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->dest, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == TESTZ) {
+            add_to_text_buffer(text_buffer, "\ttest");
+            add_size_letter(text_buffer, size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->src, size);
+            add_to_text_buffer(text_buffer, ", ");
+            emit_operand_x86(text_buffer, instruction->src, size);
+            add_to_text_buffer(text_buffer, "\n\tsetz ");
+            emit_operand_x86(text_buffer, instruction->dest, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == CALL) {
+            add_to_text_buffer(text_buffer, "\tcall ");
+            emit_operand_x86(text_buffer, instruction->src, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == SETE) {
+            add_to_text_buffer(text_buffer, "\tsete ");
+            emit_operand_x86(text_buffer, instruction->dest, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == SETNE) {
+            add_to_text_buffer(text_buffer, "\tsetne ");
+            emit_operand_x86(text_buffer, instruction->dest, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == PUSH) {
+            add_to_text_buffer(text_buffer, "\tpush");
+            add_size_letter(text_buffer, size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->src, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode == POP) {
+            add_to_text_buffer(text_buffer, "\tpop");
+            add_size_letter(text_buffer, size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->src, size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        elseif (opcode & MOVS == MOVS) {
+            add_to_text_buffer(text_buffer, "\tmovs");
+            let src_size = (opcode >> 16) & 15;
+            let dst_size = (opcode >> 20) & 15;
+            add_size_letter(text_buffer, src_size);
+            add_size_letter(text_buffer, dst_size);
+            add_to_text_buffer(text_buffer, " ");
+            emit_operand_x86(text_buffer, instruction->src, src_size);
+            add_to_text_buffer(text_buffer, ", ");
+            emit_operand_x86(text_buffer, instruction->dest, dst_size);
+            add_to_text_buffer(text_buffer, "\n");
+        }
+        else {
+            print("Unknown instruction opcode " + int_to_str(opcode) + "\n");
+        }
+    }
+    
 }
 
 fn emit_instruction(text_buffer: TextBuffer*, instruction: Instruction*) {
     emit_instruction_x86(text_buffer, instruction);
+}
+
+fn encode_sizes_in_opcode(opcode: int, src_type: int, dst_type: int): int {
+    let src_size = get_size(src_type);
+    let dst_size = get_size(dst_type);
+    opcode = opcode | (src_size << 16);
+    opcode = opcode | (dst_size << 20);
+    return opcode;
 }
 
 let rsp_offset = 0;
@@ -194,8 +326,8 @@ fn align_stack(text_buffer: TextBuffer*, offset: int): int {
     let alignment_offset = (offset % 16 + 16) % 16;
 
     if (alignment_offset != 0) {
-        add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(alignment_offset) + ", %rsp\n");
-        add_instruction(make_reg(RSP as long), make_imm(alignment_offset as long), SUB, LONG_VARIABLE);
+        //add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(alignment_offset) + ", %rsp\n");
+        add_instruction(text_buffer, make_imm(alignment_offset as long), make_reg(RSP as long), SUB, LONG_VARIABLE);
         rsp_offset = rsp_offset - alignment_offset;
     }
     return alignment_offset;
@@ -203,7 +335,8 @@ fn align_stack(text_buffer: TextBuffer*, offset: int): int {
 
 fn dealign_stack(text_buffer: TextBuffer*, offset: int) {
     if (offset != 0) {
-        add_to_text_buffer(text_buffer, "\taddq $" + int_to_str(offset) + ", %rsp\n");
+        //add_to_text_buffer(text_buffer, "\taddq $" + int_to_str(offset) + ", %rsp\n");
+        add_instruction(text_buffer, make_imm(offset as long), make_reg(RSP as long), ADD, LONG_VARIABLE);
         rsp_offset = rsp_offset + offset;
     }
 }
@@ -213,7 +346,8 @@ fn print_stack_frame_size(text_buffer: TextBuffer*, stack_frame: StackFrame*) {
     if (stack_frame_size > 0) {
         stack_frame_size = (stack_frame_size + 15) & (!15);
         if (text_buffer) {
-            add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
+            //add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
+            add_instruction(text_buffer, make_imm(stack_frame_size as long), make_reg(RSP as long), SUB, LONG_VARIABLE);
         }
         else {
             print("\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
@@ -275,7 +409,8 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
         if (type == LVALUE) {
             print("Unary minus is not allowed as lvalue\n");
         }
-        add_to_text_buffer(text_buffer, "\tneg " + register_name + "\n");
+        //add_to_text_buffer(text_buffer, "\tneg " + register_name + "\n");
+        add_instruction(text_buffer, 0 as Operand*, make_reg(RAX as long), NEG, value_type);
     }
     elseif (unary_expression_node->unary_expression_type == PLUS) {
         if (type == LVALUE) {
@@ -284,18 +419,25 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
     }
     elseif (unary_expression_node->unary_expression_type == ASTERISK) {
         if (type == RVALUE) {
-            add_to_text_buffer(text_buffer, "\tmov" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
+            //add_to_text_buffer(text_buffer, "\tmov" + word_size + " (" + pointer_register_name + "), " + register_name + "\n");
+
+            add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(RAX as long), MOV, value_type);
         }
         elseif (type == LVALUE) {
-            add_to_text_buffer(text_buffer, "\tleaq" + " (" + pointer_register_name + "), " + register_name + "\n");
+            //add_to_text_buffer(text_buffer, "\tleaq" + " (" + pointer_register_name + "), " + register_name + "\n");
+
+            add_instruction(text_buffer, make_reg(RAX as long), make_reg(RAX as long),  MOV, LONG_VARIABLE); // this does nothing, this lea can be a mov
         }
     }
     elseif (unary_expression_node->unary_expression_type == BANG) {
+        //TODO: add tilde and fix this
         if (value_type == BOOL_VARIABLE) {
-            add_to_text_buffer(text_buffer, "\ttestb " + register_name + ", " + register_name + "\n\tsetz %al\n");
+            //add_to_text_buffer(text_buffer, "\ttestb " + register_name + ", " + register_name + "\n\tsetz %al\n");
+            add_instruction(text_buffer, make_reg(RAX as long), make_reg(RAX as long), TESTZ, BOOL_VARIABLE);
         }
         else {
-            add_to_text_buffer(text_buffer, "\tnot " + register_name + "\n");
+            //add_to_text_buffer(text_buffer, "\tnot " + register_name + "\n");
+            add_instruction(text_buffer, 0 as Operand*, make_reg(RAX as long), NOT, value_type);
         }
     }
     else {
@@ -309,7 +451,8 @@ fn compile_char_into_builder(text_buffer: TextBuffer*) {
     let index = get_label_index();
 
     let alignment_offset = align_stack(text_buffer, rsp_offset);
-    add_to_text_buffer(text_buffer, "\tcall __append_char_to_builder\n");
+    add_instruction(text_buffer, make_label("__append_char_to_builder"), 0 as Operand*, CALL, VOID);
+    //add_to_text_buffer(text_buffer, "\tcall __append_char_to_builder\n");
     dealign_stack(text_buffer, alignment_offset);
 }
 
@@ -317,7 +460,8 @@ fn compile_string_into_builder(text_buffer: TextBuffer*) {
     let ___index = get_label_index();
     
     let alignment_offset = align_stack(text_buffer, rsp_offset);
-    add_to_text_buffer(text_buffer, "\tcall __append_string_to_builder\n");
+    //add_to_text_buffer(text_buffer, "\tcall __append_string_to_builder\n");
+    add_instruction(text_buffer, make_label("__append_string_to_builder"), 0 as Operand*, CALL, VOID);
     dealign_stack(text_buffer, alignment_offset);
 }
 
@@ -331,14 +475,16 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     let left_type = compile_expression_into_register(text_buffer, binary_expression_node->left, stack_frame, 'a', RVALUE);
 
     if (preserve_rax) {
-        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        //add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        add_instruction(text_buffer, make_reg(RAX as long), 0 as Operand*, PUSH, LONG_VARIABLE);
         rsp_offset = rsp_offset - 8;
     }
 
     let right_type = compile_expression_into_register(text_buffer, binary_expression_node->right, stack_frame, 'd', RVALUE);
 
     if (preserve_rax) {
-        add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+        //add_to_text_buffer(text_buffer, "\tpopq %rax\n");
+        add_instruction(text_buffer, make_reg(RAX as long), 0 as Operand*, POP, LONG_VARIABLE);
         rsp_offset = rsp_offset + 8;
     }
 
@@ -349,7 +495,8 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     let is_left_char = (left_underlying_type == to_pointer(CHAR_VARIABLE)) || (left_underlying_type == CHAR_VARIABLE);
 
     if (operator == PLUS && left_type == STRING_BUILDER_VARIABLE && is_right_char && right_expression_type != EXPRESSION_FUNCTION_CALL) {
-        add_to_text_buffer(text_buffer, "\tmovq %rdx, %r12\n");
+        //add_to_text_buffer(text_buffer, "\tmovq %rdx, %r12\n");
+        add_instruction(text_buffer, make_reg(RDX as long), make_reg(R12 as long), MOV, LONG_VARIABLE);
         if (right_type == CHAR_VARIABLE) {
             compile_char_into_builder(text_buffer);
         }
@@ -357,21 +504,32 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             compile_string_into_builder(text_buffer);
         }
 
-        add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        //add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        add_instruction(text_buffer, make_reg(R15 as long), make_reg(RAX as long), MOV, LONG_VARIABLE);
         return STRING_BUILDER_VARIABLE;
     }
     elseif (operator == PLUS && is_left_char && is_right_char) {
-        add_to_text_buffer(text_buffer, "\tpushq %rdx\n");
+        //add_to_text_buffer(text_buffer, "\tpushq %rdx\n");
+        add_instruction(text_buffer, make_reg(RDX as long), 0 as Operand*, PUSH, LONG_VARIABLE);
         rsp_offset = rsp_offset - 8;
-        add_to_text_buffer(text_buffer, "\tpushq %rax\n");
-        rsp_offset = rsp_offset - 8;
-        add_to_text_buffer(text_buffer, "\tmovq $64, %rdi\n");
-        add_to_text_buffer(text_buffer, "\tcall malloc\n");
-        add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
-        add_to_text_buffer(text_buffer, "\tmovq $0, %r14\n");
-        add_to_text_buffer(text_buffer, "\tmovq $64, %r13\n");
 
-        add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        //add_to_text_buffer(text_buffer, "\tpushq %rax\n");
+        add_instruction(text_buffer, make_reg(RAX as long), 0 as Operand*, PUSH, LONG_VARIABLE);
+        rsp_offset = rsp_offset - 8;
+
+        //add_to_text_buffer(text_buffer, "\tmovq $64, %rdi\n");
+        add_instruction(text_buffer, make_imm(64 as long), make_reg(RDI as long), MOV, LONG_VARIABLE);
+        //add_to_text_buffer(text_buffer, "\tcall malloc\n");
+        add_instruction(text_buffer, make_label("malloc"), 0 as Operand*, CALL, VOID);
+        //add_to_text_buffer(text_buffer, "\tmovq %rax, %r15\n");
+        add_instruction(text_buffer, make_reg(RAX as long), make_reg(R15 as long), MOV, LONG_VARIABLE);
+        //add_to_text_buffer(text_buffer, "\tmovq $0, %r14\n");
+        add_instruction(text_buffer, make_imm(0 as long), make_reg(R14 as long), MOV, LONG_VARIABLE);
+        //add_to_text_buffer(text_buffer, "\tmovq $64, %r13\n");
+        add_instruction(text_buffer, make_imm(64 as long), make_reg(R13 as long), MOV, LONG_VARIABLE);
+
+        //add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        add_instruction(text_buffer, make_reg(R12 as long), 0 as Operand*, POP, LONG_VARIABLE);
         rsp_offset = rsp_offset + 8;
         if (left_type == CHAR_VARIABLE) {
             compile_char_into_builder(text_buffer);
@@ -380,7 +538,8 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             compile_string_into_builder(text_buffer);
         }
 
-        add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        //add_to_text_buffer(text_buffer, "\tpopq %r12\n");
+        add_instruction(text_buffer, make_reg(R12 as long), 0 as Operand*, POP, LONG_VARIABLE);
         rsp_offset = rsp_offset + 8;
         if (right_type == CHAR_VARIABLE) {
             compile_char_into_builder(text_buffer);
@@ -389,7 +548,8 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             compile_string_into_builder(text_buffer);
         }
 
-        add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        //add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
+        add_instruction(text_buffer, make_reg(R15 as long), make_reg(RAX as long), MOV, LONG_VARIABLE);
         return STRING_BUILDER_VARIABLE;
     }
 
@@ -397,17 +557,23 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     if ((operator == EQ || operator == NEQ) && 
         (get_underlying_type(left_type) == to_pointer(CHAR_VARIABLE)) &&
         (get_underlying_type(right_type) == to_pointer(CHAR_VARIABLE))) {
-        add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
-        add_to_text_buffer(text_buffer, "\tmovq %rdx, %rsi\n");
+        //add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
+        add_instruction(text_buffer, make_reg(RAX as long), make_reg(RDI as long), MOV, LONG_VARIABLE);
+        //add_to_text_buffer(text_buffer, "\tmovq %rdx, %rsi\n");
+        add_instruction(text_buffer, make_reg(RDX as long), make_reg(RSI as long), MOV, LONG_VARIABLE);
 
         let alignment_offset = align_stack(text_buffer, rsp_offset);
-        add_to_text_buffer(text_buffer, "\tcall strcmp\n");
-        add_to_text_buffer(text_buffer, "\tcmpq $0, %rax\n");
+        //add_to_text_buffer(text_buffer, "\tcall strcmp\n");
+        add_instruction(text_buffer, make_label("strcmp"), 0 as Operand*, CALL, VOID);
+        //add_to_text_buffer(text_buffer, "\tcmpq $0, %rax\n");
+        add_instruction(text_buffer, make_imm(0 as long), make_reg(RAX as long), CMP, LONG_VARIABLE);
         if (operator == EQ) {
-            add_to_text_buffer(text_buffer, "\tsete %al\n");
+            //add_to_text_buffer(text_buffer, "\tsete %al\n");
+            add_instruction(text_buffer, 0 as Operand*, make_reg(RAX as long), SETE, BOOL_VARIABLE);
         }
         elseif (operator == NEQ) {
-            add_to_text_buffer(text_buffer, "\tsetne %al\n");
+            //add_to_text_buffer(text_buffer, "\tsetne %al\n");
+            add_instruction(text_buffer, 0 as Operand*, make_reg(RAX as long), SETNE, BOOL_VARIABLE);
         }
         else {
             print("Unknown operator to compare 2 strings " + int_to_str(operator) + "\n");
@@ -428,14 +594,17 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
                 let source_register = get_register_for_type('a', left_type);
                 let destination_register = get_register_for_type('a', right_type);
 
-                add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(left_size) + get_word_size(right_size) + " " + source_register + ", " + destination_register + "\n");
+                //add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(left_size) + get_word_size(right_size) + " " + source_register + ", " + destination_register + "\n");
+                add_instruction(text_buffer, make_reg(RAX as long), make_reg(RAX as long), encode_sizes_in_opcode(MOVS, left_type, right_type), VOID);
                 left_type = right_type;
+
             }
             elseif (right_size < left_size) {
                 let source_register = get_register_for_type('d', right_type);
                 let destination_register = get_register_for_type('d', left_type);
 
-                add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(right_size) + get_word_size(left_size) + " " + source_register + ", " + destination_register + "\n");
+                //add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(right_size) + get_word_size(left_size) + " " + source_register + ", " + destination_register + "\n");
+                add_instruction(text_buffer, make_reg(RDX as long), make_reg(RDX as long), encode_sizes_in_opcode(MOVS, right_type, left_type), VOID);
                 right_type = left_type;
             }
         }
@@ -455,13 +624,16 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
 
     let word_size = get_word_size(get_size(left_type));
     if (operator == PLUS) {
-        add_to_text_buffer(text_buffer, "\tadd" + word_size + " " + right_register + ", " + left_register + "\n");
+        //add_to_text_buffer(text_buffer, "\tadd" + word_size + " " + right_register + ", " + left_register + "\n");
+        add_instruction(text_buffer, make_reg(RDX as long), make_reg(RAX as long), ADD, left_type);
     }
     elseif (operator == MINUS) {
-        add_to_text_buffer(text_buffer, "\tsub" + word_size + " " + right_register + ", " + left_register + "\n");
+        //add_to_text_buffer(text_buffer, "\tsub" + word_size + " " + right_register + ", " + left_register + "\n");
+        add_instruction(text_buffer, make_reg(RDX as long), make_reg(RAX as long), SUB, left_type);
     }
     elseif (operator == ASTERISK) {
-        add_to_text_buffer(text_buffer, "\timul" + word_size + " " + right_register + ", " + left_register + "\n");
+        //add_to_text_buffer(text_buffer, "\timul" + word_size + " " + right_register + ", " + left_register + "\n");
+        add_instruction(text_buffer, make_reg(RDX as long), make_reg(RAX as long), IMUL, left_type);
     }
     elseif (operator == SLASH) {
         if (type != INT_VARIABLE && type != LONG_VARIABLE) {
@@ -1148,8 +1320,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
             variable_node = add_variable(stack_frame, name, expression_type, 0);
 
             let stack_variable = make_stack(variable_node->offset);
-            add_instruction(make_reg(RAX as long), stack_variable, MOV, expression_type);
-            emit_instruction(text_buffer, instructions[instructions.len() - 1]);
+            add_instruction(text_buffer, make_reg(RAX as long), stack_variable, MOV, expression_type);
         }
     }
     else {
