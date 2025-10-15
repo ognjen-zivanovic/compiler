@@ -84,12 +84,19 @@ let append_string_to_builder_asm_code = ".globl __append_string_to_builder\n__ap
 let append_char_to_builder_asm_code = ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n";
 
 fn main(): int {
-    current_target = X86_64;
+    current_target = AARCH64;
 
     if (argc != 2) {
         print("Usage: ./compiler input_file\n");
         return 1;
     }
+
+    global_scope = new_global_scope();
+
+    struct_registry = new StructRegistry*;
+    struct_registry->definitions = new StructDefinition*[];
+    function_registry = new FunctionRegistry*;
+    function_registry->signatures = new FunctionSignature*[];
 
     instructions = new Instruction*[];
     register_names_byte = new str[];
@@ -151,96 +158,103 @@ fn main(): int {
         register_names_dword.append("w0");
         register_names_dword.append("w19");
         register_names_dword.append("w2");
-        register_names_dword.append("w1");
         register_names_dword.append("w3");
-        register_names_dword.append("w4");
+        register_names_dword.append("w0");
+        register_names_dword.append("w1");
         register_names_dword.append("w29");
-        register_names_dword.append("wsp");   // 32-bit view of sp
+        register_names_dword.append("wsp");
+        register_names_dword.append("w4");
         register_names_dword.append("w5");
         register_names_dword.append("w6");
         register_names_dword.append("w7");
-        register_names_dword.append("w8");
-        register_names_dword.append("w20");
-        register_names_dword.append("w21");
-        register_names_dword.append("w22");
-        register_names_dword.append("w23");
+        register_names_dword.append("w8"); 
+        register_names_dword.append("w20"); 
+        register_names_dword.append("w21"); 
+        register_names_dword.append("w22"); 
 
         register_names_qword.append("x0");
         register_names_qword.append("x19");
         register_names_qword.append("x2");
-        register_names_qword.append("x1");
         register_names_qword.append("x3");
-        register_names_qword.append("x4");
+        register_names_qword.append("x0");
+        register_names_qword.append("x1");
         register_names_qword.append("x29");
         register_names_qword.append("sp");
+        register_names_qword.append("x4");
         register_names_qword.append("x5");
         register_names_qword.append("x6");
         register_names_qword.append("x7");
-        register_names_qword.append("x8");
+        register_names_qword.append("x8"); 
         register_names_qword.append("x20"); 
         register_names_qword.append("x21"); 
         register_names_qword.append("x22"); 
-        register_names_qword.append("x23"); 
     }
 
-    global_scope = new_global_scope();
 
-    struct_registry = new StructRegistry*;
-    struct_registry->definitions = new StructDefinition*[];
-    function_registry = new FunctionRegistry*;
-    function_registry->signatures = new FunctionSignature*[];
+    if (current_target == X86_64) {
+        let print_signature = add_signature(function_registry);
+        print_signature->name = "print";
+        print_signature->return_type = VOID;
+        add_parameter(print_signature, "str_var", STRING_VARIABLE);
 
-    let print_signature = add_signature(function_registry);
-    print_signature->name = "print";
-    print_signature->return_type = VOID;
-    add_parameter(print_signature, "str_var", STRING_VARIABLE);
+        let int_to_str_signature = add_signature(function_registry);
+        int_to_str_signature->name = "int_to_str";
+        int_to_str_signature->return_type = STRING_VARIABLE;
+        add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
 
-    let int_to_str_signature = add_signature(function_registry);
-    int_to_str_signature->name = "int_to_str";
-    int_to_str_signature->return_type = STRING_VARIABLE;
-    add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
+        let long_to_str_signature = add_signature(function_registry);
+        long_to_str_signature->name = "long_to_str";
+        long_to_str_signature->return_type = STRING_VARIABLE;
+        add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
 
-    let long_to_str_signature = add_signature(function_registry);
-    long_to_str_signature->name = "long_to_str";
-    long_to_str_signature->return_type = STRING_VARIABLE;
-    add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
+        let char_to_str_signature = add_signature(function_registry);
+        char_to_str_signature->name = "char_to_str";
+        char_to_str_signature->return_type = STRING_VARIABLE;
+        add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
 
-    let char_to_str_signature = add_signature(function_registry);
-    char_to_str_signature->name = "char_to_str";
-    char_to_str_signature->return_type = STRING_VARIABLE;
-    add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
-
-    let read_file_signature = add_signature(function_registry);
-    read_file_signature->name = "read_file";
-    read_file_signature->return_type = STRING_VARIABLE;
-    add_parameter(read_file_signature, "str", STRING_VARIABLE);
+        let read_file_signature = add_signature(function_registry);
+        read_file_signature->name = "read_file";
+        read_file_signature->return_type = STRING_VARIABLE;
+        add_parameter(read_file_signature, "str", STRING_VARIABLE);
+    }
 
 
     print(".section .text\n");
-    print(".extern memcpy\n");
-    print(".extern memset\n");
-    print(".extern malloc\n");
-    print(".extern realloc\n");
-    print(".extern strcmp\n");
-    print(".extern strlen\n");
-    print(".extern snprintf\n");
+    if (current_target == X86_64) {
+        print(".extern memcpy\n");
+        print(".extern memset\n");
+        print(".extern malloc\n");
+        print(".extern realloc\n");
+        print(".extern strcmp\n");
+        print(".extern strlen\n");
+        print(".extern snprintf\n");
+    } elseif (current_target == AARCH64) {
+        print(".extern _memcpy\n");
+        print(".extern _memset\n");
+        print(".extern _malloc\n");
+        print(".extern _realloc\n");
+        print(".extern _strcmp\n");
+        print(".extern _strlen\n");
+        print(".extern _snprintf\n");
+    }
 
     compile_file(argv[1]); 
 
-    print(print_asm_code);
-    print(strlen_internal_asm_code);
-    print(long_to_str_asm_code);
-    print(int_to_str_asm_code);
-    print(char_to_str_asm_code);
-    print(read_file_asm_code);
+    if(current_target == X86_64) {
+        print(print_asm_code);
+        print(strlen_internal_asm_code);
+        print(long_to_str_asm_code);
+        print(int_to_str_asm_code);
+        print(char_to_str_asm_code);
+        print(read_file_asm_code);
 
-    print(append_char_asm_code);
-    print(append_long_asm_code);
-    print(append_quad_asm_code);
+        print(append_char_asm_code);
+        print(append_long_asm_code);
+        print(append_quad_asm_code);
 
-    print(append_string_to_builder_asm_code);
-    print(append_char_to_builder_asm_code);
-
+        print(append_string_to_builder_asm_code);
+        print(append_char_to_builder_asm_code);
+    }
     print(".section .data\n");
     for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
         let variable_type = global_scope->variables[i]->type;

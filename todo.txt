@@ -1,0 +1,20 @@
+
+if (opcode == MOV) {
+    add_to_text_buffer(text_buffer, "\tmov");
+}
+elseif (opcode == LEA) {
+    add_to_text_buffer(text_buffer, "\tlea");
+}
+
+elseif (opcode & MOVS == MOVS) { // THIS MUST BE LAST BECAUSE IT USES A BITMASK
+    add_to_text_buffer(text_buffer, "\tmovs");
+    let src_size = (opcode >> 16) & 15;
+    let dst_size = (opcode >> 20) & 15;
+    add_size_letter(text_buffer, src_size);
+    add_size_letter(text_buffer, dst_size);
+    add_to_text_buffer(text_buffer, " ");
+    emit_operand_x86(text_buffer, instruction->src, src_size);
+    add_to_text_buffer(text_buffer, ", ");
+    emit_operand_x86(text_buffer, instruction->dest, dst_size);
+    add_to_text_buffer(text_buffer, "\n");
+}
