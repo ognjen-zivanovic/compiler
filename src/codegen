@@ -718,7 +718,7 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\tadd ");
             emit_operand_aarch64(text_buffer, instruction->dest, 8);
             add_to_text_buffer(text_buffer, ", ");
-            emit_operand_aarch64(text_buffer, instruction->src, size);
+            emit_operand_aarch64(text_buffer, instruction->dest, size);
             add_to_text_buffer(text_buffer, ", ");
             emit_operand_aarch64(text_buffer, instruction->src, size);
             add_to_text_buffer(text_buffer, "@PAGEOFF\n");
@@ -740,7 +740,7 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\tadd ");
             emit_operand_aarch64(text_buffer, instruction->dest, 8);
             add_to_text_buffer(text_buffer, ", ");
-            emit_operand_aarch64(text_buffer, instruction->src, size);
+            emit_operand_aarch64(text_buffer, instruction->dest, size);
             add_to_text_buffer(text_buffer, ", ");
             emit_operand_aarch64(text_buffer, instruction->src, size);
             add_to_text_buffer(text_buffer, "@PAGEOFF\n");
@@ -1460,7 +1460,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
                 rsp_offset = rsp_offset + argument_size;
             }
         }
-        free_stack_space(text_buffer, arguments_size);
+        free_stack_space(text_buffer, arguments_size_aligned);
 
         dealign_stack(text_buffer, alignment_offset);
         return return_type;
@@ -2115,6 +2115,7 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
 
     let name = function_node->name;
     if (name == "main") {
+        name = "_main";
         add_variable(function_stack_frame, "argc", INT_VARIABLE, 0);
         add_variable(function_stack_frame, "argv", to_pointer(to_pointer(CHAR_VARIABLE)), 0);
     }
