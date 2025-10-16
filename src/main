@@ -219,8 +219,8 @@ fn main(): int {
     }
 
 
-    print(".section .text\n");
     if (current_target == X86_64) {
+        print(".section .text\n");
         print(".extern memcpy\n");
         print(".extern memset\n");
         print(".extern malloc\n");
@@ -229,6 +229,7 @@ fn main(): int {
         print(".extern strlen\n");
         print(".extern snprintf\n");
     } elseif (current_target == AARCH64) {
+        print(".text\n");
         print(".extern _memcpy\n");
         print(".extern _memset\n");
         print(".extern _malloc\n");
@@ -255,7 +256,12 @@ fn main(): int {
         print(append_string_to_builder_asm_code);
         print(append_char_to_builder_asm_code);
     }
-    print(".section .data\n");
+
+    if (current_target == X86_64) {
+        print(".section .data\n");
+    } elseif (current_target == AARCH64) {
+        print(".data\n");
+    }
     for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
         let variable_type = global_scope->variables[i]->type;
 
@@ -266,8 +272,11 @@ fn main(): int {
         if (variable_type == STRING_LITERAL_VARIABLE) {
             continue;
         }
-
-        print("\t." + global_scope->variables[i]->name + ":\t");
+        if (current_target == X86_64) {
+            print("\t." + global_scope->variables[i]->name + ":\t");
+        } elseif (current_target == AARCH64) {
+            print("\t_" + global_scope->variables[i]->name + ":\t");
+        }
         if (is_pointer(variable_type) || is_array(variable_type)) {
             print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
         }
@@ -285,21 +294,37 @@ fn main(): int {
         }
     }
     
-    print(".section .rodata\n");
+    if (current_target == X86_64) {
+        print(".section .rodata\n");
+    } elseif (current_target == AARCH64) {
+        print(".const\n");
+    }
     for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
         let variable_type = global_scope->variables[i]->type;
         if (is_const(variable_type)) {
             continue;
         }
         if (variable_type == STRING_LITERAL_VARIABLE) {
-            print("\t." + global_scope->variables[i]->name + ":\t");
+            if (current_target == X86_64) {
+                print("\t." + global_scope->variables[i]->name + ":\t");
+            }
+            elseif (current_target == AARCH64) {
+                print("\t_" + global_scope->variables[i]->name + ":\t");
+            }
             print(".string \"" + ((global_scope->variables[i]->value) as char*) + "\"\n");
         }
     }
-    print("\t.long_fmt:\t.string \"%ld\"\n");
-    print("\t.int_fmt:\t.string \"%d\"\n");
-    print(".section .bss\n");
-    print("\tfile_statbuf:\t.skip 144\n");
+    if (current_target == X86_64) {
+        print("\t.long_fmt:\t.string \"%ld\"\n");
+        print("\t.int_fmt:\t.string \"%d\"\n");
+        print(".section .bss\n");
+        print("\tfile_statbuf:\t.skip 144\n");
+    } elseif (current_target == AARCH64) {
+        print("\t_long_fmt:\t.asciz \"%ld\"\n");
+        print("\t_int_fmt:\t.asciz \"%d\"\n");
+        print(".bss\n");
+        //print("\t_file_statbuf:\t.skip 144\n");
+    }
 
     return 0;
 }
