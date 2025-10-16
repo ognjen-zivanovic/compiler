@@ -18,3 +18,272 @@ elseif (opcode & MOVS == MOVS) { // THIS MUST BE LAST BECAUSE IT USES A BITMASK
     emit_operand_x86(text_buffer, instruction->dest, dst_size);
     add_to_text_buffer(text_buffer, "\n");
 }
+
+let print_asm_code = ".globl print
+print:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+
+\tmovq 16(%rbp), %rdi
+\tcall strlen_internal
+
+\tmovq %rax, %rdx
+\tmovq $1, %rax
+\tmovq $1, %rdi
+\tmovq 16(%rbp), %rsi
+\tsyscall
+\tleave
+\tret
+";
+
+let strlen_internal_asm_code = "
+.globl strlen_internal
+strlen_internal:
+\txor %rcx, %rcx
+.loop:
+\tmovb (%rdi,%rcx,1), %al
+\ttest %al, %al
+\tje .done
+\tinc %rcx
+\tjmp .loop
+.done:
+\tmovq %rcx, %rax
+\tret
+";
+    
+let long_to_str_asm_code = "
+.globl long_to_str
+long_to_str:
+\tpush %rbp
+\tmovq %rsp, %rbp
+\tmovq %rax, %rbx
+\tmovq $16, %rdi
+\tcall malloc
+\tmovq %rax, %rdi
+\tmovq %rbx, %rcx
+\tmovq $16, %rsi
+\tleaq .long_fmt(%rip), %rdx
+\txor %al, %al
+\tmovq %rdi, %rbx
+\tcall snprintf
+\tmovq %rbx, %rax
+\tleave
+\tret
+";
+
+let int_to_str_asm_code = "
+.globl int_to_str
+int_to_str:
+\tpush %rbp
+\tmovq %rsp, %rbp
+\tmovl %eax, %ebx
+\tmovq $16, %rdi
+\tcall malloc
+\tmovq %rax, %rdi
+\tmovslq %ebx, %rcx
+\tmovq $16, %rsi
+\tleaq .int_fmt(%rip), %rdx
+\txor %al, %al
+\tmovq %rdi, %rbx
+\tcall snprintf
+\tmovq %rbx, %rax
+\tleave
+\tret
+";
+
+let char_to_str_asm_code = "
+.globl char_to_str
+char_to_str:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovb %al, %bl
+\tmovq $16, %rdi
+\tcall malloc
+\tmovq %rax, %rdi
+\tmovb %bl, (%rdi)
+\tmovb $0, 1(%rdi)
+\tmovq %rdi, %rax
+\tleave
+\tret
+";
+
+let read_file_asm_code = "
+.globl read_file
+read_file:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovq %rax, %rdi
+\tmovq $2, %rax
+\tmovq $0, %rsi
+\tmovq $0, %rdx
+\tsyscall
+\tmovq %rax, %r12
+\tmovq $5, %rax
+\tmovq %r12, %rdi
+\tleaq file_statbuf(%rip), %rsi
+\tsyscall
+\tmovq 48+file_statbuf(%rip), %r15
+\tmovq %r15, %rdi
+\taddq $1, %rdi
+\tcall malloc
+\tmovq %rax, %r13
+
+\tmovq $0, %rax
+\tmovq %r12, %rdi
+\tmovq %r13, %rsi
+\tmovq %r15, %rdx
+\tsyscall
+\tmovq %rax, %r14
+\taddq %r13, %r14
+\tmovb $0, (%r14)
+\tmovq $3, %rax
+\tmovq %r12, %rdi
+\tsyscall
+\tmovq %r13, %rax
+\tleave
+\tret
+";
+
+let append_char_asm_code = "
+.globl __append_char
+__append_char:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovq %rax, %r12
+\tmovl 12(%r12), %edx
+\tmovl 8(%r12), %ecx
+\taddl $1, %ecx
+\tcmpl %ecx, %edx
+\tjge .L_after_grow_char
+\taddl %edx, %edx
+\tmovl %edx, 12(%r12)
+\tmovslq %edx, %rsi
+\timulq $1, %rsi
+\tmovq (%r12), %rdi
+\tcall realloc
+\tmovq %rax, (%r12)
+\tmovq %r12, %rax
+.L_after_grow_char:
+\tmovslq 8(%rax), %rdx
+\tmovq (%rax), %rax
+\tleaq (%rax, %rdx, 1), %rax
+\tmovb %bl, (%rax)
+\tleave
+\tret
+";
+
+let append_long_asm_code = "
+.globl __append_long
+__append_long:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovq %rax, %r12
+\tmovl 12(%r12), %edx
+\tmovl 8(%r12), %ecx
+\taddl $1, %ecx
+\tcmpl %ecx, %edx
+\tjge .L_after_grow_long
+\taddl %edx, %edx
+\tmovl %edx, 12(%r12)
+\tmovslq %edx, %rsi
+\timulq $4, %rsi
+\tmovq (%r12), %rdi
+\tcall realloc
+\tmovq %rax, (%r12)
+\tmovq %r12, %rax
+.L_after_grow_long:
+\tmovslq 8(%rax), %rdx
+\tmovq (%rax), %rax
+\tleaq (%rax, %rdx, 4), %rax
+\tmovl %ebx, (%rax)
+\tleave
+\tret
+";
+
+let append_quad_asm_code = "
+.globl __append_quad
+__append_quad:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovq %rax, %r12
+\tmovl 12(%r12), %edx
+\tmovl 8(%r12), %ecx
+\taddl $1, %ecx
+\tcmpl %ecx, %edx
+\tjge .L_after_grow_quad
+\taddl %edx, %edx
+\tmovl %edx, 12(%r12)
+\tmovslq %edx, %rsi
+\timulq $8, %rsi
+\tmovq (%r12), %rdi
+\tcall realloc
+\tmovq %rax, (%r12)
+\tmovq %r12, %rax
+.L_after_grow_quad:
+\tmovslq 8(%rax), %rdx
+\tmovq (%rax), %rax
+\tleaq (%rax, %rdx, 8), %rax
+\tmovq %rbx, (%rax)
+\tleave
+\tret
+";
+
+let append_string_to_builder_asm_code = "
+.globl __append_string_to_builder
+__append_string_to_builder:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\tmovq %r12, %rdi
+\tcall strlen
+\tmovq %rax, %rbx
+\tmovq %r14, %rax
+\taddq %rbx, %rax
+\tincq %rax
+\tcmpq %r13, %rax
+\tjbe .L_after_grow_builder_string
+.L_grow_builder_string:
+\taddq %r13, %r13
+\tcmpq %rax, %r13
+\tjb .L_grow_builder_string
+\tmovq %r13, %rsi
+\tmovq %r15, %rdi
+\tcall realloc
+\tmovq %rax, %r15
+.L_after_grow_builder_string:
+\tleaq (%r15,%r14), %rdi
+\tmovq %r12, %rsi
+\tmovq %rbx, %rdx
+\taddq %rbx, %r14
+\tcall memcpy
+\tmovb $0, (%r15,%r14)
+\tleave
+\tret
+";
+
+let append_char_to_builder_asm_code = "
+.globl __append_char_to_builder
+__append_char_to_builder:
+\tpushq %rbp
+\tmovq %rsp, %rbp
+\t\tmovq $1, %rbx
+\tmovq %r14, %rax
+\taddq %rbx, %rax
+\tincq %rax
+\tcmpq %r13, %rax
+\tjbe .L_after_grow_builder_char
+.L_grow_builder_char:
+\taddq %r13, %r13
+\tcmpq %rax, %r13
+\tjb .L_grow_builder_char
+\tmovq %r13, %rsi
+\tmovq %r15, %rdi
+\tcall realloc
+\tmovq %rax, %r15
+.L_after_grow_builder_char:
+\tleaq (%r15,%r14), %rdi
+\tmovb %r12b, (%r15,%r14)
+\taddq %rbx, %r14
+\tmovb $0, (%r15,%r14)
+leave
+\tret
+";

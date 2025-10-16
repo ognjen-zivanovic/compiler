@@ -1441,7 +1441,6 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
             offset = offset + size;
             push_register(text_buffer, make_reg(RAX as long), argument_type, arguments_size - offset, arguments_size_aligned);
-            print("Pushing size: " + (arguments_size_aligned - offset).int_to_str() + "\n");
         }
 
         let return_type = function_signature->return_type;
