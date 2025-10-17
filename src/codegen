@@ -530,7 +530,16 @@ fn print_insides_of_lea(text_buffer: TextBuffer*, operand: Operand*) {
 fn emit_operand_aarch64(text_buffer: TextBuffer*, operand: Operand*, size: int) {
     if (operand->type == REG) {
         if (operand->value == 31) {
-            add_to_text_buffer(text_buffer, "xzr");
+            if (size == 4 || size == 1) {
+                add_to_text_buffer(text_buffer, "wzr");
+            }
+            elseif (size == 8) {
+                add_to_text_buffer(text_buffer, "xzr");
+            }
+            else {
+                print("Unknown regiser, has no name and no size\n");
+            }
+            return;
         }
         if (size == 4 || size == 1) {
             add_to_text_buffer(text_buffer, register_names_dword[operand->value & 31]);
@@ -587,6 +596,22 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
 
     let jmp_instruction = opcode == JMP || opcode == JMPZ;
 
+    if (cmpset_instruction || opcode == CMP) {
+        if (instruction->dest->type == IMM) {
+            let t = instruction->dest->type;
+            instruction->dest->type = instruction->src->type;
+            instruction->src->type = t;
+        }
+        if (instruction->src->type == IMM) {
+            if (instruction->src->value == 0) {
+                instruction->src = make_reg(31 as long);
+            }
+            else {
+                print("Only 0 can be used as immediate value for cmp\n");
+            }
+        }
+    }
+
     if (three_operand_instruction) {
         if (opcode == ADD) {
             if (instruction->dest->type == MEM) {
@@ -618,7 +643,7 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\torr");
         }
         elseif (opcode == XOR) {
-            add_to_text_buffer(text_buffer, "\txor");
+            add_to_text_buffer(text_buffer, "\teor");
         }
         elseif (opcode == SAL) {
             add_to_text_buffer(text_buffer, "\tlsl");
@@ -774,7 +799,7 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\n");
         }
         elseif (opcode == NOT) {
-            add_to_text_buffer(text_buffer, "\tnot");
+            add_to_text_buffer(text_buffer, "\tmvn");
             add_to_text_buffer(text_buffer, " ");
             emit_operand_aarch64(text_buffer, instruction->dest, size);
             add_to_text_buffer(text_buffer, ", ");
@@ -1863,7 +1888,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             add_instruction(text_buffer, make_stdlib_label("memcpy"), 0 as Operand*, CALL, VOID);
 
             //add_to_text_buffer(text_buffer, "\tmovq $0, (%rax, %r13, " + int_to_str(get_size(element_type)) + ")\n");
-            add_instruction(text_buffer, make_imm(0 as long), make_mem(make_reg(RAX as long), make_reg(R13 as long), get_size(element_type), 0, REGISTER_INDEXED), LOAD, LONG_VARIABLE);
+            add_instruction(text_buffer, make_imm(0 as long), make_mem(make_reg(RAX as long), make_reg(R13 as long), get_size(element_type), 0, REGISTER_INDEXED), STORE, LONG_VARIABLE);
             dealign_stack(text_buffer, alignment_offset);
             return STRING_VARIABLE;
         }
