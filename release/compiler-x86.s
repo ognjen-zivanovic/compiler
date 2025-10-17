@@ -23693,7 +23693,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $8, %rsp
 	pushq %rax
-	movl $1, %eax
+	movl $2, %eax
 	subq $4, %rsp
 	movl %eax, (%rsp)
 	movl -40(%rbp), %eax
@@ -33285,10 +33285,10 @@ leave
 	.str_403:	.string "ne"
 	.str_404:	.string "\n"
 	.str_405:	.string "\tb"
-	.str_406:	.string "\tbz"
+	.str_406:	.string "\tbeq"
 	.str_407:	.string "Unknown opcode "
 	.str_408:	.string "\n"
-	.str_409:	.string " "
+	.str_409:	.string " ."
 	.str_410:	.string "\n"
 	.str_411:	.string "\tldr"
 	.str_412:	.string " "

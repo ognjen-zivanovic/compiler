@@ -670,12 +670,12 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
         if (opcode == JMP) {
             add_to_text_buffer(text_buffer, "\tb");
         } elseif (opcode == JMPZ) {
-            add_to_text_buffer(text_buffer, "\tbz");
+            add_to_text_buffer(text_buffer, "\tbeq");
         } else {
             print("Unknown opcode " + int_to_str(opcode as int) + "\n");
         }
 
-        add_to_text_buffer(text_buffer, " ");
+        add_to_text_buffer(text_buffer, " .");
         emit_operand_aarch64(text_buffer, instruction->src, size);
         add_to_text_buffer(text_buffer, "\n");
     }
@@ -1744,7 +1744,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         if (type == RVALUE) {
             let word_size = get_word_size(get_size(member_type));
             //add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), STORE, member_type);
+            add_instruction(text_buffer, make_mem(make_reg(RAX as long), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG as long), LOAD, member_type);
         }
         elseif (type == LVALUE) {
             //add_to_text_buffer(text_buffer, "\tleaq" + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
