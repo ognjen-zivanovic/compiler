@@ -306,6 +306,7 @@ fn main(): int {
         print(".section .data\n");
     } elseif (current_target == AARCH64) {
         print(".data\n");
+        print(".align 8\n");
     }
     for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
         let variable_type = global_scope->variables[i]->type;
@@ -314,7 +315,8 @@ fn main(): int {
             continue;
         }
 
-        if (variable_type == STRING_LITERAL_VARIABLE) {
+
+        if (variable_type == STRING_LITERAL_VARIABLE || variable_type == CHAR_VARIABLE) {
             continue;
         }
         if (current_target == X86_64) {
@@ -326,7 +328,12 @@ fn main(): int {
             print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
         }
         elseif (variable_type == STRING_VARIABLE) {
-            print(".quad ." + (global_scope->variables[i]->value as char*) + "\n");
+            if (current_target == X86_64) {
+                print(".quad ." + (global_scope->variables[i]->value as char*) + "\n");
+            }
+            elseif (current_target == AARCH64) {
+                print(".quad _" + (global_scope->variables[i]->value as char*) + "\n");
+            }
         }
         elseif (variable_type == INT_VARIABLE) {
             print(".quad " + (*(global_scope->variables[i]->value as int*)).int_to_str() + "\n");
@@ -334,7 +341,26 @@ fn main(): int {
         elseif (variable_type == LONG_VARIABLE) {
             print(".quad " + *(global_scope->variables[i]->value as long*).long_to_str() + "\n");
         }
-        elseif (variable_type == CHAR_VARIABLE) {
+
+    }
+
+    for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
+        let variable_type = global_scope->variables[i]->type;
+
+        if (is_const(variable_type)) {
+            continue;
+        }
+
+        if (variable_type != CHAR_VARIABLE) {
+            continue;
+        }
+        if (current_target == X86_64) {
+            print("\t." + global_scope->variables[i]->name + ":\t");
+        } elseif (current_target == AARCH64) {
+            print("\t_" + global_scope->variables[i]->name + ":\t");
+        }
+        
+        if (variable_type == CHAR_VARIABLE) {
             print(".byte " + (*(global_scope->variables[i]->value as char*) as int).int_to_str() + "\n");
         }
     }
@@ -343,6 +369,7 @@ fn main(): int {
         print(".section .rodata\n");
     } elseif (current_target == AARCH64) {
         print(".const\n");
+        print(".align 8\n");
     }
     for (let i = 0; i < global_scope->variables.len(); i = i + 1) {
         let variable_type = global_scope->variables[i]->type;
