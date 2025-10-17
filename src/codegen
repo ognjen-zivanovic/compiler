@@ -854,6 +854,7 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\tadd sp, sp, #" + int_to_str(size) + "\n");
         }
         elseif (opcode == LEAVE) {
+            add_to_text_buffer(text_buffer, "\tmov sp, x29\n");
             add_to_text_buffer(text_buffer, "\tldp x29, x30, [sp], #16\n");
         }
         elseif (opcode == RET) {
@@ -2214,15 +2215,13 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
     allocate_stack_space(0 as TextBuffer*, function_stack_frame);
     if (name == "main") {
         rsp_offset = -16;
-        if (current_target == X86_64) {
-            //print("\tsubq $16, %rsp\n");
-            print("\tmovl %edi, -4(%rbp)\n");
-            print("\tmovq %rsi, -12(%rbp)\n");
-        } 
-        elseif (current_target == AARCH64) {
-            print("\tstr w0, [x29, #-4]\n");
-            print("\tstr x1, [x29, #-12]\n");
-        }
+        print("\tmovl %edi, -4(%rbp)\n");
+        print("\tmovq %rsi, -12(%rbp)\n");
+    }
+    if (name == "_main") {
+        rsp_offset = -16;
+        print("\tstr w0, [x29, #-4]\n");
+        print("\tstr x1, [x29, #-12]\n");
     }
     terminate_buffer(function_text_buffer);
     print(*(function_text_buffer->buffer));
