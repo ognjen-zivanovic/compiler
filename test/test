@@ -1,0 +1,20 @@
+fn main(): int {
+    let a = 12;
+    print(a.int_to_str() + " World!" + '\n');
+    print('G'.char_to_str());
+    print("\n");
+    let ll = (1000 as long) * (1234 as long);
+    print(ll.long_to_str() + '\n');
+
+    let file = read_file("test/globals");
+    print(file);
+
+    let arr = new int[];
+    arr.append(5);
+    arr.append(6);
+    arr.append(7);
+
+    print(int_to_str(arr[0]) + "\n");
+    print(int_to_str(arr[0]) + "\n");
+    print(int_to_str(arr[0]) + "\n");
+}

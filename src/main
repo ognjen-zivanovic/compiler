@@ -84,17 +84,47 @@ let append_string_to_builder_asm_code_x86 = ".globl __append_string_to_builder\n
 let append_char_to_builder_asm_code_x86 = ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n";
 
 
-let print_asm_code_aarch64 = ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl write\n\n\tldp x29, x30, [sp], #16\n\tret\n";
+let print_asm_code_aarch64 = ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n";
 
-let strlen_internal_asm_code_aarch64 = ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\nb .loop\n.done:\n\tmov x0, x2\n\tret\n";
+let strlen_internal_asm_code_aarch64 = ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\tb .loop\n.done:\n\tmov x0, x2\n\tret\n";
+
+let int_to_str_asm_code_aarch64 = ".globl int_to_str\nint_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _int_fmt@PAGE\n\tadd x2, x2, _int_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let long_to_str_asm_code_aarch64 = ".globl long_to_str\nlong_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, x0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _long_fmt@PAGE\n\tadd x2, x2, _long_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let char_to_str_asm_code_aarch64 = ".globl char_to_str\nchar_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tstrb w19, [x0]\n\tstrb wzr, [x0, #1]\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let read_file_asm_code_aarch64 = ".globl read_file\nread_file:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tmov w1, #0\n\tbl  _open\n\tmov x19, x0\n\n\tadrp x20, file_statbuf@PAGE\n\tadd x20, x20, file_statbuf@PAGEOFF \n\tmov x1, x20\n\tbl  _fstat\n\n\tldr x0, [x20, #0x60]\n\tmov x20, x0\n\n\tmov x0, x20\n\tadd x0, x0, #1\n\tbl  _malloc\n\tmov x21, x0\n\n\tmov x0, x19\n\tmov x1, x21\n\tmov x2, x20\n\tbl  _read\n\n\tadd x1, x21, x0\n\tstrb wzr, [x1]\n\n\tmov x0, x19\n\tbl  _close\n\n\tmov x0, x21\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let append_long_asm_code_aarch64 = ".globl __append_long\n__append_long:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_long\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_long:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #2\n\tstr w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let append_quad_asm_code_aarch64 = ".globl __append_quad\n__append_quad:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_quad\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #3\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_quad:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #3\n\tstr x19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let append_char_asm_code_aarch64 = ".globl __append_char\n__append_char:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_char\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_char:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2\n\tstrb w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let append_string_to_builder_asm_code_aarch64 = ".globl __append_string_to_builder\n__append_string_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x0, x23\n\tbl _strlen\n\tmov x19, x0\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_string\n\n\t.L_grow_builder_string:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_string\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_string:\n\tadd x0, x22, x21\n\tmov x1, x23\n\tmov x2, x19\n\tadd x21, x21, x2\n\tbl _memcpy\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n";
+
+let append_char_to_builder_asm_code_aarch64 = ".globl __append_string_to_builder\n__append_char_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, #1\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_char\n\n\t.L_grow_builder_char:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_char\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_char:\n\tadd x0, x22, x21\n\tstrb w23, [x22, x21]\n\tadd x21, x21, #1\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n";
 
 fn main(): int {
-    current_target = AARCH64;
 
-    if (argc != 2) {
-        print("Usage: ./compiler input_file\n");
+    if (argc != 3) {
+        print("Usage: ./compiler [target] input_file\n");
         return 1;
     }
+
+    if (argv[1] == "x86_64") {
+        current_target = X86_64;
+    }
+    elseif (argv[1] == "aarch64") {
+        current_target = AARCH64;
+    }
+    else {
+        print("Unknown target " + argv[1] + "\n");
+        return 1;
+    }
+
+
 
     global_scope = new_global_scope();
 
@@ -142,28 +172,28 @@ fn main(): int {
         register_names_dword.append("%r14d");
         register_names_dword.append("%r15d");
 
-        register_names_qword.append("%rax");
-        register_names_qword.append("%rbx");
-        register_names_qword.append("%rcx"); 
-        register_names_qword.append("%rdx");
-        register_names_qword.append("%rsi");
-        register_names_qword.append("%rdi");
-        register_names_qword.append("%rbp");
-        register_names_qword.append("%rsp");
-        register_names_qword.append("%r8");
-        register_names_qword.append("%r9");
-        register_names_qword.append("%r10");
-        register_names_qword.append("%r11");
-        register_names_qword.append("%r12");
-        register_names_qword.append("%r13");
-        register_names_qword.append("%r14");
-        register_names_qword.append("%r15");
+        register_names_qword.append("%rax"); // x0
+        register_names_qword.append("%rbx"); // x19
+        register_names_qword.append("%rcx"); // x3
+        register_names_qword.append("%rdx"); // x2
+        register_names_qword.append("%rsi"); // x1
+        register_names_qword.append("%rdi"); // x0
+        register_names_qword.append("%rbp"); // x29
+        register_names_qword.append("%rsp"); // sp
+        register_names_qword.append("%r8");  // x4
+        register_names_qword.append("%r9");  // x5
+        register_names_qword.append("%r10"); // x6
+        register_names_qword.append("%r11"); // x7
+        register_names_qword.append("%r12"); // x23
+        register_names_qword.append("%r13"); // x20
+        register_names_qword.append("%r14"); // x21
+        register_names_qword.append("%r15"); // x22
     }
     elseif (current_target == AARCH64) {
         register_names_dword.append("w0");
         register_names_dword.append("w19");
-        register_names_dword.append("w2");
         register_names_dword.append("w3");
+        register_names_dword.append("w2");
         register_names_dword.append("w0");
         register_names_dword.append("w1");
         register_names_dword.append("w29");
@@ -172,55 +202,54 @@ fn main(): int {
         register_names_dword.append("w5");
         register_names_dword.append("w6");
         register_names_dword.append("w7");
-        register_names_dword.append("w8"); 
+        register_names_dword.append("w23"); 
         register_names_dword.append("w20"); 
         register_names_dword.append("w21"); 
         register_names_dword.append("w22"); 
 
-        register_names_qword.append("x0");
-        register_names_qword.append("x19");
-        register_names_qword.append("x2");
-        register_names_qword.append("x3");
-        register_names_qword.append("x0");
-        register_names_qword.append("x1");
-        register_names_qword.append("x29");
-        register_names_qword.append("sp");
-        register_names_qword.append("x4");
-        register_names_qword.append("x5");
-        register_names_qword.append("x6");
-        register_names_qword.append("x7");
-        register_names_qword.append("x8"); 
-        register_names_qword.append("x20"); 
-        register_names_qword.append("x21"); 
-        register_names_qword.append("x22"); 
+        register_names_qword.append("x0");  // rax 
+        register_names_qword.append("x19"); // rbx
+        register_names_qword.append("x3");  // rcx
+        register_names_qword.append("x2");  // rdx
+        register_names_qword.append("x1");  // rsi
+        register_names_qword.append("x0");  // rdi
+        register_names_qword.append("x29"); // rbp
+        register_names_qword.append("sp");  // rsp
+        register_names_qword.append("x4");  // r8
+        register_names_qword.append("x5");  // r9
+        register_names_qword.append("x6");  // r10
+        register_names_qword.append("x7");  // r11
+        register_names_qword.append("x23"); // r12
+        register_names_qword.append("x20"); // r13
+        register_names_qword.append("x21"); // r14
+        register_names_qword.append("x22"); // r15
     }
 
 
-    if (current_target == X86_64) {
-        let int_to_str_signature = add_signature(function_registry);
-        int_to_str_signature->name = "int_to_str";
-        int_to_str_signature->return_type = STRING_VARIABLE;
-        add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
-
-        let long_to_str_signature = add_signature(function_registry);
-        long_to_str_signature->name = "long_to_str";
-        long_to_str_signature->return_type = STRING_VARIABLE;
-        add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
-
-        let char_to_str_signature = add_signature(function_registry);
-        char_to_str_signature->name = "char_to_str";
-        char_to_str_signature->return_type = STRING_VARIABLE;
-        add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
-
-        let read_file_signature = add_signature(function_registry);
-        read_file_signature->name = "read_file";
-        read_file_signature->return_type = STRING_VARIABLE;
-        add_parameter(read_file_signature, "str", STRING_VARIABLE);
-    }
     let print_signature = add_signature(function_registry);
     print_signature->name = "print";
     print_signature->return_type = VOID;
     add_parameter(print_signature, "str_var", STRING_VARIABLE);
+
+    let read_file_signature = add_signature(function_registry);
+    read_file_signature->name = "read_file";
+    read_file_signature->return_type = STRING_VARIABLE;
+    add_parameter(read_file_signature, "str", STRING_VARIABLE);
+
+    let int_to_str_signature = add_signature(function_registry);
+    int_to_str_signature->name = "int_to_str";
+    int_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(int_to_str_signature, "int_var", INT_VARIABLE);
+
+    let long_to_str_signature = add_signature(function_registry);
+    long_to_str_signature->name = "long_to_str";
+    long_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(long_to_str_signature, "long_var", LONG_VARIABLE);
+
+    let char_to_str_signature = add_signature(function_registry);
+    char_to_str_signature->name = "char_to_str";
+    char_to_str_signature->return_type = STRING_VARIABLE;
+    add_parameter(char_to_str_signature, "char_var", CHAR_VARIABLE);
 
 
     if (current_target == X86_64) {
@@ -234,23 +263,18 @@ fn main(): int {
         print(".extern snprintf\n");
     } elseif (current_target == AARCH64) {
         print(".text\n");
-        print(".extern _memcpy\n");
-        print(".extern _memset\n");
-        print(".extern _malloc\n");
-        print(".extern _realloc\n");
-        print(".extern _strcmp\n");
-        print(".extern _strlen\n");
-        print(".extern _snprintf\n");
     }
 
-    compile_file(argv[1]); 
+    compile_file(argv[2]); 
 
     if(current_target == X86_64) {
         print(print_asm_code_x86);
         print(strlen_internal_asm_code_x86);
+
         print(long_to_str_asm_code_x86);
         print(int_to_str_asm_code_x86);
         print(char_to_str_asm_code_x86);
+
         print(read_file_asm_code_x86);
 
         print(append_char_asm_code_x86);
@@ -263,6 +287,19 @@ fn main(): int {
     elseif (current_target == AARCH64) {
         print(print_asm_code_aarch64);
         print(strlen_internal_asm_code_aarch64);
+
+        print(int_to_str_asm_code_aarch64);
+        print(long_to_str_asm_code_aarch64);
+        print(char_to_str_asm_code_aarch64);
+
+        print(read_file_asm_code_aarch64);
+
+        print(append_long_asm_code_aarch64);
+        print(append_quad_asm_code_aarch64);
+        print(append_char_asm_code_aarch64);
+
+        print(append_string_to_builder_asm_code_aarch64);
+        print(append_char_to_builder_asm_code_aarch64);
     }
 
     if (current_target == X86_64) {
@@ -331,7 +368,7 @@ fn main(): int {
         print("\t_long_fmt:\t.asciz \"%ld\"\n");
         print("\t_int_fmt:\t.asciz \"%d\"\n");
         print(".bss\n");
-        //print("\t_file_statbuf:\t.skip 144\n");
+        print("\tfile_statbuf:\t.skip 144\n");
     }
 
     return 0;
