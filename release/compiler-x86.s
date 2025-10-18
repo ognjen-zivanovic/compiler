@@ -14255,9 +14255,27 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	movl -8(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L263_end
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_417(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L263_end
+	addq $16, %rsp
+.L263_end:
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_418(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14278,7 +14296,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_418(%rip), %rax
+	leaq .str_419(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14299,7 +14317,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_419(%rip), %rax
+	leaq .str_420(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14323,29 +14341,8 @@ emit_instruction_aarch64:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L263_else
+	jz .L264_else
 	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_420(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_421(%rip), %rax
@@ -14353,6 +14350,20 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_422(%rip), %rax
@@ -14360,10 +14371,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L263_end
-	addq $16, %rsp
-.L263_else:
-	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_423(%rip), %rax
@@ -14371,9 +14378,38 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	jmp .L264_end
+	addq $16, %rsp
+.L264_else:
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_424(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	movl -8(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L265_end
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_425(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L265_end
+	addq $16, %rsp
+.L265_end:
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_426(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14394,14 +14430,14 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_425(%rip), %rax
+	leaq .str_427(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L263_end
+	jmp .L264_end
 	addq $16, %rsp
-.L263_end:
+.L264_end:
 	subq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -14418,7 +14454,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_426(%rip), %rax
+	leaq .str_428(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14436,14 +14472,14 @@ emit_instruction_aarch64:
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_427(%rip), %rax
+	leaq .str_429(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_428(%rip), %rax
+	leaq .str_430(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14464,7 +14500,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_429(%rip), %rax
+	leaq .str_431(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14485,7 +14521,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_430(%rip), %rax
+	leaq .str_432(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14509,17 +14545,17 @@ emit_instruction_aarch64:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L264_end
+	jz .L266_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_431(%rip), %rax
+	leaq .str_433(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L264_end
+	jmp .L266_end
 	addq $16, %rsp
-.L264_end:
+.L266_end:
 	movq 16(%rbp), %rax
 	movq 8(%rax), %rax
 	movl 8(%rax), %eax
@@ -14528,20 +14564,20 @@ emit_instruction_aarch64:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L265_end
+	jz .L267_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_432(%rip), %rax
+	leaq .str_434(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L265_end
+	jmp .L267_end
 	addq $16, %rsp
-.L265_end:
+.L267_end:
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_433(%rip), %rax
+	leaq .str_435(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14562,7 +14598,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_434(%rip), %rax
+	leaq .str_436(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14577,7 +14613,7 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_435(%rip), %rax
+	leaq .str_437(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14595,7 +14631,7 @@ emit_instruction_aarch64:
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_436(%rip), %rax
+	leaq .str_438(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14614,34 +14650,6 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_437(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_438(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_439(%rip), %rax
@@ -14653,9 +14661,9 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
+	movq (%rax), %rax
 	pushq %rax
-	movl $8, %eax
+	movl -8(%rbp), %eax
 	subq $4, %rsp
 	movl %eax, (%rsp)
 	call emit_operand_aarch64
@@ -14670,6 +14678,13 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_441(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
 	subq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -14686,7 +14701,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_441(%rip), %rax
+	leaq .str_442(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -14695,9 +14710,9 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq (%rax), %rax
+	movq 8(%rax), %rax
 	pushq %rax
-	movl -8(%rbp), %eax
+	movl $8, %eax
 	subq $4, %rsp
 	movl %eax, (%rsp)
 	call emit_operand_aarch64
@@ -14705,13 +14720,6 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_442(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_443(%rip), %rax
@@ -14723,7 +14731,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
+	movq (%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -14740,20 +14748,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl $8, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_445(%rip), %rax
@@ -14761,16 +14755,13 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_4:
-	movl -4(%rbp), %eax
-	movl $35, %edx
+	movl -8(%rbp), %eax
+	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_5
+	jz .L268_end
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -14779,20 +14770,9 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl $8, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
+	jmp .L268_end
+	addq $16, %rsp
+.L268_end:
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_447(%rip), %rax
@@ -14804,7 +14784,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq (%rax), %rax
+	movq 8(%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -14821,13 +14801,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_449(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
 	subq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -14842,6 +14815,24 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_449(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_4:
+	movl -4(%rbp), %eax
+	movl $35, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_5
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_450(%rip), %rax
@@ -14891,17 +14882,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_5:
-	movl -4(%rbp), %eax
-	movl $15, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_6
-	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_453(%rip), %rax
@@ -14909,6 +14889,20 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movl $8, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_454(%rip), %rax
@@ -14922,7 +14916,7 @@ emit_instruction_aarch64:
 	movq 16(%rbp), %rax
 	movq 8(%rax), %rax
 	pushq %rax
-	movl -8(%rbp), %eax
+	movl $8, %eax
 	subq $4, %rsp
 	movl %eax, (%rsp)
 	call emit_operand_aarch64
@@ -14941,7 +14935,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
+	movq (%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -14960,14 +14954,14 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	jmp .L262_end
 	addq $16, %rsp
-.L262_elseif_6:
+.L262_elseif_5:
 	movl -4(%rbp), %eax
-	movl $16, %edx
+	movl $15, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_7
+	jz .L262_elseif_6
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -15027,14 +15021,14 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	jmp .L262_end
 	addq $16, %rsp
-.L262_elseif_7:
+.L262_elseif_6:
 	movl -4(%rbp), %eax
-	movl $13, %edx
+	movl $16, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_8
+	jz .L262_elseif_7
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -15054,7 +15048,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq (%rax), %rax
+	movq 8(%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -15094,14 +15088,14 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	jmp .L262_end
 	addq $16, %rsp
-.L262_elseif_8:
+.L262_elseif_7:
 	movl -4(%rbp), %eax
-	movl $14, %edx
+	movl $13, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_9
+	jz .L262_elseif_8
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -15142,7 +15136,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq (%rax), %rax
+	movq 8(%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -15159,20 +15153,17 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_8:
+	movl -4(%rbp), %eax
+	movl $14, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_9
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_469(%rip), %rax
@@ -15187,17 +15178,20 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_9:
-	movl -4(%rbp), %eax
-	movl $17, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_10
-	subq $16, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_471(%rip), %rax
@@ -15226,17 +15220,20 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_10:
-	movl -4(%rbp), %eax
-	movl $20, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_11
-	subq $16, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_473(%rip), %rax
@@ -15244,20 +15241,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_474(%rip), %rax
@@ -15265,112 +15248,20 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_9:
+	movl -4(%rbp), %eax
+	movl $17, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_10
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_475(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_11:
-	movl -4(%rbp), %eax
-	movl $21, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_12
-	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_476(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_477(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_478(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_12:
-	movl -4(%rbp), %eax
-	movl $18, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_13
-	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_479(%rip), %rax
-	pushq %rax
-	subq $12, %rsp
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call int_to_str
-	movq %rax, %rdx
-	addq $4, %rsp
-	addq $12, %rsp
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_480(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_481(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15391,25 +15282,25 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_482(%rip), %rax
+	leaq .str_476(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
 	jmp .L262_end
 	addq $16, %rsp
-.L262_elseif_13:
+.L262_elseif_10:
 	movl -4(%rbp), %eax
-	movl $19, %edx
+	movl $20, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_14
+	jz .L262_elseif_11
 	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_483(%rip), %rax
+	leaq .str_477(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15430,14 +15321,78 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_484(%rip), %rax
+	leaq .str_478(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_485(%rip), %rax
+	leaq .str_479(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_11:
+	movl -4(%rbp), %eax
+	movl $21, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_12
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_480(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_481(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_482(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_12:
+	movl -4(%rbp), %eax
+	movl $18, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_13
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_483(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -8(%rbp), %eax
@@ -15463,7 +15418,7 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_486(%rip), %rdx
+	leaq .str_484(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -15474,63 +15429,34 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_14:
-	movl -4(%rbp), %eax
-	movl $32, %edx
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_485(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	movl -8(%rbp), %eax
+	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_15
+	jz .L272_end
 	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_486(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L272_end
+	addq $16, %rsp
+.L272_end:
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_487(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_488(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_15:
-	movl -4(%rbp), %eax
-	movl $33, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_16
-	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_489(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L262_end
-	addq $16, %rsp
-.L262_elseif_16:
-	movl -4(%rbp), %eax
-	movl $7, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L262_elseif_17
-	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_490(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15539,7 +15465,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
+	movq (%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -15549,6 +15475,49 @@ emit_instruction_aarch64:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_488(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_13:
+	movl -4(%rbp), %eax
+	movl $19, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_14
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_489(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	movl -8(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L273_end
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_490(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L273_end
+	addq $16, %rsp
+.L273_end:
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_491(%rip), %rax
@@ -15577,65 +15546,56 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_493(%rip), %rax
+	pushq %rax
+	subq $12, %rsp
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call int_to_str
+	movq %rax, %rdx
+	addq $4, %rsp
+	addq $12, %rsp
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_494(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
 	jmp .L262_end
 	addq $16, %rsp
-.L262_elseif_17:
+.L262_elseif_14:
 	movl -4(%rbp), %eax
-	movl $23, %edx
+	movl $32, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L262_elseif_18
+	jz .L262_elseif_15
 	subq $16, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	leaq .str_494(%rip), %rax
-	pushq %rax
-	call add_to_text_buffer
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	subq $4, %rsp
-	movl $3, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	addq $4, %rsp
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_495(%rip), %rax
@@ -15643,20 +15603,6 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_496(%rip), %rax
@@ -15664,20 +15610,17 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	subq $12, %rsp
-	movq 24(%rbp), %rax
-	pushq %rax
-	movq 16(%rbp), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -8(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call emit_operand_aarch64
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_15:
+	movl -4(%rbp), %eax
+	movl $33, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_16
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_497(%rip), %rax
@@ -15685,6 +15628,17 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_16:
+	movl -4(%rbp), %eax
+	movl $7, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_17
+	subq $16, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
 	leaq .str_498(%rip), %rax
@@ -15716,14 +15670,8 @@ emit_instruction_aarch64:
 	subq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	subq $4, %rsp
-	movl $3, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	addq $4, %rsp
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
 	pushq %rax
 	movl -8(%rbp), %eax
 	subq $4, %rsp
@@ -15761,6 +15709,51 @@ emit_instruction_aarch64:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
+	jmp .L262_end
+	addq $16, %rsp
+.L262_elseif_17:
+	movl -4(%rbp), %eax
+	movl $23, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L262_elseif_18
+	subq $16, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_502(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	subq $4, %rsp
+	movl $3, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	addq $4, %rsp
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_503(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
 	subq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
@@ -15777,7 +15770,125 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_502(%rip), %rax
+	leaq .str_504(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_505(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_506(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_507(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	subq $4, %rsp
+	movl $3, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	addq $4, %rsp
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_508(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_509(%rip), %rax
+	pushq %rax
+	call add_to_text_buffer
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	movq 16(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movl -8(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call emit_operand_aarch64
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	movq 24(%rbp), %rax
+	pushq %rax
+	leaq .str_510(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15818,35 +15929,35 @@ emit_instruction_aarch64:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L272_else
+	jz .L277_else
 	subq $32, %rsp
 	leaq -8(%rbp), %rax
 	pushq %rax
 	movl -15(%rbp), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L272_end
+	jmp .L277_end
 	addq $32, %rsp
-.L272_else:
+.L277_else:
 	subq $32, %rsp
 	leaq -8(%rbp), %rax
 	pushq %rax
 	movl -19(%rbp), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L272_end
+	jmp .L277_end
 	addq $32, %rsp
-.L272_end:
+.L277_end:
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_503(%rip), %rax
+	leaq .str_511(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_504(%rip), %rax
+	leaq .str_512(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15867,7 +15978,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_505(%rip), %rax
+	leaq .str_513(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15888,7 +15999,7 @@ emit_instruction_aarch64:
 	addq $12, %rsp
 	movq 24(%rbp), %rax
 	pushq %rax
-	leaq .str_506(%rip), %rax
+	leaq .str_514(%rip), %rax
 	pushq %rax
 	call add_to_text_buffer
 	addq $8, %rsp
@@ -15912,7 +16023,7 @@ emit_instruction:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L273_elseif_0
+	jz .L278_elseif_0
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
@@ -15920,15 +16031,15 @@ emit_instruction:
 	call emit_instruction_x86
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L273_end
-.L273_elseif_0:
+	jmp .L278_end
+.L278_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L273_else
+	jz .L278_else
 	movq 24(%rbp), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
@@ -15936,10 +16047,10 @@ emit_instruction:
 	call emit_instruction_aarch64
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L273_end
-.L273_else:
+	jmp .L278_end
+.L278_else:
 	subq $8, %rsp
-	leaq .str_507(%rip), %rax
+	leaq .str_515(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl .current_target(%rip), %eax
@@ -15965,7 +16076,7 @@ emit_instruction:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_508(%rip), %rdx
+	leaq .str_516(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -15976,8 +16087,8 @@ emit_instruction:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L273_end
-.L273_end:
+	jmp .L278_end
+.L278_end:
 	leave
 	ret
 .globl encode_sizes_in_opcode
@@ -16046,7 +16157,7 @@ align_stack:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L277_else
+	jz .L282_else
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $16, %edx
@@ -16070,7 +16181,7 @@ align_stack:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L278_end
+	jz .L283_end
 	subq $16, %rsp
 	movq 20(%rbp), %rax
 	pushq %rax
@@ -16109,21 +16220,21 @@ align_stack:
 	subl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L278_end
+	jmp .L283_end
 	addq $16, %rsp
-.L278_end:
+.L283_end:
 	movl -4(%rbp), %eax
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L277_end
+	jmp .L282_end
 	addq $16, %rsp
-.L277_else:
+.L282_else:
 	movl $0, %eax
 	leave
 	ret
-	jmp .L277_end
-.L277_end:
+	jmp .L282_end
+.L282_end:
 	leave
 	ret
 .globl dealign_stack
@@ -16136,14 +16247,14 @@ dealign_stack:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L279_end
+	jz .L284_end
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L280_end
+	jz .L285_end
 	movq 20(%rbp), %rax
 	pushq %rax
 	movl 16(%rbp), %eax
@@ -16181,10 +16292,10 @@ dealign_stack:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L280_end
-.L280_end:
-	jmp .L279_end
-.L279_end:
+	jmp .L285_end
+.L285_end:
+	jmp .L284_end
+.L284_end:
 	leave
 	ret
 .globl allocate_stack_space
@@ -16202,7 +16313,7 @@ allocate_stack_space:
 	setg %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L281_end
+	jz .L286_end
 	subq $16, %rsp
 	leaq -4(%rbp), %rax
 	pushq %rax
@@ -16248,9 +16359,9 @@ allocate_stack_space:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L281_end
+	jmp .L286_end
 	addq $16, %rsp
-.L281_end:
+.L286_end:
 	addq $16, %rsp
 	leave
 	ret
@@ -16269,7 +16380,7 @@ deallocate_stack_space:
 	setg %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L282_end
+	jz .L287_end
 	subq $16, %rsp
 	leaq -4(%rbp), %rax
 	pushq %rax
@@ -16315,9 +16426,9 @@ deallocate_stack_space:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L282_end
+	jmp .L287_end
 	addq $16, %rsp
-.L282_end:
+.L287_end:
 	addq $16, %rsp
 	leave
 	ret
@@ -16331,7 +16442,7 @@ push_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L283_elseif_0
+	jz .L288_elseif_0
 	subq $16, %rsp
 	subq $12, %rsp
 	movl 24(%rbp), %eax
@@ -16348,7 +16459,7 @@ push_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L284_else
+	jz .L289_else
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -16369,9 +16480,9 @@ push_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L284_end
+	jmp .L289_end
 	addq $16, %rsp
-.L284_else:
+.L289_else:
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -16450,9 +16561,9 @@ push_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L284_end
+	jmp .L289_end
 	addq $16, %rsp
-.L284_end:
+.L289_end:
 	leaq .rsp_offset(%rip), %rax
 	pushq %rax
 	movl .rsp_offset(%rip), %eax
@@ -16469,16 +16580,16 @@ push_register:
 	subl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L283_end
+	jmp .L288_end
 	addq $16, %rsp
-.L283_elseif_0:
+.L288_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L283_end
+	jz .L288_end
 	movq 36(%rbp), %rax
 	pushq %rax
 	movq 28(%rbp), %rax
@@ -16526,8 +16637,8 @@ push_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L283_end
-.L283_end:
+	jmp .L288_end
+.L288_end:
 	leave
 	ret
 .globl pop_register
@@ -16540,7 +16651,7 @@ pop_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L285_elseif_0
+	jz .L290_elseif_0
 	subq $16, %rsp
 	subq $12, %rsp
 	movl 24(%rbp), %eax
@@ -16557,7 +16668,7 @@ pop_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L286_else
+	jz .L291_else
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -16578,9 +16689,9 @@ pop_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L286_end
+	jmp .L291_end
 	addq $16, %rsp
-.L286_else:
+.L291_else:
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -16659,9 +16770,9 @@ pop_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L286_end
+	jmp .L291_end
 	addq $16, %rsp
-.L286_end:
+.L291_end:
 	leaq .rsp_offset(%rip), %rax
 	pushq %rax
 	movl .rsp_offset(%rip), %eax
@@ -16678,16 +16789,16 @@ pop_register:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L285_end
+	jmp .L290_end
 	addq $16, %rsp
-.L285_elseif_0:
+.L290_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L285_end
+	jz .L290_end
 	movq 36(%rbp), %rax
 	pushq %rax
 	subq $12, %rsp
@@ -16735,8 +16846,8 @@ pop_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L285_end
-.L285_end:
+	jmp .L290_end
+.L290_end:
 	leave
 	ret
 .globl reserve_stack_space
@@ -16749,7 +16860,7 @@ reserve_stack_space:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L287_end
+	jz .L292_end
 	movq 20(%rbp), %rax
 	pushq %rax
 	movl 16(%rbp), %eax
@@ -16780,8 +16891,8 @@ reserve_stack_space:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L287_end
-.L287_end:
+	jmp .L292_end
+.L292_end:
 	leave
 	ret
 .globl free_stack_space
@@ -16794,7 +16905,7 @@ free_stack_space:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L288_end
+	jz .L293_end
 	movq 20(%rbp), %rax
 	pushq %rax
 	movl 16(%rbp), %eax
@@ -16825,8 +16936,8 @@ free_stack_space:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L288_end
-.L288_end:
+	jmp .L293_end
+.L293_end:
 	leave
 	ret
 .globl get_label_index
@@ -16862,16 +16973,16 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L289_end
+	jz .L294_end
 	subq $16, %rsp
 	leaq -12(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L289_end
+	jmp .L294_end
 	addq $16, %rsp
-.L289_end:
+.L294_end:
 	subq $3, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -16880,7 +16991,7 @@ compile_unary_expression:
 	pushq %rax
 	movq 20(%rbp), %rax
 	pushq %rax
-	movb .char_509(%rip), %al
+	movb .char_517(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl -12(%rbp), %eax
@@ -16911,7 +17022,7 @@ compile_unary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L290_end
+	jz .L295_end
 	subq $16, %rsp
 	subq $12, %rsp
 	movl -16(%rbp), %eax
@@ -16934,7 +17045,7 @@ compile_unary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L291_else
+	jz .L296_else
 	subq $16, %rsp
 	leaq -16(%rbp), %rax
 	pushq %rax
@@ -16948,22 +17059,22 @@ compile_unary_expression:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L291_end
+	jmp .L296_end
 	addq $16, %rsp
-.L291_else:
+.L296_else:
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_510(%rip), %rax
+	leaq .str_518(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L291_end
+	jmp .L296_end
 	addq $16, %rsp
-.L291_end:
-	jmp .L290_end
+.L296_end:
+	jmp .L295_end
 	addq $16, %rsp
-.L290_end:
+.L295_end:
 	movq -8(%rbp), %rax
 	movl (%rax), %eax
 	movl $7, %edx
@@ -16971,7 +17082,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L292_elseif_0
+	jz .L297_elseif_0
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -16979,17 +17090,17 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L293_end
+	jz .L298_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_511(%rip), %rax
+	leaq .str_519(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L293_end
+	jmp .L298_end
 	addq $16, %rsp
-.L293_end:
+.L298_end:
 	movq 36(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
@@ -17016,9 +17127,9 @@ compile_unary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L292_end
+	jmp .L297_end
 	addq $16, %rsp
-.L292_elseif_0:
+.L297_elseif_0:
 	movq -8(%rbp), %rax
 	movl (%rax), %eax
 	movl $6, %edx
@@ -17026,7 +17137,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L292_elseif_1
+	jz .L297_elseif_1
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -17034,20 +17145,20 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L294_end
+	jz .L299_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_512(%rip), %rax
+	leaq .str_520(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L294_end
+	jmp .L299_end
 	addq $16, %rsp
-.L294_end:
-	jmp .L292_end
+.L299_end:
+	jmp .L297_end
 	addq $16, %rsp
-.L292_elseif_1:
+.L297_elseif_1:
 	movq -8(%rbp), %rax
 	movl (%rax), %eax
 	movl $8, %edx
@@ -17055,7 +17166,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L292_elseif_2
+	jz .L297_elseif_2
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $1, %edx
@@ -17063,7 +17174,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L295_elseif_0
+	jz .L300_elseif_0
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -17119,16 +17230,16 @@ compile_unary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L295_end
+	jmp .L300_end
 	addq $16, %rsp
-.L295_elseif_0:
+.L300_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L295_end
+	jz .L300_end
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -17160,12 +17271,12 @@ compile_unary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L295_end
+	jmp .L300_end
 	addq $16, %rsp
-.L295_end:
-	jmp .L292_end
+.L300_end:
+	jmp .L297_end
 	addq $16, %rsp
-.L292_elseif_2:
+.L297_elseif_2:
 	movq -8(%rbp), %rax
 	movl (%rax), %eax
 	movl $11, %edx
@@ -17173,7 +17284,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L292_else
+	jz .L297_else
 	subq $16, %rsp
 	movl -16(%rbp), %eax
 	movl $4, %edx
@@ -17181,7 +17292,7 @@ compile_unary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L296_else
+	jz .L301_else
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -17213,9 +17324,9 @@ compile_unary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L296_end
+	jmp .L301_end
 	addq $16, %rsp
-.L296_else:
+.L301_else:
 	subq $16, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -17243,15 +17354,15 @@ compile_unary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L296_end
+	jmp .L301_end
 	addq $16, %rsp
-.L296_end:
-	jmp .L292_end
+.L301_end:
+	jmp .L297_end
 	addq $16, %rsp
-.L292_else:
+.L297_else:
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_513(%rip), %rax
+	leaq .str_521(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -8(%rbp), %rax
@@ -17278,7 +17389,7 @@ compile_unary_expression:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_514(%rip), %rdx
+	leaq .str_522(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -17291,7 +17402,7 @@ compile_unary_expression:
 	addq $8, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
-	leaq .str_515(%rip), %rax
+	leaq .str_523(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -8(%rbp), %rax
@@ -17318,7 +17429,7 @@ compile_unary_expression:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_516(%rip), %rdx
+	leaq .str_524(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -17329,9 +17440,9 @@ compile_unary_expression:
 	call add_to_text_buffer
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L292_end
+	jmp .L297_end
 	addq $16, %rsp
-.L292_end:
+.L297_end:
 	movl -16(%rbp), %eax
 	addq $16, %rsp
 	leave
@@ -17361,7 +17472,7 @@ compile_char_into_builder:
 	movl %eax, -8(%rbp)
 	movq 16(%rbp), %rax
 	pushq %rax
-	leaq .str_517(%rip), %rax
+	leaq .str_525(%rip), %rax
 	pushq %rax
 	call make_label
 	movq %rax, %rax
@@ -17417,7 +17528,7 @@ compile_string_into_builder:
 	movl %eax, -8(%rbp)
 	movq 16(%rbp), %rax
 	pushq %rax
-	leaq .str_518(%rip), %rax
+	leaq .str_526(%rip), %rax
 	pushq %rax
 	call make_label
 	movq %rax, %rax
@@ -17533,7 +17644,7 @@ compile_binary_expression:
 	pushq %rax
 	movq 16(%rbp), %rax
 	pushq %rax
-	movb .char_519(%rip), %al
+	movb .char_527(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -17550,7 +17661,7 @@ compile_binary_expression:
 	movl %eax, -21(%rbp)
 	movb -17(%rbp), %al
 	cmpb $0, %al
-	jz .L303_end
+	jz .L308_end
 	subq $32, %rsp
 	subq $4, %rsp
 	movq 32(%rbp), %rax
@@ -17590,9 +17701,9 @@ compile_binary_expression:
 	addq $4, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L303_end
+	jmp .L308_end
 	addq $32, %rsp
-.L303_end:
+.L308_end:
 	subq $3, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -17601,7 +17712,7 @@ compile_binary_expression:
 	pushq %rax
 	movq 16(%rbp), %rax
 	pushq %rax
-	movb .char_520(%rip), %al
+	movb .char_528(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -17618,7 +17729,7 @@ compile_binary_expression:
 	movl %eax, -25(%rbp)
 	movb -17(%rbp), %al
 	cmpb $0, %al
-	jz .L304_end
+	jz .L309_end
 	subq $32, %rsp
 	subq $4, %rsp
 	movq 32(%rbp), %rax
@@ -17658,9 +17769,9 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L304_end
+	jmp .L309_end
 	addq $32, %rsp
-.L304_end:
+.L309_end:
 	subq $12, %rsp
 	movl -25(%rbp), %eax
 	subq $4, %rsp
@@ -17752,7 +17863,7 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L305_elseif_0
+	jz .L310_elseif_0
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -17790,7 +17901,7 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L306_else
+	jz .L311_else
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -17798,9 +17909,9 @@ compile_binary_expression:
 	call compile_char_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L306_end
+	jmp .L311_end
 	addq $48, %rsp
-.L306_else:
+.L311_else:
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -17808,9 +17919,9 @@ compile_binary_expression:
 	call compile_string_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L306_end
+	jmp .L311_end
 	addq $48, %rsp
-.L306_end:
+.L311_end:
 	movq 32(%rbp), %rax
 	pushq %rax
 	movl $15, %eax
@@ -17845,9 +17956,9 @@ compile_binary_expression:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L305_end
+	jmp .L310_end
 	addq $48, %rsp
-.L305_elseif_0:
+.L310_elseif_0:
 	movl -12(%rbp), %eax
 	movl $6, %edx
 	cmpl %edx, %eax
@@ -17860,7 +17971,7 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L305_end
+	jz .L310_end
 	subq $48, %rsp
 	subq $4, %rsp
 	movq 32(%rbp), %rax
@@ -17960,7 +18071,7 @@ compile_binary_expression:
 	addq $4, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_521(%rip), %rax
+	leaq .str_529(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -18105,7 +18216,7 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L307_else
+	jz .L312_else
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -18113,9 +18224,9 @@ compile_binary_expression:
 	call compile_char_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L307_end
+	jmp .L312_end
 	addq $48, %rsp
-.L307_else:
+.L312_else:
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -18123,9 +18234,9 @@ compile_binary_expression:
 	call compile_string_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L307_end
+	jmp .L312_end
 	addq $48, %rsp
-.L307_end:
+.L312_end:
 	subq $4, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18160,7 +18271,7 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L308_else
+	jz .L313_else
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -18168,9 +18279,9 @@ compile_binary_expression:
 	call compile_char_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L308_end
+	jmp .L313_end
 	addq $48, %rsp
-.L308_else:
+.L313_else:
 	subq $48, %rsp
 	subq $8, %rsp
 	movq 32(%rbp), %rax
@@ -18178,9 +18289,9 @@ compile_binary_expression:
 	call compile_string_into_builder
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L308_end
+	jmp .L313_end
 	addq $48, %rsp
-.L308_end:
+.L313_end:
 	movq 32(%rbp), %rax
 	pushq %rax
 	movl $15, %eax
@@ -18225,9 +18336,9 @@ compile_binary_expression:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L305_end
+	jmp .L310_end
 	addq $48, %rsp
-.L305_end:
+.L310_end:
 	movl -12(%rbp), %eax
 	movl $32, %edx
 	cmpl %edx, %eax
@@ -18293,7 +18404,7 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L309_end
+	jz .L314_end
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18369,7 +18480,7 @@ compile_binary_expression:
 	movl %eax, -39(%rbp)
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_522(%rip), %rax
+	leaq .str_530(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -18426,7 +18537,7 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L310_elseif_0
+	jz .L315_elseif_0
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18454,16 +18565,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L310_end
+	jmp .L315_end
 	addq $48, %rsp
-.L310_elseif_0:
+.L315_elseif_0:
 	movl -12(%rbp), %eax
 	movl $33, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L310_else
+	jz .L315_else
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18491,12 +18602,12 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L310_end
+	jmp .L315_end
 	addq $48, %rsp
-.L310_else:
+.L315_else:
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_523(%rip), %rax
+	leaq .str_531(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -18522,7 +18633,7 @@ compile_binary_expression:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_524(%rip), %rdx
+	leaq .str_532(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -18533,9 +18644,9 @@ compile_binary_expression:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L310_end
+	jmp .L315_end
 	addq $48, %rsp
-.L310_end:
+.L315_end:
 	subq $4, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18550,9 +18661,9 @@ compile_binary_expression:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L309_end
+	jmp .L314_end
 	addq $48, %rsp
-.L309_end:
+.L314_end:
 	leaq -21(%rbp), %rax
 	pushq %rax
 	subq $4, %rsp
@@ -18583,7 +18694,7 @@ compile_binary_expression:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L314_end
+	jz .L319_end
 	subq $48, %rsp
 	movl -21(%rbp), %eax
 	movl $3, %edx
@@ -18636,7 +18747,7 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L315_elseif_0
+	jz .L320_elseif_0
 	subq $48, %rsp
 	subq $12, %rsp
 	movl -21(%rbp), %eax
@@ -18662,7 +18773,7 @@ compile_binary_expression:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L316_elseif_0
+	jz .L321_elseif_0
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18714,16 +18825,16 @@ compile_binary_expression:
 	movl -25(%rbp), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L316_end
+	jmp .L321_end
 	addq $48, %rsp
-.L316_elseif_0:
+.L321_elseif_0:
 	movl -43(%rbp), %eax
 	movl -39(%rbp), %edx
 	cmpl %edx, %eax
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L316_end
+	jz .L321_end
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18775,12 +18886,12 @@ compile_binary_expression:
 	movl -21(%rbp), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L316_end
+	jmp .L321_end
 	addq $48, %rsp
-.L316_end:
-	jmp .L315_end
+.L321_end:
+	jmp .L320_end
 	addq $48, %rsp
-.L315_elseif_0:
+.L320_elseif_0:
 	subq $12, %rsp
 	movl -21(%rbp), %eax
 	subq $4, %rsp
@@ -18820,7 +18931,7 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L315_else
+	jz .L320_else
 	subq $48, %rsp
 	leaq -21(%rbp), %rax
 	pushq %rax
@@ -18832,22 +18943,22 @@ compile_binary_expression:
 	movl $8, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L315_end
+	jmp .L320_end
 	addq $48, %rsp
-.L315_else:
+.L320_else:
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_525(%rip), %rax
+	leaq .str_533(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L315_end
+	jmp .L320_end
 	addq $48, %rsp
-.L315_end:
-	jmp .L314_end
+.L320_end:
+	jmp .L319_end
 	addq $48, %rsp
-.L314_end:
+.L319_end:
 	movl -21(%rbp), %eax
 	movl %eax, -39(%rbp)
 	movl -12(%rbp), %eax
@@ -18856,7 +18967,7 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_0
+	jz .L322_elseif_0
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18888,16 +18999,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_0:
+.L322_elseif_0:
 	movl -12(%rbp), %eax
 	movl $7, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_1
+	jz .L322_elseif_1
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18929,16 +19040,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_1:
+.L322_elseif_1:
 	movl -12(%rbp), %eax
 	movl $8, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_2
+	jz .L322_elseif_2
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -18970,16 +19081,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_2:
+.L322_elseif_2:
 	movl -12(%rbp), %eax
 	movl $9, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_3
+	jz .L322_elseif_3
 	subq $48, %rsp
 	movl -39(%rbp), %eax
 	movl $1, %edx
@@ -18996,17 +19107,17 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L318_end
+	jz .L323_end
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_526(%rip), %rax
+	leaq .str_534(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L318_end
+	jmp .L323_end
 	addq $48, %rsp
-.L318_end:
+.L323_end:
 	subq $12, %rsp
 	movl -39(%rbp), %eax
 	subq $4, %rsp
@@ -19020,11 +19131,11 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L319_elseif_0
+	jz .L324_elseif_0
 	subq $48, %rsp
-	jmp .L319_end
+	jmp .L324_end
 	addq $48, %rsp
-.L319_elseif_0:
+.L324_elseif_0:
 	subq $12, %rsp
 	movl -39(%rbp), %eax
 	subq $4, %rsp
@@ -19038,11 +19149,11 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L319_end
+	jz .L324_end
 	subq $48, %rsp
-	jmp .L319_end
+	jmp .L324_end
 	addq $48, %rsp
-.L319_end:
+.L324_end:
 	movq 32(%rbp), %rax
 	pushq %rax
 	movl $3, %eax
@@ -19073,16 +19184,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_3:
+.L322_elseif_3:
 	movl -12(%rbp), %eax
 	movl $10, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_4
+	jz .L322_elseif_4
 	subq $48, %rsp
 	movl -39(%rbp), %eax
 	movl $1, %edx
@@ -19099,17 +19210,17 @@ compile_binary_expression:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L320_end
+	jz .L325_end
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_527(%rip), %rax
+	leaq .str_535(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L320_end
+	jmp .L325_end
 	addq $48, %rsp
-.L320_end:
+.L325_end:
 	subq $12, %rsp
 	movl -39(%rbp), %eax
 	subq $4, %rsp
@@ -19123,11 +19234,11 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L321_elseif_0
+	jz .L326_elseif_0
 	subq $48, %rsp
-	jmp .L321_end
+	jmp .L326_end
 	addq $48, %rsp
-.L321_elseif_0:
+.L326_elseif_0:
 	subq $12, %rsp
 	movl -39(%rbp), %eax
 	subq $4, %rsp
@@ -19141,11 +19252,11 @@ compile_binary_expression:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L321_end
+	jz .L326_end
 	subq $48, %rsp
-	jmp .L321_end
+	jmp .L326_end
 	addq $48, %rsp
-.L321_end:
+.L326_end:
 	movq 32(%rbp), %rax
 	pushq %rax
 	movl $3, %eax
@@ -19176,16 +19287,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_4:
+.L322_elseif_4:
 	movl -12(%rbp), %eax
 	movl $34, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_5
+	jz .L322_elseif_5
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19217,16 +19328,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_5:
+.L322_elseif_5:
 	movl -12(%rbp), %eax
 	movl $35, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_6
+	jz .L322_elseif_6
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19258,16 +19369,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_6:
+.L322_elseif_6:
 	movl -12(%rbp), %eax
 	movl $36, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_7
+	jz .L322_elseif_7
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19299,16 +19410,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_7:
+.L322_elseif_7:
 	movl -12(%rbp), %eax
 	movl $37, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_8
+	jz .L322_elseif_8
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19340,16 +19451,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_8:
+.L322_elseif_8:
 	movl -12(%rbp), %eax
 	movl $32, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_9
+	jz .L322_elseif_9
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19381,16 +19492,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_9:
+.L322_elseif_9:
 	movl -12(%rbp), %eax
 	movl $33, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_10
+	jz .L322_elseif_10
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19422,9 +19533,9 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_10:
+.L322_elseif_10:
 	movl -12(%rbp), %eax
 	movl $38, %edx
 	cmpl %edx, %eax
@@ -19440,7 +19551,7 @@ compile_binary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_11
+	jz .L322_elseif_11
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19472,9 +19583,9 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_11:
+.L322_elseif_11:
 	movl -12(%rbp), %eax
 	movl $39, %edx
 	cmpl %edx, %eax
@@ -19490,7 +19601,7 @@ compile_binary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_12
+	jz .L322_elseif_12
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19522,9 +19633,9 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_12:
+.L322_elseif_12:
 	movl -12(%rbp), %eax
 	movl $40, %edx
 	cmpl %edx, %eax
@@ -19540,7 +19651,7 @@ compile_binary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_13
+	jz .L322_elseif_13
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19572,16 +19683,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_13:
+.L322_elseif_13:
 	movl -12(%rbp), %eax
 	movl $44, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_elseif_14
+	jz .L322_elseif_14
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19613,16 +19724,16 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_elseif_14:
+.L322_elseif_14:
 	movl -12(%rbp), %eax
 	movl $45, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L317_else
+	jz .L322_else
 	subq $48, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -19654,12 +19765,12 @@ compile_binary_expression:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_else:
+.L322_else:
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_528(%rip), %rax
+	leaq .str_536(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -19685,7 +19796,7 @@ compile_binary_expression:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_529(%rip), %rdx
+	leaq .str_537(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -19696,9 +19807,9 @@ compile_binary_expression:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L317_end
+	jmp .L322_end
 	addq $48, %rsp
-.L317_end:
+.L322_end:
 	movl -12(%rbp), %eax
 	movl $6, %edx
 	cmpl %edx, %eax
@@ -19786,15 +19897,15 @@ compile_binary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L325_elseif_0
+	jz .L330_elseif_0
 	subq $48, %rsp
 	movl -39(%rbp), %eax
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L325_end
+	jmp .L330_end
 	addq $48, %rsp
-.L325_elseif_0:
+.L330_elseif_0:
 	movl -12(%rbp), %eax
 	movl $34, %edx
 	cmpl %edx, %eax
@@ -19873,18 +19984,18 @@ compile_binary_expression:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L325_else
+	jz .L330_else
 	subq $48, %rsp
 	movl $4, %eax
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L325_end
+	jmp .L330_end
 	addq $48, %rsp
-.L325_else:
+.L330_else:
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_530(%rip), %rax
+	leaq .str_538(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -19910,7 +20021,7 @@ compile_binary_expression:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_531(%rip), %rdx
+	leaq .str_539(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -19921,9 +20032,9 @@ compile_binary_expression:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L325_end
+	jmp .L330_end
 	addq $48, %rsp
-.L325_end:
+.L330_end:
 	addq $48, %rsp
 	leave
 	ret
@@ -19941,40 +20052,40 @@ compile_function_call:
 	movl $0, %eax
 	movl %eax, -20(%rbp)
 	movb 20(%rbp), %al
-	movb .char_532(%rip), %dl
+	movb .char_540(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L329_elseif_0
+	jz .L334_elseif_0
 	subq $32, %rsp
 	leaq -20(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L329_end
+	jmp .L334_end
 	addq $32, %rsp
-.L329_elseif_0:
+.L334_elseif_0:
 	movb 20(%rbp), %al
-	movb .char_533(%rip), %dl
+	movb .char_541(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L329_else
+	jz .L334_else
 	subq $32, %rsp
 	leaq -20(%rbp), %rax
 	pushq %rax
 	movl $3, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L329_end
+	jmp .L334_end
 	addq $32, %rsp
-.L329_else:
+.L334_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_534(%rip), %rax
+	leaq .str_542(%rip), %rax
 	movb 20(%rbp), %dl
 	pushq %rdx
 	pushq %rax
@@ -19991,7 +20102,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_535(%rip), %rdx
+	leaq .str_543(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -20002,11 +20113,11 @@ compile_function_call:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L329_end
+	jmp .L334_end
 	addq $32, %rsp
-.L329_end:
+.L334_end:
 	movq -16(%rbp), %rax
-	leaq .str_536(%rip), %rdx
+	leaq .str_544(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -20014,7 +20125,7 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L333_elseif_0
+	jz .L338_elseif_0
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -20022,17 +20133,17 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L334_end
+	jz .L339_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_537(%rip), %rax
+	leaq .str_545(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L334_end
+	jmp .L339_end
 	addq $32, %rsp
-.L334_end:
+.L339_end:
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movl 8(%rax), %eax
@@ -20041,17 +20152,17 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L335_end
+	jz .L340_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_538(%rip), %rax
+	leaq .str_546(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L335_end
+	jmp .L340_end
 	addq $32, %rsp
-.L335_end:
+.L340_end:
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movq (%rax), %rax
@@ -20068,7 +20179,7 @@ compile_function_call:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_539(%rip), %al
+	movb .char_547(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -20107,7 +20218,7 @@ compile_function_call:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L336_elseif_0
+	jz .L341_elseif_0
 	subq $48, %rsp
 	subq $4, %rsp
 	movq 29(%rbp), %rax
@@ -20153,7 +20264,7 @@ compile_function_call:
 	addq $4, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
-	leaq .str_540(%rip), %rax
+	leaq .str_548(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -20218,9 +20329,9 @@ compile_function_call:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L336_end
+	jmp .L341_end
 	addq $48, %rsp
-.L336_elseif_0:
+.L341_elseif_0:
 	subq $12, %rsp
 	movl -32(%rbp), %eax
 	subq $4, %rsp
@@ -20230,7 +20341,7 @@ compile_function_call:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L336_else
+	jz .L341_else
 	subq $32, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -20290,24 +20401,24 @@ compile_function_call:
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L336_end
+	jmp .L341_end
 	addq $32, %rsp
-.L336_else:
+.L341_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_541(%rip), %rax
+	leaq .str_549(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L336_end
+	jmp .L341_end
 	addq $32, %rsp
-.L336_end:
-	jmp .L333_end
+.L341_end:
+	jmp .L338_end
 	addq $32, %rsp
-.L333_elseif_0:
+.L338_elseif_0:
 	movq -16(%rbp), %rax
-	leaq .str_542(%rip), %rdx
+	leaq .str_550(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -20315,7 +20426,7 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L333_elseif_1
+	jz .L338_elseif_1
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -20323,17 +20434,17 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L337_end
+	jz .L342_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_543(%rip), %rax
+	leaq .str_551(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L337_end
+	jmp .L342_end
 	addq $32, %rsp
-.L337_end:
+.L342_end:
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movl 8(%rax), %eax
@@ -20342,17 +20453,17 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L338_end
+	jz .L343_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_544(%rip), %rax
+	leaq .str_552(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L338_end
+	jmp .L343_end
 	addq $32, %rsp
-.L338_end:
+.L343_end:
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movq (%rax), %rax
@@ -20369,7 +20480,7 @@ compile_function_call:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_545(%rip), %al
+	movb .char_553(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -20393,7 +20504,7 @@ compile_function_call:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L339_else
+	jz .L344_else
 	subq $32, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -20453,24 +20564,24 @@ compile_function_call:
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L339_end
+	jmp .L344_end
 	addq $32, %rsp
-.L339_else:
+.L344_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_546(%rip), %rax
+	leaq .str_554(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L339_end
+	jmp .L344_end
 	addq $32, %rsp
-.L339_end:
-	jmp .L333_end
+.L344_end:
+	jmp .L338_end
 	addq $32, %rsp
-.L333_elseif_1:
+.L338_elseif_1:
 	movq -16(%rbp), %rax
-	leaq .str_547(%rip), %rdx
+	leaq .str_555(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -20478,7 +20589,7 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L333_else
+	jz .L338_else
 	subq $48, %rsp
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
@@ -20488,10 +20599,10 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L340_end
+	jz .L345_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_548(%rip), %rax
+	leaq .str_556(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -8(%rbp), %rax
@@ -20519,7 +20630,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_549(%rip), %rdx
+	leaq .str_557(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -20530,9 +20641,9 @@ compile_function_call:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L340_end
+	jmp .L345_end
 	addq $32, %rsp
-.L340_end:
+.L345_end:
 	subq $4, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -20559,7 +20670,7 @@ compile_function_call:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_550(%rip), %al
+	movb .char_558(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -20626,7 +20737,7 @@ compile_function_call:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_551(%rip), %al
+	movb .char_559(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -20697,11 +20808,11 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L344_elseif_0
+	jz .L349_elseif_0
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
-	leaq .str_552(%rip), %rax
+	leaq .str_560(%rip), %rax
 	pushq %rax
 	call make_label
 	movq %rax, %rax
@@ -20722,20 +20833,20 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L344_end
+	jmp .L349_end
 	addq $48, %rsp
-.L344_elseif_0:
+.L349_elseif_0:
 	movl -40(%rbp), %eax
 	movl $4, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L344_elseif_1
+	jz .L349_elseif_1
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
-	leaq .str_553(%rip), %rax
+	leaq .str_561(%rip), %rax
 	pushq %rax
 	call make_label
 	movq %rax, %rax
@@ -20756,20 +20867,20 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L344_end
+	jmp .L349_end
 	addq $48, %rsp
-.L344_elseif_1:
+.L349_elseif_1:
 	movl -40(%rbp), %eax
 	movl $8, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L344_end
+	jz .L349_end
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
-	leaq .str_554(%rip), %rax
+	leaq .str_562(%rip), %rax
 	pushq %rax
 	call make_label
 	movq %rax, %rax
@@ -20790,16 +20901,16 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L344_end
+	jmp .L349_end
 	addq $48, %rsp
-.L344_end:
+.L349_end:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L345_end
+	jz .L350_end
 	subq $48, %rsp
 	leaq -32(%rbp), %rax
 	pushq %rax
@@ -20813,16 +20924,16 @@ compile_function_call:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L345_end
+	jmp .L350_end
 	addq $48, %rsp
-.L345_end:
+.L350_end:
 	movl 16(%rbp), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L346_elseif_0
+	jz .L351_elseif_0
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -20878,16 +20989,16 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L346_end
+	jmp .L351_end
 	addq $48, %rsp
-.L346_elseif_0:
+.L351_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L346_end
+	jz .L351_end
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -20919,9 +21030,9 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L346_end
+	jmp .L351_end
 	addq $48, %rsp
-.L346_end:
+.L351_end:
 	movq 29(%rbp), %rax
 	pushq %rax
 	movl $1, %eax
@@ -20988,9 +21099,9 @@ compile_function_call:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L333_end
+	jmp .L338_end
 	addq $48, %rsp
-.L333_else:
+.L338_else:
 	subq $48, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -20998,17 +21109,17 @@ compile_function_call:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L347_end
+	jz .L352_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_555(%rip), %rax
+	leaq .str_563(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L347_end
+	jmp .L352_end
 	addq $32, %rsp
-.L347_end:
+.L352_end:
 	movq .function_registry(%rip), %rax
 	pushq %rax
 	movq -16(%rbp), %rax
@@ -21030,10 +21141,10 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L348_end
+	jz .L353_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_556(%rip), %rax
+	leaq .str_564(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -28(%rbp), %rax
@@ -21061,7 +21172,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_557(%rip), %rdx
+	leaq .str_565(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -21095,7 +21206,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_558(%rip), %rdx
+	leaq .str_566(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -21106,15 +21217,15 @@ compile_function_call:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L348_end
+	jmp .L353_end
 	addq $32, %rsp
-.L348_end:
+.L353_end:
 	movl $0, %eax
 	movl %eax, -32(%rbp)
 	subq $48, %rsp
 	movl $0, %eax
 	movl %eax, -36(%rbp)
-.L355_for_start:
+.L360_for_start:
 	movl -36(%rbp), %eax
 	pushq %rax
 	movq -28(%rbp), %rax
@@ -21125,7 +21236,7 @@ compile_function_call:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L355_for_end
+	jz .L360_for_end
 	leaq -32(%rbp), %rax
 	pushq %rax
 	movl -32(%rbp), %eax
@@ -21150,7 +21261,7 @@ compile_function_call:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-.L355_for_inc:
+.L360_for_inc:
 	leaq -36(%rbp), %rax
 	pushq %rax
 	movl -36(%rbp), %eax
@@ -21158,8 +21269,8 @@ compile_function_call:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L355_for_start
-.L355_for_end:
+	jmp .L360_for_start
+.L360_for_end:
 	addq $48, %rsp
 	subq $4, %rsp
 	movq 29(%rbp), %rax
@@ -21202,7 +21313,7 @@ compile_function_call:
 	subq $80, %rsp
 	movl $0, %eax
 	movl %eax, -48(%rbp)
-.L356_for_start:
+.L361_for_start:
 	movl -48(%rbp), %eax
 	pushq %rax
 	movq -8(%rbp), %rax
@@ -21213,7 +21324,7 @@ compile_function_call:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L356_for_end
+	jz .L361_for_end
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movq (%rax), %rax
@@ -21230,7 +21341,7 @@ compile_function_call:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_559(%rip), %al
+	movb .char_567(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -21286,10 +21397,10 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L357_end
+	jz .L362_end
 	subq $80, %rsp
 	subq $8, %rsp
-	leaq .str_560(%rip), %rax
+	leaq .str_568(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -28(%rbp), %rax
@@ -21323,7 +21434,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_561(%rip), %rdx
+	leaq .str_569(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -21355,7 +21466,7 @@ compile_function_call:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_562(%rip), %rdx
+	leaq .str_570(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -21366,9 +21477,9 @@ compile_function_call:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L357_end
+	jmp .L362_end
 	addq $80, %rsp
-.L357_end:
+.L362_end:
 	leaq -44(%rbp), %rax
 	pushq %rax
 	movl -44(%rbp), %eax
@@ -21407,7 +21518,7 @@ compile_function_call:
 	addq $4, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-.L356_for_inc:
+.L361_for_inc:
 	leaq -48(%rbp), %rax
 	pushq %rax
 	movl -48(%rbp), %eax
@@ -21415,8 +21526,8 @@ compile_function_call:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L356_for_start
-.L356_for_end:
+	jmp .L361_for_start
+.L361_for_end:
 	addq $80, %rsp
 	movq -28(%rbp), %rax
 	movl 16(%rax), %eax
@@ -21450,7 +21561,7 @@ compile_function_call:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L364_end
+	jz .L369_end
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -21482,21 +21593,21 @@ compile_function_call:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L364_end
+	jmp .L369_end
 	addq $48, %rsp
-.L364_end:
+.L369_end:
 	movl .current_target(%rip), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L365_end
+	jz .L370_end
 	subq $48, %rsp
 	subq $64, %rsp
 	movl $0, %eax
 	movl %eax, -52(%rbp)
-.L366_for_start:
+.L371_for_start:
 	movl -52(%rbp), %eax
 	pushq %rax
 	movq -28(%rbp), %rax
@@ -21507,7 +21618,7 @@ compile_function_call:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L366_for_end
+	jz .L371_for_end
 	subq $12, %rsp
 	movq -28(%rbp), %rax
 	movq 8(%rax), %rax
@@ -21562,7 +21673,7 @@ compile_function_call:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-.L366_for_inc:
+.L371_for_inc:
 	leaq -52(%rbp), %rax
 	pushq %rax
 	movl -52(%rbp), %eax
@@ -21570,12 +21681,12 @@ compile_function_call:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L366_for_start
-.L366_for_end:
+	jmp .L371_for_start
+.L371_for_end:
 	addq $64, %rsp
-	jmp .L365_end
+	jmp .L370_end
 	addq $48, %rsp
-.L365_end:
+.L370_end:
 	subq $4, %rsp
 	movq 29(%rbp), %rax
 	pushq %rax
@@ -21600,9 +21711,9 @@ compile_function_call:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L333_end
+	jmp .L338_end
 	addq $48, %rsp
-.L333_end:
+.L338_end:
 	addq $32, %rsp
 	leave
 	ret
@@ -21614,56 +21725,56 @@ compile_expression_into_register:
 	movl $0, %eax
 	movl %eax, -4(%rbp)
 	movb 20(%rbp), %al
-	movb .char_563(%rip), %dl
+	movb .char_571(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L367_elseif_0
+	jz .L372_elseif_0
 	subq $16, %rsp
 	leaq -4(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L367_end
+	jmp .L372_end
 	addq $16, %rsp
-.L367_elseif_0:
+.L372_elseif_0:
 	movb 20(%rbp), %al
-	movb .char_564(%rip), %dl
+	movb .char_572(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L367_elseif_1
+	jz .L372_elseif_1
 	subq $16, %rsp
 	leaq -4(%rbp), %rax
 	pushq %rax
 	movl $1, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L367_end
+	jmp .L372_end
 	addq $16, %rsp
-.L367_elseif_1:
+.L372_elseif_1:
 	movb 20(%rbp), %al
-	movb .char_565(%rip), %dl
+	movb .char_573(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L367_else
+	jz .L372_else
 	subq $16, %rsp
 	leaq -4(%rbp), %rax
 	pushq %rax
 	movl $3, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L367_end
+	jmp .L372_end
 	addq $16, %rsp
-.L367_else:
+.L372_else:
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_566(%rip), %rax
+	leaq .str_574(%rip), %rax
 	movb 20(%rbp), %dl
 	pushq %rdx
 	pushq %rax
@@ -21680,7 +21791,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_567(%rip), %rdx
+	leaq .str_575(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -21691,9 +21802,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L367_end
+	jmp .L372_end
 	addq $16, %rsp
-.L367_end:
+.L372_end:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $1, %edx
@@ -21701,7 +21812,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_0
+	jz .L376_elseif_0
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -21709,17 +21820,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L372_end
+	jz .L377_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_568(%rip), %rax
+	leaq .str_576(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L372_end
+	jmp .L377_end
 	addq $16, %rsp
-.L372_end:
+.L377_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movq 29(%rbp), %rax
@@ -21756,9 +21867,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_0:
+.L376_elseif_0:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $2, %edx
@@ -21766,7 +21877,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_1
+	jz .L376_elseif_1
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -21774,17 +21885,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L373_end
+	jz .L378_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_569(%rip), %rax
+	leaq .str_577(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L373_end
+	jmp .L378_end
 	addq $16, %rsp
-.L373_end:
+.L378_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movq 29(%rbp), %rax
@@ -21820,9 +21931,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_1:
+.L376_elseif_1:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $17, %edx
@@ -21830,7 +21941,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_2
+	jz .L376_elseif_2
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -21838,17 +21949,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L374_end
+	jz .L379_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_570(%rip), %rax
+	leaq .str_578(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L374_end
+	jmp .L379_end
 	addq $16, %rsp
-.L374_end:
+.L379_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movl $1, %eax
@@ -21883,9 +21994,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_2:
+.L376_elseif_2:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $18, %edx
@@ -21893,7 +22004,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_3
+	jz .L376_elseif_3
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -21901,17 +22012,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L375_end
+	jz .L380_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_571(%rip), %rax
+	leaq .str_579(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L375_end
+	jmp .L380_end
 	addq $16, %rsp
-.L375_end:
+.L380_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
@@ -21946,9 +22057,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_3:
+.L376_elseif_3:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $3, %edx
@@ -21956,7 +22067,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_4
+	jz .L376_elseif_4
 	subq $32, %rsp
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
@@ -21973,7 +22084,7 @@ compile_expression_into_register:
 	movq %rax, -20(%rbp)
 	movq -20(%rbp), %rax
 	cmpq $0, %rax
-	jz .L376_else
+	jz .L381_else
 	subq $32, %rsp
 	movq -20(%rbp), %rax
 	movl 12(%rax), %eax
@@ -21984,7 +22095,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L377_end
+	jz .L382_end
 	subq $32, %rsp
 	leaq -24(%rbp), %rax
 	pushq %rax
@@ -21998,16 +22109,16 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L377_end
+	jmp .L382_end
 	addq $32, %rsp
-.L377_end:
+.L382_end:
 	movl 16(%rbp), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L378_elseif_0
+	jz .L383_elseif_0
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -22064,16 +22175,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L378_end
+	jmp .L383_end
 	addq $32, %rsp
-.L378_elseif_0:
+.L383_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L378_end
+	jz .L383_end
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -22130,16 +22241,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L378_end
+	jmp .L383_end
 	addq $32, %rsp
-.L378_end:
+.L383_end:
 	movl -24(%rbp), %eax
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L376_end
+	jmp .L381_end
 	addq $32, %rsp
-.L376_else:
+.L381_else:
 	subq $32, %rsp
 	movq .global_scope(%rip), %rax
 	pushq %rax
@@ -22154,7 +22265,7 @@ compile_expression_into_register:
 	movl %eax, -32(%rbp)
 	movq -28(%rbp), %rax
 	cmpq $0, %rax
-	jz .L379_else
+	jz .L384_else
 	subq $32, %rsp
 	leaq -32(%rbp), %rax
 	pushq %rax
@@ -22168,7 +22279,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L380_end
+	jz .L385_end
 	subq $32, %rsp
 	leaq -32(%rbp), %rax
 	pushq %rax
@@ -22182,16 +22293,16 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L380_end
+	jmp .L385_end
 	addq $32, %rsp
-.L380_end:
+.L385_end:
 	movl 16(%rbp), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L381_elseif_0
+	jz .L386_elseif_0
 	subq $32, %rsp
 	subq $12, %rsp
 	movl -32(%rbp), %eax
@@ -22202,7 +22313,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L382_else
+	jz .L387_else
 	subq $32, %rsp
 	leaq -32(%rbp), %rax
 	pushq %rax
@@ -22223,25 +22334,25 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L383_elseif_0
+	jz .L388_elseif_0
 	subq $32, %rsp
-	jmp .L383_end
+	jmp .L388_end
 	addq $32, %rsp
-.L383_elseif_0:
+.L388_elseif_0:
 	movl -32(%rbp), %eax
 	movl $2, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L383_else
+	jz .L388_else
 	subq $32, %rsp
-	jmp .L383_end
+	jmp .L388_end
 	addq $32, %rsp
-.L383_else:
+.L388_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_572(%rip), %rax
+	leaq .str_580(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -32(%rbp), %eax
@@ -22267,7 +22378,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_573(%rip), %rdx
+	leaq .str_581(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -22278,9 +22389,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L383_end
+	jmp .L388_end
 	addq $32, %rsp
-.L383_end:
+.L388_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movq -28(%rbp), %rax
@@ -22314,9 +22425,9 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L382_end
+	jmp .L387_end
 	addq $32, %rsp
-.L382_else:
+.L387_else:
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -22348,19 +22459,19 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L382_end
+	jmp .L387_end
 	addq $32, %rsp
-.L382_end:
-	jmp .L381_end
+.L387_end:
+	jmp .L386_end
 	addq $32, %rsp
-.L381_elseif_0:
+.L386_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L381_end
+	jz .L386_end
 	subq $32, %rsp
 	subq $12, %rsp
 	movl -32(%rbp), %eax
@@ -22371,17 +22482,17 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L387_end
+	jz .L392_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_574(%rip), %rax
+	leaq .str_582(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L387_end
+	jmp .L392_end
 	addq $32, %rsp
-.L387_end:
+.L392_end:
 	movq 37(%rbp), %rax
 	pushq %rax
 	movq -28(%rbp), %rax
@@ -22412,15 +22523,15 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L381_end
+	jmp .L386_end
 	addq $32, %rsp
-.L381_end:
-	jmp .L379_end
+.L386_end:
+	jmp .L384_end
 	addq $32, %rsp
-.L379_else:
+.L384_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_575(%rip), %rax
+	leaq .str_583(%rip), %rax
 	movq -12(%rbp), %rdx
 	pushq %rdx
 	pushq %rax
@@ -22437,7 +22548,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_576(%rip), %rdx
+	leaq .str_584(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -22448,19 +22559,19 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L379_end
+	jmp .L384_end
 	addq $32, %rsp
-.L379_end:
+.L384_end:
 	movl -32(%rbp), %eax
 	addq $32, %rsp
 	leave
 	ret
+	jmp .L381_end
+	addq $32, %rsp
+.L381_end:
 	jmp .L376_end
 	addq $32, %rsp
-.L376_end:
-	jmp .L371_end
-	addq $32, %rsp
-.L371_elseif_4:
+.L376_elseif_4:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $5, %edx
@@ -22468,7 +22579,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_5
+	jz .L376_elseif_5
 	subq $16, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -22476,17 +22587,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L391_end
+	jz .L396_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_577(%rip), %rax
+	leaq .str_585(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L391_end
+	jmp .L396_end
 	addq $16, %rsp
-.L391_end:
+.L396_end:
 	subq $8, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -22535,9 +22646,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_5:
+.L376_elseif_5:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $6, %edx
@@ -22545,7 +22656,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_6
+	jz .L376_elseif_6
 	subq $16, %rsp
 	subq $4, %rsp
 	movq 37(%rbp), %rax
@@ -22599,9 +22710,9 @@ compile_expression_into_register:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_6:
+.L376_elseif_6:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $8, %edx
@@ -22609,7 +22720,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_7
+	jz .L376_elseif_7
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -22617,17 +22728,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L392_end
+	jz .L397_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_578(%rip), %rax
+	leaq .str_586(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L392_end
+	jmp .L397_end
 	addq $16, %rsp
-.L392_end:
+.L397_end:
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
 	movq (%rax), %rax
@@ -22676,9 +22787,9 @@ compile_expression_into_register:
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $32, %rsp
-.L371_elseif_7:
+.L376_elseif_7:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $10, %edx
@@ -22686,7 +22797,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_8
+	jz .L376_elseif_8
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -22694,17 +22805,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L393_end
+	jz .L398_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_579(%rip), %rax
+	leaq .str_587(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L393_end
+	jmp .L398_end
 	addq $16, %rsp
-.L393_end:
+.L398_end:
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
 	movq (%rax), %rax
@@ -22753,9 +22864,9 @@ compile_expression_into_register:
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $32, %rsp
-.L371_elseif_8:
+.L376_elseif_8:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $4, %edx
@@ -22763,7 +22874,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_9
+	jz .L376_elseif_9
 	subq $16, %rsp
 	subq $3, %rsp
 	movq 29(%rbp), %rax
@@ -22793,24 +22904,24 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L394_end
+	jz .L399_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_580(%rip), %rax
+	leaq .str_588(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L394_end
+	jmp .L399_end
 	addq $16, %rsp
-.L394_end:
+.L399_end:
 	movl -8(%rbp), %eax
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_9:
+.L376_elseif_9:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $11, %edx
@@ -22818,7 +22929,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_10
+	jz .L376_elseif_10
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $0, %edx
@@ -22826,17 +22937,17 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L395_end
+	jz .L400_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_581(%rip), %rax
+	leaq .str_589(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L395_end
+	jmp .L400_end
 	addq $16, %rsp
-.L395_end:
+.L400_end:
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
 	movq %rax, -12(%rbp)
@@ -22864,7 +22975,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L396_elseif_0
+	jz .L401_elseif_0
 	subq $32, %rsp
 	subq $12, %rsp
 	movl -16(%rbp), %eax
@@ -22914,7 +23025,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_582(%rip), %rax
+	leaq .str_590(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -23034,7 +23145,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_583(%rip), %rax
+	leaq .str_591(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -23085,9 +23196,9 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L396_end
+	jmp .L401_end
 	addq $32, %rsp
-.L396_elseif_0:
+.L401_elseif_0:
 	subq $12, %rsp
 	movl -16(%rbp), %eax
 	subq $4, %rsp
@@ -23097,7 +23208,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L396_else
+	jz .L401_else
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -23131,7 +23242,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_584(%rip), %rax
+	leaq .str_592(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -23347,7 +23458,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_585(%rip), %rax
+	leaq .str_593(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -23473,7 +23584,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_586(%rip), %rax
+	leaq .str_594(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -23576,19 +23687,19 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L396_end
+	jmp .L401_end
 	addq $32, %rsp
-.L396_else:
+.L401_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_587(%rip), %rax
+	leaq .str_595(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L396_end
+	jmp .L401_end
 	addq $32, %rsp
-.L396_end:
+.L401_end:
 	subq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -23603,9 +23714,9 @@ compile_expression_into_register:
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $32, %rsp
-.L371_elseif_10:
+.L376_elseif_10:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $13, %edx
@@ -23623,7 +23734,7 @@ compile_expression_into_register:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_11
+	jz .L376_elseif_11
 	subq $48, %rsp
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
@@ -23637,16 +23748,16 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L397_end
+	jz .L402_end
 	subq $16, %rsp
 	leaq -16(%rbp), %rax
 	pushq %rax
 	movl $0, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L397_end
+	jmp .L402_end
 	addq $16, %rsp
-.L397_end:
+.L402_end:
 	subq $3, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -23655,7 +23766,7 @@ compile_expression_into_register:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_588(%rip), %al
+	movb .char_596(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl -16(%rbp), %eax
@@ -23682,10 +23793,10 @@ compile_expression_into_register:
 	setz %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L398_end
+	jz .L403_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_589(%rip), %rax
+	leaq .str_597(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -20(%rbp), %eax
@@ -23711,7 +23822,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_590(%rip), %rdx
+	leaq .str_598(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -23722,9 +23833,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L398_end
+	jmp .L403_end
 	addq $32, %rsp
-.L398_end:
+.L403_end:
 	leaq -20(%rbp), %rax
 	pushq %rax
 	subq $4, %rsp
@@ -23779,10 +23890,10 @@ compile_expression_into_register:
 	setz %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L402_end
+	jz .L407_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_591(%rip), %rax
+	leaq .str_599(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -20(%rbp), %eax
@@ -23808,7 +23919,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_592(%rip), %rdx
+	leaq .str_600(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -23819,9 +23930,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L402_end
+	jmp .L407_end
 	addq $32, %rsp
-.L402_end:
+.L407_end:
 	subq $4, %rsp
 	movq .struct_registry(%rip), %rax
 	pushq %rax
@@ -23864,7 +23975,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L406_end
+	jz .L411_end
 	subq $48, %rsp
 	leaq -40(%rbp), %rax
 	pushq %rax
@@ -23878,9 +23989,9 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L406_end
+	jmp .L411_end
 	addq $48, %rsp
-.L406_end:
+.L411_end:
 	movq -36(%rbp), %rax
 	movl 8(%rax), %eax
 	movl %eax, -44(%rbp)
@@ -23890,7 +24001,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L407_elseif_0
+	jz .L412_elseif_0
 	subq $48, %rsp
 	subq $12, %rsp
 	movl -40(%rbp), %eax
@@ -23960,16 +24071,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L407_end
+	jmp .L412_end
 	addq $48, %rsp
-.L407_elseif_0:
+.L412_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L407_end
+	jz .L412_end
 	subq $48, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -24025,16 +24136,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L407_end
+	jmp .L412_end
 	addq $48, %rsp
-.L407_end:
+.L412_end:
 	movl -40(%rbp), %eax
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $48, %rsp
-.L371_elseif_11:
+.L376_elseif_11:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $12, %edx
@@ -24042,7 +24153,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_elseif_12
+	jz .L376_elseif_12
 	subq $16, %rsp
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
@@ -24055,7 +24166,7 @@ compile_expression_into_register:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_593(%rip), %al
+	movb .char_601(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -24106,10 +24217,10 @@ compile_expression_into_register:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L408_end
+	jz .L413_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_594(%rip), %rax
+	leaq .str_602(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -16(%rbp), %eax
@@ -24135,7 +24246,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_595(%rip), %rdx
+	leaq .str_603(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -24146,9 +24257,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L408_end
+	jmp .L413_end
 	addq $16, %rsp
-.L408_end:
+.L413_end:
 	subq $12, %rsp
 	movl -16(%rbp), %eax
 	subq $4, %rsp
@@ -24158,7 +24269,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L412_end
+	jz .L417_end
 	subq $16, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -24214,9 +24325,9 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L412_end
+	jmp .L417_end
 	addq $16, %rsp
-.L412_end:
+.L417_end:
 	subq $12, %rsp
 	movl -16(%rbp), %eax
 	subq $4, %rsp
@@ -24226,7 +24337,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L413_elseif_0
+	jz .L418_elseif_0
 	subq $16, %rsp
 	leaq .element_type(%rip), %rax
 	pushq %rax
@@ -24245,9 +24356,9 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L413_end
+	jmp .L418_end
 	addq $16, %rsp
-.L413_elseif_0:
+.L418_elseif_0:
 	subq $12, %rsp
 	movl -16(%rbp), %eax
 	subq $4, %rsp
@@ -24257,7 +24368,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L413_else
+	jz .L418_else
 	subq $16, %rsp
 	leaq .element_type(%rip), %rax
 	pushq %rax
@@ -24271,18 +24382,18 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L413_end
+	jmp .L418_end
 	addq $16, %rsp
-.L413_else:
+.L418_else:
 	subq $16, %rsp
 	leaq .element_type(%rip), %rax
 	pushq %rax
 	movl $3, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L413_end
+	jmp .L418_end
 	addq $16, %rsp
-.L413_end:
+.L418_end:
 	movq -12(%rbp), %rax
 	movq 8(%rax), %rax
 	movl (%rax), %eax
@@ -24291,7 +24402,7 @@ compile_expression_into_register:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L414_else
+	jz .L419_else
 	subq $32, %rsp
 	subq $4, %rsp
 	movq 37(%rbp), %rax
@@ -24339,7 +24450,7 @@ compile_expression_into_register:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_596(%rip), %al
+	movb .char_604(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -24369,10 +24480,10 @@ compile_expression_into_register:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L415_end
+	jz .L420_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_597(%rip), %rax
+	leaq .str_605(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -20(%rbp), %eax
@@ -24398,7 +24509,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_598(%rip), %rdx
+	leaq .str_606(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -24409,9 +24520,9 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L415_end
+	jmp .L420_end
 	addq $32, %rsp
-.L415_end:
+.L420_end:
 	subq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -24523,7 +24634,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L419_end
+	jz .L424_end
 	subq $32, %rsp
 	leaq .element_type(%rip), %rax
 	pushq %rax
@@ -24537,16 +24648,16 @@ compile_expression_into_register:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L419_end
+	jmp .L424_end
 	addq $32, %rsp
-.L419_end:
+.L424_end:
 	movl 16(%rbp), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L420_elseif_0
+	jz .L425_elseif_0
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -24602,16 +24713,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L420_end
+	jmp .L425_end
 	addq $32, %rsp
-.L420_elseif_0:
+.L425_elseif_0:
 	movl 16(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L420_end
+	jz .L425_end
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -24643,16 +24754,16 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L420_end
+	jmp .L425_end
 	addq $32, %rsp
-.L420_end:
+.L425_end:
 	movl .element_type(%rip), %eax
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L414_end
+	jmp .L419_end
 	addq $32, %rsp
-.L414_else:
+.L419_else:
 	subq $48, %rsp
 	subq $12, %rsp
 	movl -16(%rbp), %eax
@@ -24675,17 +24786,17 @@ compile_expression_into_register:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L421_end
+	jz .L426_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_599(%rip), %rax
+	leaq .str_607(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L421_end
+	jmp .L426_end
 	addq $16, %rsp
-.L421_end:
+.L426_end:
 	movq -12(%rbp), %rax
 	movq 8(%rax), %rax
 	movq 4(%rax), %rax
@@ -24736,7 +24847,7 @@ compile_expression_into_register:
 	pushq %rax
 	movq 21(%rbp), %rax
 	pushq %rax
-	movb .char_600(%rip), %al
+	movb .char_608(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -24766,191 +24877,13 @@ compile_expression_into_register:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L422_end
-	subq $32, %rsp
-	subq $8, %rsp
-	leaq .str_601(%rip), %rax
-	pushq %rax
-	subq $12, %rsp
-	movl -28(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call debug_variable_type_name
-	movq %rax, %rdx
-	addq $4, %rsp
-	addq $12, %rsp
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_602(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L422_end
-	addq $32, %rsp
-.L422_end:
-	movl -28(%rbp), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L426_elseif_0
-	subq $32, %rsp
-	movq 37(%rbp), %rax
-	pushq %rax
-	movl $0, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	pushq %rax
-	subq $8, %rsp
-	movl $12, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	addq $8, %rsp
-	pushq %rax
-	subq $12, %rsp
-	movl $22, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	movl $1, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	movl $2, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call encode_sizes_in_opcode
-	movl %eax, %eax
-	addq $4, %rsp
-	addq $4, %rsp
-	addq $4, %rsp
-	addq $12, %rsp
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	movl $9, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call add_instruction
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $4, %rsp
-	jmp .L426_end
-	addq $32, %rsp
-.L426_elseif_0:
-	movl -28(%rbp), %eax
-	movl $2, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L426_end
-	subq $32, %rsp
-	movq 37(%rbp), %rax
-	pushq %rax
-	movl $0, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	pushq %rax
-	subq $8, %rsp
-	movl $12, %eax
-	movslq %eax, %rax
-	pushq %rax
-	call make_reg
-	movq %rax, %rax
-	addq $8, %rsp
-	addq $8, %rsp
-	pushq %rax
-	movl $0, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	movl $2, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call add_instruction
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $4, %rsp
-	addq $4, %rsp
-	jmp .L426_end
-	addq $32, %rsp
-.L426_end:
-	subq $3, %rsp
-	movq 37(%rbp), %rax
-	pushq %rax
-	movq -24(%rbp), %rax
-	movq 8(%rax), %rax
-	pushq %rax
-	movq 21(%rbp), %rax
-	pushq %rax
-	movb .char_603(%rip), %al
-	subq $1, %rsp
-	movb %al, (%rsp)
-	movl $1, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call compile_expression_into_register
-	movl %eax, %eax
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $8, %rsp
-	addq $1, %rsp
-	addq $4, %rsp
-	addq $3, %rsp
-	movl %eax, -32(%rbp)
-	movl -32(%rbp), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	setne %al
-	movb %al, %al
-	pushq %rax
-	movl -32(%rbp), %eax
-	movl $2, %edx
-	cmpl %edx, %eax
-	setne %al
-	movb %al, %dl
-	popq %rax
-	andb %dl, %al
-	movb %al, %al
-	cmpb $0, %al
 	jz .L427_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_604(%rip), %rax
+	leaq .str_609(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
-	movl -32(%rbp), %eax
+	movl -28(%rbp), %eax
 	subq $4, %rsp
 	movl %eax, (%rsp)
 	call debug_variable_type_name
@@ -24973,7 +24906,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_605(%rip), %rdx
+	leaq .str_610(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -24987,7 +24920,7 @@ compile_expression_into_register:
 	jmp .L427_end
 	addq $32, %rsp
 .L427_end:
-	movl -32(%rbp), %eax
+	movl -28(%rbp), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
@@ -25005,7 +24938,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	pushq %rax
 	subq $8, %rsp
-	movl $13, %eax
+	movl $12, %eax
 	movslq %eax, %rax
 	pushq %rax
 	call make_reg
@@ -25043,13 +24976,191 @@ compile_expression_into_register:
 	jmp .L431_end
 	addq $32, %rsp
 .L431_elseif_0:
-	movl -32(%rbp), %eax
+	movl -28(%rbp), %eax
 	movl $2, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
 	jz .L431_end
+	subq $32, %rsp
+	movq 37(%rbp), %rax
+	pushq %rax
+	movl $0, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	pushq %rax
+	subq $8, %rsp
+	movl $12, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	addq $8, %rsp
+	pushq %rax
+	movl $0, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	movl $2, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call add_instruction
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $4, %rsp
+	jmp .L431_end
+	addq $32, %rsp
+.L431_end:
+	subq $3, %rsp
+	movq 37(%rbp), %rax
+	pushq %rax
+	movq -24(%rbp), %rax
+	movq 8(%rax), %rax
+	pushq %rax
+	movq 21(%rbp), %rax
+	pushq %rax
+	movb .char_611(%rip), %al
+	subq $1, %rsp
+	movb %al, (%rsp)
+	movl $1, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call compile_expression_into_register
+	movl %eax, %eax
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $1, %rsp
+	addq $4, %rsp
+	addq $3, %rsp
+	movl %eax, -32(%rbp)
+	movl -32(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	setne %al
+	movb %al, %al
+	pushq %rax
+	movl -32(%rbp), %eax
+	movl $2, %edx
+	cmpl %edx, %eax
+	setne %al
+	movb %al, %dl
+	popq %rax
+	andb %dl, %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L432_end
+	subq $32, %rsp
+	subq $8, %rsp
+	leaq .str_612(%rip), %rax
+	pushq %rax
+	subq $12, %rsp
+	movl -32(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call debug_variable_type_name
+	movq %rax, %rdx
+	addq $4, %rsp
+	addq $12, %rsp
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_613(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L432_end
+	addq $32, %rsp
+.L432_end:
+	movl -32(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L436_elseif_0
+	subq $32, %rsp
+	movq 37(%rbp), %rax
+	pushq %rax
+	movl $0, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	pushq %rax
+	subq $8, %rsp
+	movl $13, %eax
+	movslq %eax, %rax
+	pushq %rax
+	call make_reg
+	movq %rax, %rax
+	addq $8, %rsp
+	addq $8, %rsp
+	pushq %rax
+	subq $12, %rsp
+	movl $22, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	movl $1, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	movl $2, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call encode_sizes_in_opcode
+	movl %eax, %eax
+	addq $4, %rsp
+	addq $4, %rsp
+	addq $4, %rsp
+	addq $12, %rsp
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	movl $9, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call add_instruction
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $8, %rsp
+	addq $4, %rsp
+	addq $4, %rsp
+	jmp .L436_end
+	addq $32, %rsp
+.L436_elseif_0:
+	movl -32(%rbp), %eax
+	movl $2, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L436_end
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -25081,9 +25192,9 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L431_end
+	jmp .L436_end
 	addq $32, %rsp
-.L431_end:
+.L436_end:
 	subq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -25324,7 +25435,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_606(%rip), %rax
+	leaq .str_614(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -25437,7 +25548,7 @@ compile_expression_into_register:
 	addq $4, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
-	leaq .str_607(%rip), %rax
+	leaq .str_615(%rip), %rax
 	pushq %rax
 	call make_stdlib_label
 	movq %rax, %rax
@@ -25537,12 +25648,12 @@ compile_expression_into_register:
 	addq $48, %rsp
 	leave
 	ret
-	jmp .L414_end
+	jmp .L419_end
 	addq $48, %rsp
-.L414_end:
-	jmp .L371_end
+.L419_end:
+	jmp .L376_end
 	addq $16, %rsp
-.L371_elseif_12:
+.L376_elseif_12:
 	movq 29(%rbp), %rax
 	movl (%rax), %eax
 	movl $15, %edx
@@ -25550,7 +25661,7 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L371_end
+	jz .L376_end
 	subq $32, %rsp
 	movq 29(%rbp), %rax
 	movq 4(%rax), %rax
@@ -25605,22 +25716,22 @@ compile_expression_into_register:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L432_end
+	jz .L437_end
 	subq $32, %rsp
 	movl -20(%rbp), %eax
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L432_end
+	jmp .L437_end
 	addq $32, %rsp
-.L432_end:
+.L437_end:
 	movl -28(%rbp), %eax
 	movl -24(%rbp), %edx
 	cmpl %edx, %eax
 	setg %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L433_else
+	jz .L438_else
 	subq $32, %rsp
 	movq 37(%rbp), %rax
 	pushq %rax
@@ -25667,12 +25778,12 @@ compile_expression_into_register:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L433_end
+	jmp .L438_end
 	addq $32, %rsp
-.L433_else:
+.L438_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_608(%rip), %rax
+	leaq .str_616(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -16(%rbp), %eax
@@ -25698,7 +25809,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_609(%rip), %rdx
+	leaq .str_617(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -25730,7 +25841,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_610(%rip), %rdx
+	leaq .str_618(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -25741,18 +25852,18 @@ compile_expression_into_register:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L433_end
+	jmp .L438_end
 	addq $32, %rsp
-.L433_end:
+.L438_end:
 	movl -20(%rbp), %eax
 	addq $32, %rsp
 	leave
 	ret
-	jmp .L371_end
+	jmp .L376_end
 	addq $32, %rsp
-.L371_end:
+.L376_end:
 	subq $8, %rsp
-	leaq .str_611(%rip), %rax
+	leaq .str_619(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 29(%rbp), %rax
@@ -25779,7 +25890,7 @@ compile_expression_into_register:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_612(%rip), %rdx
+	leaq .str_620(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -25812,7 +25923,7 @@ compile_assign:
 	movl %eax, -20(%rbp)
 	movq 36(%rbp), %rax
 	cmpq $0, %rax
-	jz .L443_end
+	jz .L448_end
 	subq $32, %rsp
 	movl 16(%rbp), %eax
 	movl $25, %edx
@@ -25820,7 +25931,7 @@ compile_assign:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L444_end
+	jz .L449_end
 	subq $32, %rsp
 	leaq -20(%rbp), %rax
 	pushq %rax
@@ -25832,7 +25943,7 @@ compile_assign:
 	pushq %rax
 	movq 20(%rbp), %rax
 	pushq %rax
-	movb .char_613(%rip), %al
+	movb .char_621(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $0, %eax
@@ -25886,16 +25997,16 @@ compile_assign:
 	addq $4, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L444_end
+	jmp .L449_end
 	addq $32, %rsp
-.L444_end:
-	jmp .L443_end
+.L449_end:
+	jmp .L448_end
 	addq $32, %rsp
-.L443_end:
+.L448_end:
 	movq -8(%rbp), %rax
 	movq 16(%rax), %rax
 	cmpq $0, %rax
-	jz .L445_else
+	jz .L450_else
 	subq $32, %rsp
 	movq -8(%rbp), %rax
 	movq 16(%rax), %rax
@@ -25907,7 +26018,7 @@ compile_assign:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_0
+	jz .L451_elseif_0
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -25920,7 +26031,7 @@ compile_assign:
 	movq %rax, -32(%rbp)
 	movq 36(%rbp), %rax
 	cmpq $0, %rax
-	jz .L447_else
+	jz .L452_else
 	subq $32, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -25953,14 +26064,14 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L447_end
+	jmp .L452_end
 	addq $32, %rsp
-.L447_else:
+.L452_else:
 	subq $48, %rsp
 	movq -8(%rbp), %rax
 	movb 28(%rax), %al
 	cmpb $0, %al
-	jz .L448_end
+	jz .L453_end
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -25974,9 +26085,9 @@ compile_assign:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L448_end
+	jmp .L453_end
 	addq $32, %rsp
-.L448_end:
+.L453_end:
 	movq $4, %rdi
 	call malloc
 	movq %rax, %rdi
@@ -26009,19 +26120,19 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L447_end
+	jmp .L452_end
 	addq $48, %rsp
-.L447_end:
-	jmp .L446_end
+.L452_end:
+	jmp .L451_end
 	addq $32, %rsp
-.L446_elseif_0:
+.L451_elseif_0:
 	movl -24(%rbp), %eax
 	movl $2, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_1
+	jz .L451_elseif_1
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26034,7 +26145,7 @@ compile_assign:
 	movq %rax, -32(%rbp)
 	movq 36(%rbp), %rax
 	cmpq $0, %rax
-	jz .L449_else
+	jz .L454_else
 	subq $32, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -26066,14 +26177,14 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L449_end
+	jmp .L454_end
 	addq $32, %rsp
-.L449_else:
+.L454_else:
 	subq $48, %rsp
 	movq -8(%rbp), %rax
 	movb 28(%rax), %al
 	cmpb $0, %al
-	jz .L450_end
+	jz .L455_end
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26087,9 +26198,9 @@ compile_assign:
 	addq $4, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L450_end
+	jmp .L455_end
 	addq $32, %rsp
-.L450_end:
+.L455_end:
 	movq $8, %rdi
 	call malloc
 	movq %rax, %rdi
@@ -26122,19 +26233,19 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L449_end
+	jmp .L454_end
 	addq $48, %rsp
-.L449_end:
-	jmp .L446_end
+.L454_end:
+	jmp .L451_end
 	addq $32, %rsp
-.L446_elseif_1:
+.L451_elseif_1:
 	movl -24(%rbp), %eax
 	movl $4, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_2
+	jz .L451_elseif_2
 	subq $32, %rsp
 	subq $3, %rsp
 	movq -8(%rbp), %rax
@@ -26144,7 +26255,7 @@ compile_assign:
 	pushq %rax
 	movq 20(%rbp), %rax
 	pushq %rax
-	movb .char_614(%rip), %al
+	movb .char_622(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -26165,32 +26276,32 @@ compile_assign:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L451_end
+	jz .L456_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_615(%rip), %rax
+	leaq .str_623(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L451_end
+	jmp .L456_end
 	addq $32, %rsp
-.L451_end:
+.L456_end:
 	leaq .expression_type(%rip), %rax
 	pushq %rax
 	movl -28(%rbp), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L446_end
+	jmp .L451_end
 	addq $32, %rsp
-.L446_elseif_2:
+.L451_elseif_2:
 	movl -24(%rbp), %eax
 	movl $8, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_3
+	jz .L451_elseif_3
 	subq $48, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26213,7 +26324,7 @@ compile_assign:
 	movq %rax, -40(%rbp)
 	movq 36(%rbp), %rax
 	cmpq $0, %rax
-	jz .L452_else
+	jz .L457_else
 	subq $48, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -26245,9 +26356,9 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L452_end
+	jmp .L457_end
 	addq $48, %rsp
-.L452_else:
+.L457_else:
 	subq $48, %rsp
 	subq $4, %rsp
 	movq .global_scope(%rip), %rax
@@ -26266,19 +26377,19 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L452_end
+	jmp .L457_end
 	addq $48, %rsp
-.L452_end:
-	jmp .L446_end
+.L457_end:
+	jmp .L451_end
 	addq $48, %rsp
-.L446_elseif_3:
+.L451_elseif_3:
 	movl -24(%rbp), %eax
 	movl $10, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_4
+	jz .L451_elseif_4
 	subq $48, %rsp
 	movq -8(%rbp), %rax
 	movq 16(%rax), %rax
@@ -26301,7 +26412,7 @@ compile_assign:
 	movl %eax, (%rbx)
 	movq 36(%rbp), %rax
 	cmpq $0, %rax
-	jz .L453_else
+	jz .L458_else
 	subq $48, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -26333,9 +26444,9 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L453_end
+	jmp .L458_end
 	addq $48, %rsp
-.L453_else:
+.L458_else:
 	subq $48, %rsp
 	movq -40(%rbp), %rax
 	leaq (%rax), %rax
@@ -26343,19 +26454,19 @@ compile_assign:
 	movq -16(%rbp), %rax
 	popq %rbx
 	movq %rax, (%rbx)
-	jmp .L453_end
+	jmp .L458_end
 	addq $48, %rsp
-.L453_end:
-	jmp .L446_end
+.L458_end:
+	jmp .L451_end
 	addq $48, %rsp
-.L446_elseif_4:
+.L451_elseif_4:
 	movl -24(%rbp), %eax
 	movl $5, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_5
+	jz .L451_elseif_5
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26373,16 +26484,16 @@ compile_assign:
 	addq $8, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L446_end
+	jmp .L451_end
 	addq $32, %rsp
-.L446_elseif_5:
+.L451_elseif_5:
 	movl -24(%rbp), %eax
 	movl $6, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_elseif_6
+	jz .L451_elseif_6
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26406,9 +26517,9 @@ compile_assign:
 	addq $12, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L446_end
+	jmp .L451_end
 	addq $32, %rsp
-.L446_elseif_6:
+.L451_elseif_6:
 	movl -24(%rbp), %eax
 	movl $3, %edx
 	cmpl %edx, %eax
@@ -26478,7 +26589,7 @@ compile_assign:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L446_else
+	jz .L451_else
 	subq $32, %rsp
 	leaq .expression_type(%rip), %rax
 	pushq %rax
@@ -26490,7 +26601,7 @@ compile_assign:
 	pushq %rax
 	movq 20(%rbp), %rax
 	pushq %rax
-	movb .char_616(%rip), %al
+	movb .char_624(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -26506,12 +26617,12 @@ compile_assign:
 	addq $11, %rsp
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L446_end
+	jmp .L451_end
 	addq $32, %rsp
-.L446_else:
+.L451_else:
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_617(%rip), %rax
+	leaq .str_625(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -24(%rbp), %eax
@@ -26537,7 +26648,7 @@ compile_assign:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_618(%rip), %rdx
+	leaq .str_626(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -26548,9 +26659,9 @@ compile_assign:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L446_end
+	jmp .L451_end
 	addq $32, %rsp
-.L446_end:
+.L451_end:
 	movq 36(%rbp), %rax
 	pushq %rax
 	movl $0, %edx
@@ -26569,7 +26680,7 @@ compile_assign:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L457_end
+	jz .L462_end
 	subq $32, %rsp
 	leaq -20(%rbp), %rax
 	pushq %rax
@@ -26605,7 +26716,7 @@ compile_assign:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L458_end
+	jz .L463_end
 	subq $32, %rsp
 	movl -20(%rbp), %eax
 	movl $8, %edx
@@ -26640,10 +26751,10 @@ compile_assign:
 	setz %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L459_end
+	jz .L464_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_619(%rip), %rax
+	leaq .str_627(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl .expression_type(%rip), %eax
@@ -26669,7 +26780,7 @@ compile_assign:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_620(%rip), %rdx
+	leaq .str_628(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -26701,7 +26812,7 @@ compile_assign:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_621(%rip), %rdx
+	leaq .str_629(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -26712,12 +26823,12 @@ compile_assign:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L459_end
+	jmp .L464_end
 	addq $32, %rsp
-.L459_end:
-	jmp .L458_end
+.L464_end:
+	jmp .L463_end
 	addq $32, %rsp
-.L458_end:
+.L463_end:
 	subq $4, %rsp
 	movq 36(%rbp), %rax
 	pushq %rax
@@ -26808,9 +26919,9 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L457_end
+	jmp .L462_end
 	addq $32, %rsp
-.L457_end:
+.L462_end:
 	movq 36(%rbp), %rax
 	pushq %rax
 	movl $0, %edx
@@ -26829,7 +26940,7 @@ compile_assign:
 	andb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L466_end
+	jz .L471_end
 	subq $48, %rsp
 	movq 20(%rbp), %rax
 	pushq %rax
@@ -26842,10 +26953,10 @@ compile_assign:
 	movq %rax, -32(%rbp)
 	movq -32(%rbp), %rax
 	cmpq $0, %rax
-	jz .L467_end
+	jz .L472_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_622(%rip), %rax
+	leaq .str_630(%rip), %rax
 	movq -16(%rbp), %rdx
 	pushq %rdx
 	pushq %rax
@@ -26862,7 +26973,7 @@ compile_assign:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_623(%rip), %rdx
+	leaq .str_631(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -26873,9 +26984,9 @@ compile_assign:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L467_end
+	jmp .L472_end
 	addq $32, %rsp
-.L467_end:
+.L472_end:
 	leaq -32(%rbp), %rax
 	pushq %rax
 	movq 20(%rbp), %rax
@@ -26929,12 +27040,12 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L466_end
+	jmp .L471_end
 	addq $48, %rsp
-.L466_end:
-	jmp .L445_end
+.L471_end:
+	jmp .L450_end
 	addq $32, %rsp
-.L445_else:
+.L450_else:
 	subq $32, %rsp
 	movq -8(%rbp), %rax
 	movl 24(%rax), %eax
@@ -26943,17 +27054,17 @@ compile_assign:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L471_end
+	jz .L476_end
 	subq $32, %rsp
 	subq $8, %rsp
-	leaq .str_624(%rip), %rax
+	leaq .str_632(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L471_end
+	jmp .L476_end
 	addq $32, %rsp
-.L471_end:
+.L476_end:
 	movq $16, %rdi
 	call malloc
 	movq %rax, %rbx
@@ -26971,7 +27082,7 @@ compile_assign:
 	subq $32, %rsp
 	movl $0, %eax
 	movl %eax, -32(%rbp)
-.L472_for_start:
+.L477_for_start:
 	movl -32(%rbp), %eax
 	pushq %rax
 	subq $4, %rsp
@@ -26988,15 +27099,15 @@ compile_assign:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L472_for_end
+	jz .L477_for_end
 	movq -28(%rbp), %rax
 	pushq %rax
-	movb .char_625(%rip), %bl
+	movb .char_633(%rip), %bl
 	popq %rax
 	call __append_char
 	movb (%rax), %al
 	addl $1, 8(%r12)
-.L472_for_inc:
+.L477_for_inc:
 	leaq -32(%rbp), %rax
 	pushq %rax
 	movl -32(%rbp), %eax
@@ -27004,8 +27115,8 @@ compile_assign:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L472_for_start
-.L472_for_end:
+	jmp .L477_for_start
+.L477_for_end:
 	addq $32, %rsp
 	subq $4, %rsp
 	movq .global_scope(%rip), %rax
@@ -27026,9 +27137,9 @@ compile_assign:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L445_end
+	jmp .L450_end
 	addq $32, %rsp
-.L445_end:
+.L450_end:
 	addq $32, %rsp
 	leave
 	ret
@@ -27048,10 +27159,10 @@ compile_if_jump:
 	setg %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L474_elseif_0
+	jz .L479_elseif_0
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_626(%rip), %rax
+	leaq .str_634(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl 20(%rbp), %eax
@@ -27077,7 +27188,7 @@ compile_if_jump:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_627(%rip), %rdx
+	leaq .str_635(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27132,15 +27243,15 @@ compile_if_jump:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L474_end
-.L474_elseif_0:
+	jmp .L479_end
+.L479_elseif_0:
 	movq 24(%rbp), %rax
 	movq 16(%rax), %rax
 	cmpq $0, %rax
-	jz .L474_else
+	jz .L479_else
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_628(%rip), %rax
+	leaq .str_636(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl 20(%rbp), %eax
@@ -27166,7 +27277,7 @@ compile_if_jump:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_629(%rip), %rdx
+	leaq .str_637(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27193,11 +27304,11 @@ compile_if_jump:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L474_end
-.L474_else:
+	jmp .L479_end
+.L479_else:
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_630(%rip), %rax
+	leaq .str_638(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl 20(%rbp), %eax
@@ -27223,7 +27334,7 @@ compile_if_jump:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_631(%rip), %rdx
+	leaq .str_639(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27250,8 +27361,8 @@ compile_if_jump:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L474_end
-.L474_end:
+	jmp .L479_end
+.L479_end:
 	leave
 	ret
 .globl compile_block
@@ -27261,7 +27372,7 @@ compile_block:
 	subq $16, %rsp
 	movl $0, %eax
 	movl %eax, -4(%rbp)
-.L486_for_start:
+.L491_for_start:
 	movl -4(%rbp), %eax
 	pushq %rax
 	movq 32(%rbp), %rax
@@ -27272,7 +27383,7 @@ compile_block:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L486_for_end
+	jz .L491_for_end
 	subq $8, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -27298,7 +27409,7 @@ compile_block:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-.L486_for_inc:
+.L491_for_inc:
 	leaq -4(%rbp), %rax
 	pushq %rax
 	movl -4(%rbp), %eax
@@ -27306,8 +27417,8 @@ compile_block:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L486_for_start
-.L486_for_end:
+	jmp .L491_for_start
+.L491_for_end:
 	addq $16, %rsp
 	leave
 	ret
@@ -27347,7 +27458,7 @@ compile_if_block:
 	addq $8, %rsp
 	movq -16(%rbp), %rax
 	pushq %rax
-	leaq .str_632(%rip), %rax
+	leaq .str_640(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl 32(%rbp), %eax
@@ -27373,7 +27484,7 @@ compile_if_block:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_633(%rip), %rdx
+	leaq .str_641(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27454,7 +27565,7 @@ compile_if:
 	pushq %rax
 	movq 32(%rbp), %rax
 	pushq %rax
-	movb .char_634(%rip), %al
+	movb .char_642(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -27544,7 +27655,7 @@ compile_if:
 	subq $48, %rsp
 	movl $0, %eax
 	movl %eax, -28(%rbp)
-.L490_for_start:
+.L495_for_start:
 	movl -28(%rbp), %eax
 	pushq %rax
 	movq -8(%rbp), %rax
@@ -27554,7 +27665,7 @@ compile_if:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L490_for_end
+	jz .L495_for_end
 	movq -8(%rbp), %rax
 	movq 24(%rax), %rax
 	movq (%rax), %rax
@@ -27566,7 +27677,7 @@ compile_if:
 	movq %rax, -36(%rbp)
 	movq 48(%rbp), %rax
 	pushq %rax
-	leaq .str_635(%rip), %rax
+	leaq .str_643(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -27592,7 +27703,7 @@ compile_if:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_636(%rip), %rdx
+	leaq .str_644(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27624,7 +27735,7 @@ compile_if:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_637(%rip), %rdx
+	leaq .str_645(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27642,7 +27753,7 @@ compile_if:
 	pushq %rax
 	movq 32(%rbp), %rax
 	pushq %rax
-	movb .char_638(%rip), %al
+	movb .char_646(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -27733,7 +27844,7 @@ compile_if:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $4, %rsp
-.L490_for_inc:
+.L495_for_inc:
 	leaq -28(%rbp), %rax
 	pushq %rax
 	movl -28(%rbp), %eax
@@ -27741,17 +27852,17 @@ compile_if:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L490_for_start
-.L490_for_end:
+	jmp .L495_for_start
+.L495_for_end:
 	addq $48, %rsp
 	movq -8(%rbp), %rax
 	movq 16(%rax), %rax
 	cmpq $0, %rax
-	jz .L497_end
+	jz .L502_end
 	subq $32, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
-	leaq .str_639(%rip), %rax
+	leaq .str_647(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -27777,7 +27888,7 @@ compile_if:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_640(%rip), %rdx
+	leaq .str_648(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27811,12 +27922,12 @@ compile_if:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $4, %rsp
-	jmp .L497_end
+	jmp .L502_end
 	addq $32, %rsp
-.L497_end:
+.L502_end:
 	movq 48(%rbp), %rax
 	pushq %rax
-	leaq .str_641(%rip), %rax
+	leaq .str_649(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -27842,7 +27953,7 @@ compile_if:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_642(%rip), %rdx
+	leaq .str_650(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -27873,17 +27984,17 @@ compile_return:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L504_end
+	jz .L509_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_643(%rip), %rax
+	leaq .str_651(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L504_end
+	jmp .L509_end
 	addq $16, %rsp
-.L504_end:
+.L509_end:
 	movq -8(%rbp), %rax
 	movq (%rax), %rax
 	pushq %rax
@@ -27894,7 +28005,7 @@ compile_return:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L505_end
+	jz .L510_end
 	subq $16, %rsp
 	movq 40(%rbp), %rax
 	pushq %rax
@@ -27940,9 +28051,9 @@ compile_return:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L505_end
+	jmp .L510_end
 	addq $16, %rsp
-.L505_end:
+.L510_end:
 	movq 16(%rbp), %rax
 	movl 16(%rax), %eax
 	movl %eax, -12(%rbp)
@@ -27954,7 +28065,7 @@ compile_return:
 	pushq %rax
 	movq 24(%rbp), %rax
 	pushq %rax
-	movb .char_644(%rip), %al
+	movb .char_652(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -27991,10 +28102,10 @@ compile_return:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L506_end
+	jz .L511_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_645(%rip), %rax
+	leaq .str_653(%rip), %rax
 	pushq %rax
 	movq 16(%rbp), %rax
 	movq (%rax), %rdx
@@ -28014,7 +28125,7 @@ compile_return:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_646(%rip), %rdx
+	leaq .str_654(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28046,7 +28157,7 @@ compile_return:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_647(%rip), %rdx
+	leaq .str_655(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28078,7 +28189,7 @@ compile_return:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_648(%rip), %rdx
+	leaq .str_656(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28090,7 +28201,7 @@ compile_return:
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_649(%rip), %rax
+	leaq .str_657(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -12(%rbp), %eax
@@ -28121,7 +28232,7 @@ compile_return:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_650(%rip), %rdx
+	leaq .str_658(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28158,7 +28269,7 @@ compile_return:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_651(%rip), %rdx
+	leaq .str_659(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28169,9 +28280,9 @@ compile_return:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L506_end
+	jmp .L511_end
 	addq $16, %rsp
-.L506_end:
+.L511_end:
 	movq 40(%rbp), %rax
 	pushq %rax
 	movq 24(%rbp), %rax
@@ -28244,13 +28355,13 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L522_end
+	jz .L527_end
 	subq $16, %rsp
 	leave
 	ret
-	jmp .L522_end
+	jmp .L527_end
 	addq $16, %rsp
-.L522_end:
+.L527_end:
 	subq $8, %rsp
 	movl $0, %eax
 	movslq %eax, %rax
@@ -28270,7 +28381,7 @@ compile_function:
 	movq (%rax), %rax
 	movq %rax, -40(%rbp)
 	movq -40(%rbp), %rax
-	leaq .str_652(%rip), %rdx
+	leaq .str_660(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -28278,7 +28389,7 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L523_end
+	jz .L528_end
 	subq $48, %rsp
 	movl .current_target(%rip), %eax
 	movl $1, %edx
@@ -28286,20 +28397,20 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L524_end
+	jz .L529_end
 	subq $48, %rsp
 	leaq -40(%rbp), %rax
 	pushq %rax
-	leaq .str_653(%rip), %rax
+	leaq .str_661(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
-	jmp .L524_end
+	jmp .L529_end
 	addq $48, %rsp
-.L524_end:
+.L529_end:
 	subq $8, %rsp
 	movq -16(%rbp), %rax
 	pushq %rax
-	leaq .str_654(%rip), %rax
+	leaq .str_662(%rip), %rax
 	pushq %rax
 	movl $1, %eax
 	subq $4, %rsp
@@ -28317,7 +28428,7 @@ compile_function:
 	subq $8, %rsp
 	movq -16(%rbp), %rax
 	pushq %rax
-	leaq .str_655(%rip), %rax
+	leaq .str_663(%rip), %rax
 	pushq %rax
 	subq $4, %rsp
 	movl $3, %eax
@@ -28344,13 +28455,13 @@ compile_function:
 	addq $4, %rsp
 	addq $4, %rsp
 	addq $8, %rsp
-	jmp .L523_end
+	jmp .L528_end
 	addq $48, %rsp
-.L523_end:
+.L528_end:
 	subq $64, %rsp
 	movl $0, %eax
 	movl %eax, -44(%rbp)
-.L525_for_start:
+.L530_for_start:
 	movl -44(%rbp), %eax
 	pushq %rax
 	movq -32(%rbp), %rax
@@ -28361,7 +28472,7 @@ compile_function:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L525_for_end
+	jz .L530_for_end
 	movq -32(%rbp), %rax
 	movq 8(%rax), %rax
 	movq (%rax), %rax
@@ -28392,7 +28503,7 @@ compile_function:
 	addq $4, %rsp
 	addq $4, %rsp
 	addq $8, %rsp
-.L525_for_inc:
+.L530_for_inc:
 	leaq -44(%rbp), %rax
 	pushq %rax
 	movl -44(%rbp), %eax
@@ -28400,13 +28511,13 @@ compile_function:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L525_for_start
-.L525_for_end:
+	jmp .L530_for_start
+.L530_for_end:
 	addq $64, %rsp
 	subq $48, %rsp
 	movl $0, %eax
 	movl %eax, -44(%rbp)
-.L526_for_start:
+.L531_for_start:
 	movl -44(%rbp), %eax
 	pushq %rax
 	movq -8(%rbp), %rax
@@ -28418,7 +28529,7 @@ compile_function:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L526_for_end
+	jz .L531_for_end
 	movq -8(%rbp), %rax
 	movq 8(%rax), %rax
 	movq (%rax), %rax
@@ -28434,7 +28545,7 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L527_else
+	jz .L532_else
 	subq $48, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
@@ -28482,10 +28593,10 @@ compile_function:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L528_end
+	jz .L533_end
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_656(%rip), %rax
+	leaq .str_664(%rip), %rax
 	pushq %rax
 	movq -8(%rbp), %rax
 	movq (%rax), %rdx
@@ -28505,7 +28616,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_657(%rip), %rdx
+	leaq .str_665(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28538,7 +28649,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_658(%rip), %rdx
+	leaq .str_666(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28570,7 +28681,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_659(%rip), %rdx
+	leaq .str_667(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28582,7 +28693,7 @@ compile_function:
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_660(%rip), %rax
+	leaq .str_668(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq -32(%rbp), %rax
@@ -28614,7 +28725,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_661(%rip), %rdx
+	leaq .str_669(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28651,7 +28762,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_662(%rip), %rdx
+	leaq .str_670(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28662,12 +28773,12 @@ compile_function:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L528_end
+	jmp .L533_end
 	addq $48, %rsp
-.L528_end:
-	jmp .L527_end
+.L533_end:
+	jmp .L532_end
 	addq $48, %rsp
-.L527_else:
+.L532_else:
 	subq $48, %rsp
 	subq $8, %rsp
 	movq -24(%rbp), %rax
@@ -28696,10 +28807,10 @@ compile_function:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L527_end
+	jmp .L532_end
 	addq $48, %rsp
-.L527_end:
-.L526_for_inc:
+.L532_end:
+.L531_for_inc:
 	leaq -44(%rbp), %rax
 	pushq %rax
 	movl -44(%rbp), %eax
@@ -28707,11 +28818,11 @@ compile_function:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L526_for_start
-.L526_for_end:
+	jmp .L531_for_start
+.L531_for_end:
 	addq $48, %rsp
 	subq $8, %rsp
-	leaq .str_663(%rip), %rax
+	leaq .str_671(%rip), %rax
 	movq -40(%rbp), %rdx
 	pushq %rdx
 	pushq %rax
@@ -28728,7 +28839,7 @@ compile_function:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_664(%rip), %rdx
+	leaq .str_672(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -28741,7 +28852,7 @@ compile_function:
 	addq $8, %rsp
 	subq $8, %rsp
 	movq -40(%rbp), %rax
-	leaq .str_665(%rip), %rdx
+	leaq .str_673(%rip), %rdx
 	pushq %rdx
 	pushq %rax
 	movq $64, %rdi
@@ -28767,46 +28878,46 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L549_elseif_0
+	jz .L554_elseif_0
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_666(%rip), %rax
+	leaq .str_674(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_667(%rip), %rax
+	leaq .str_675(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L549_end
+	jmp .L554_end
 	addq $48, %rsp
-.L549_elseif_0:
+.L554_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L549_end
+	jz .L554_end
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_668(%rip), %rax
+	leaq .str_676(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_669(%rip), %rax
+	leaq .str_677(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L549_end
+	jmp .L554_end
 	addq $48, %rsp
-.L549_end:
+.L554_end:
 	leaq .rsp_offset(%rip), %rax
 	pushq %rax
 	movl $0, %eax
@@ -28821,7 +28932,7 @@ compile_function:
 	addq $8, %rsp
 	addq $8, %rsp
 	movq -40(%rbp), %rax
-	leaq .str_670(%rip), %rdx
+	leaq .str_678(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -28829,7 +28940,7 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L550_end
+	jz .L555_end
 	subq $48, %rsp
 	leaq .rsp_offset(%rip), %rax
 	pushq %rax
@@ -28838,22 +28949,22 @@ compile_function:
 	popq %rbx
 	movl %eax, (%rbx)
 	subq $8, %rsp
-	leaq .str_671(%rip), %rax
+	leaq .str_679(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_672(%rip), %rax
+	leaq .str_680(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L550_end
+	jmp .L555_end
 	addq $48, %rsp
-.L550_end:
+.L555_end:
 	movq -40(%rbp), %rax
-	leaq .str_673(%rip), %rdx
+	leaq .str_681(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -28861,7 +28972,7 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L551_end
+	jz .L556_end
 	subq $48, %rsp
 	leaq .rsp_offset(%rip), %rax
 	pushq %rax
@@ -28870,20 +28981,20 @@ compile_function:
 	popq %rbx
 	movl %eax, (%rbx)
 	subq $8, %rsp
-	leaq .str_674(%rip), %rax
+	leaq .str_682(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_675(%rip), %rax
+	leaq .str_683(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L551_end
+	jmp .L556_end
 	addq $48, %rsp
-.L551_end:
+.L556_end:
 	subq $8, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
@@ -28913,40 +29024,40 @@ compile_function:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L552_elseif_0
+	jz .L557_elseif_0
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_676(%rip), %rax
+	leaq .str_684(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L552_end
+	jmp .L557_end
 	addq $48, %rsp
-.L552_elseif_0:
+.L557_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L552_end
+	jz .L557_end
 	subq $48, %rsp
 	subq $8, %rsp
-	leaq .str_677(%rip), %rax
+	leaq .str_685(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_678(%rip), %rax
+	leaq .str_686(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L552_end
+	jmp .L557_end
 	addq $48, %rsp
-.L552_end:
+.L557_end:
 	addq $48, %rsp
 	leave
 	ret
@@ -28963,15 +29074,15 @@ compile_break:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L553_end
+	jz .L558_end
 	subq $8, %rsp
-	leaq .str_679(%rip), %rax
+	leaq .str_687(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L553_end
-.L553_end:
+	jmp .L558_end
+.L558_end:
 	movq 16(%rbp), %rax
 	movl (%rax), %eax
 	movl $24, %edx
@@ -28979,10 +29090,10 @@ compile_break:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L554_elseif_0
+	jz .L559_elseif_0
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_680(%rip), %rax
+	leaq .str_688(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29009,7 +29120,7 @@ compile_break:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_681(%rip), %rdx
+	leaq .str_689(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29036,8 +29147,8 @@ compile_break:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L554_end
-.L554_elseif_0:
+	jmp .L559_end
+.L559_elseif_0:
 	movq 16(%rbp), %rax
 	movl (%rax), %eax
 	movl $23, %edx
@@ -29045,10 +29156,10 @@ compile_break:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L554_else
+	jz .L559_else
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_682(%rip), %rax
+	leaq .str_690(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29075,7 +29186,7 @@ compile_break:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_683(%rip), %rdx
+	leaq .str_691(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29102,10 +29213,10 @@ compile_break:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L554_end
-.L554_else:
+	jmp .L559_end
+.L559_else:
 	subq $8, %rsp
-	leaq .str_684(%rip), %rax
+	leaq .str_692(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29132,7 +29243,7 @@ compile_break:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_685(%rip), %rdx
+	leaq .str_693(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29143,8 +29254,8 @@ compile_break:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L554_end
-.L554_end:
+	jmp .L559_end
+.L559_end:
 	leave
 	ret
 .globl compile_continue
@@ -29160,15 +29271,15 @@ compile_continue:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L564_end
+	jz .L569_end
 	subq $8, %rsp
-	leaq .str_686(%rip), %rax
+	leaq .str_694(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L564_end
-.L564_end:
+	jmp .L569_end
+.L569_end:
 	movq 16(%rbp), %rax
 	movl (%rax), %eax
 	movl $24, %edx
@@ -29176,10 +29287,10 @@ compile_continue:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L565_elseif_0
+	jz .L570_elseif_0
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_687(%rip), %rax
+	leaq .str_695(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29206,7 +29317,7 @@ compile_continue:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_688(%rip), %rdx
+	leaq .str_696(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29233,8 +29344,8 @@ compile_continue:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L565_end
-.L565_elseif_0:
+	jmp .L570_end
+.L570_elseif_0:
 	movq 16(%rbp), %rax
 	movl (%rax), %eax
 	movl $23, %edx
@@ -29242,10 +29353,10 @@ compile_continue:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L565_else
+	jz .L570_else
 	movq 32(%rbp), %rax
 	pushq %rax
-	leaq .str_689(%rip), %rax
+	leaq .str_697(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29272,7 +29383,7 @@ compile_continue:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_690(%rip), %rdx
+	leaq .str_698(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29299,10 +29410,10 @@ compile_continue:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L565_end
-.L565_else:
+	jmp .L570_end
+.L570_else:
 	subq $8, %rsp
-	leaq .str_691(%rip), %rax
+	leaq .str_699(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 16(%rbp), %rax
@@ -29329,7 +29440,7 @@ compile_continue:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_692(%rip), %rdx
+	leaq .str_700(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29340,8 +29451,8 @@ compile_continue:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L565_end
-.L565_end:
+	jmp .L570_end
+.L570_end:
 	leave
 	ret
 .globl compile_while
@@ -29389,7 +29500,7 @@ compile_while:
 	movl %eax, (%rbx)
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_693(%rip), %rax
+	leaq .str_701(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -36(%rbp), %eax
@@ -29415,7 +29526,7 @@ compile_while:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_694(%rip), %rdx
+	leaq .str_702(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29434,7 +29545,7 @@ compile_while:
 	pushq %rax
 	movq -16(%rbp), %rax
 	pushq %rax
-	movb .char_695(%rip), %al
+	movb .char_703(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -29481,7 +29592,7 @@ compile_while:
 	addq $4, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_696(%rip), %rax
+	leaq .str_704(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -36(%rbp), %eax
@@ -29507,7 +29618,7 @@ compile_while:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_697(%rip), %rdx
+	leaq .str_705(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29555,7 +29666,7 @@ compile_while:
 	addq $8, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_698(%rip), %rax
+	leaq .str_706(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -36(%rbp), %eax
@@ -29581,7 +29692,7 @@ compile_while:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_699(%rip), %rdx
+	leaq .str_707(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29610,7 +29721,7 @@ compile_while:
 	addq $4, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_700(%rip), %rax
+	leaq .str_708(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -36(%rbp), %eax
@@ -29636,7 +29747,7 @@ compile_while:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_701(%rip), %rdx
+	leaq .str_709(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29756,7 +29867,7 @@ compile_for:
 	movl %eax, (%rbx)
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_702(%rip), %rax
+	leaq .str_710(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -60(%rbp), %eax
@@ -29782,7 +29893,7 @@ compile_for:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_703(%rip), %rdx
+	leaq .str_711(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29800,7 +29911,7 @@ compile_for:
 	pushq %rax
 	movq -16(%rbp), %rax
 	pushq %rax
-	movb .char_704(%rip), %al
+	movb .char_712(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -29847,7 +29958,7 @@ compile_for:
 	addq $4, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_705(%rip), %rax
+	leaq .str_713(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -60(%rbp), %eax
@@ -29873,7 +29984,7 @@ compile_for:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_706(%rip), %rdx
+	leaq .str_714(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29920,7 +30031,7 @@ compile_for:
 	addq $8, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_707(%rip), %rax
+	leaq .str_715(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -60(%rbp), %eax
@@ -29946,7 +30057,7 @@ compile_for:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_708(%rip), %rdx
+	leaq .str_716(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -29977,7 +30088,7 @@ compile_for:
 	addq $8, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_709(%rip), %rax
+	leaq .str_717(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -60(%rbp), %eax
@@ -30003,7 +30114,7 @@ compile_for:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_710(%rip), %rdx
+	leaq .str_718(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -30032,7 +30143,7 @@ compile_for:
 	addq $4, %rsp
 	movq -24(%rbp), %rax
 	pushq %rax
-	leaq .str_711(%rip), %rax
+	leaq .str_719(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movl -60(%rbp), %eax
@@ -30058,7 +30169,7 @@ compile_for:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_712(%rip), %rdx
+	leaq .str_720(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -30113,7 +30224,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_0
+	jz .L607_elseif_0
 	subq $4, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -30131,8 +30242,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L602_end
-.L602_elseif_0:
+	jmp .L607_end
+.L607_elseif_0:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $25, %edx
@@ -30140,7 +30251,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_1
+	jz .L607_elseif_1
 	subq $4, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -30158,8 +30269,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $4, %rsp
 	addq $4, %rsp
-	jmp .L602_end
-.L602_elseif_1:
+	jmp .L607_end
+.L607_elseif_1:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $22, %edx
@@ -30167,7 +30278,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_2
+	jz .L607_elseif_2
 	subq $8, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -30186,8 +30297,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_2:
+	jmp .L607_end
+.L607_elseif_2:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $21, %edx
@@ -30195,7 +30306,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_3
+	jz .L607_elseif_3
 	movq 48(%rbp), %rax
 	pushq %rax
 	movl $0, %edx
@@ -30205,15 +30316,15 @@ compile_statement:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L603_end
+	jz .L608_end
 	subq $8, %rsp
-	leaq .str_713(%rip), %rax
+	leaq .str_721(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L603_end
-.L603_end:
+	jmp .L608_end
+.L608_end:
 	movq 32(%rbp), %rax
 	pushq %rax
 	movq 40(%rbp), %rax
@@ -30221,8 +30332,8 @@ compile_statement:
 	call compile_function
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_3:
+	jmp .L607_end
+.L607_elseif_3:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $26, %edx
@@ -30230,7 +30341,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_4
+	jz .L607_elseif_4
 	movq 48(%rbp), %rax
 	pushq %rax
 	movq 32(%rbp), %rax
@@ -30245,8 +30356,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_4:
+	jmp .L607_end
+.L607_elseif_4:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $27, %edx
@@ -30254,7 +30365,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_5
+	jz .L607_elseif_5
 	subq $8, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -30267,8 +30378,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_5:
+	jmp .L607_end
+.L607_elseif_5:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $28, %edx
@@ -30276,7 +30387,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_6
+	jz .L607_elseif_6
 	subq $8, %rsp
 	movq 48(%rbp), %rax
 	pushq %rax
@@ -30289,8 +30400,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_6:
+	jmp .L607_end
+.L607_elseif_6:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $4, %edx
@@ -30298,7 +30409,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_7
+	jz .L607_elseif_7
 	subq $3, %rsp
 	movq 32(%rbp), %rax
 	pushq %rax
@@ -30306,7 +30417,7 @@ compile_statement:
 	pushq %rax
 	movq 40(%rbp), %rax
 	pushq %rax
-	movb .char_714(%rip), %al
+	movb .char_722(%rip), %al
 	subq $1, %rsp
 	movb %al, (%rsp)
 	movl $1, %eax
@@ -30320,8 +30431,8 @@ compile_statement:
 	addq $1, %rsp
 	addq $4, %rsp
 	addq $3, %rsp
-	jmp .L602_end
-.L602_elseif_7:
+	jmp .L607_end
+.L607_elseif_7:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $23, %edx
@@ -30329,7 +30440,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_8
+	jz .L607_elseif_8
 	movq 48(%rbp), %rax
 	pushq %rax
 	movq 32(%rbp), %rax
@@ -30343,8 +30454,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_8:
+	jmp .L607_end
+.L607_elseif_8:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $24, %edx
@@ -30352,7 +30463,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_9
+	jz .L607_elseif_9
 	movq 48(%rbp), %rax
 	pushq %rax
 	movq 32(%rbp), %rax
@@ -30366,8 +30477,8 @@ compile_statement:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_elseif_9:
+	jmp .L607_end
+.L607_elseif_9:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $29, %edx
@@ -30385,9 +30496,9 @@ compile_statement:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_elseif_10
-	jmp .L602_end
-.L602_elseif_10:
+	jz .L607_elseif_10
+	jmp .L607_end
+.L607_elseif_10:
 	movq 32(%rbp), %rax
 	movl (%rax), %eax
 	movl $30, %edx
@@ -30395,7 +30506,7 @@ compile_statement:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L602_else
+	jz .L607_else
 	subq $16, %rsp
 	movq 32(%rbp), %rax
 	movq 4(%rax), %rax
@@ -30407,11 +30518,11 @@ compile_statement:
 	call compile_file
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
+	jmp .L607_end
 	addq $16, %rsp
-.L602_else:
+.L607_else:
 	subq $8, %rsp
-	leaq .str_715(%rip), %rax
+	leaq .str_723(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq 32(%rbp), %rax
@@ -30438,7 +30549,7 @@ compile_statement:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_716(%rip), %rdx
+	leaq .str_724(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -30449,8 +30560,8 @@ compile_statement:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L602_end
-.L602_end:
+	jmp .L607_end
+.L607_end:
 	leave
 	ret
 .globl get_index_of_last_slash
@@ -30466,34 +30577,34 @@ get_index_of_last_slash:
 	subl %edx, %eax
 	movl %eax, -4(%rbp)
 	subq $16, %rsp
-.L607_while_start:
+.L612_while_start:
 	movl -4(%rbp), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	setge %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L607_while_end
+	jz .L612_while_end
 	movq 16(%rbp), %rax
 	pushq %rax
 	movl -4(%rbp), %edx
 	popq %rax
 	leaq (%rax, %rdx, 1), %rax
 	movb (%rax), %al
-	movb .char_717(%rip), %dl
+	movb .char_725(%rip), %dl
 	cmpb %dl, %al
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L608_end
+	jz .L613_end
 	subq $16, %rsp
 	movl -4(%rbp), %eax
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L608_end
+	jmp .L613_end
 	addq $16, %rsp
-.L608_end:
+.L613_end:
 	leaq -4(%rbp), %rax
 	pushq %rax
 	movl -4(%rbp), %eax
@@ -30501,8 +30612,8 @@ get_index_of_last_slash:
 	subl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L607_while_start
-.L607_while_end:
+	jmp .L612_while_start
+.L612_while_end:
 	addq $16, %rsp
 	movl $1, %eax
 	negl %eax
@@ -30609,7 +30720,7 @@ compile_file:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L611_else
+	jz .L616_else
 	subq $48, %rsp
 	leaq .relative_directory(%rip), %rax
 	pushq %rax
@@ -30637,20 +30748,20 @@ compile_file:
 	addq $8, %rsp
 	popq %rbx
 	movq %rax, (%rbx)
-	jmp .L611_end
+	jmp .L616_end
 	addq $48, %rsp
-.L611_else:
+.L616_else:
 	subq $48, %rsp
 	leaq .relative_directory(%rip), %rax
 	pushq %rax
-	leaq .str_718(%rip), %rax
+	leaq .str_726(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
-	jmp .L611_end
+	jmp .L616_end
 	addq $48, %rsp
-.L611_end:
+.L616_end:
 	subq $48, %rsp
-.L612_while_start:
+.L617_while_start:
 	call peek_next_token
 	movq %rax, %rax
 	pushq %rax
@@ -30661,7 +30772,7 @@ compile_file:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L612_while_end
+	jz .L617_while_end
 	call peek_next_token
 	movq %rax, %rax
 	movl (%rax), %eax
@@ -30670,12 +30781,12 @@ compile_file:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L613_end
+	jz .L618_end
 	subq $48, %rsp
-	jmp .L612_while_end
-	jmp .L613_end
+	jmp .L617_while_end
+	jmp .L618_end
 	addq $48, %rsp
-.L613_end:
+.L618_end:
 	call get_statement
 	movq %rax, %rax
 	movq %rax, -44(%rbp)
@@ -30701,8 +30812,8 @@ compile_file:
 	addq $8, %rsp
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L612_while_start
-.L612_while_end:
+	jmp .L617_while_start
+.L617_while_end:
 	addq $48, %rsp
 	leaq .input_text(%rip), %rax
 	pushq %rax
@@ -30726,7 +30837,7 @@ compile_file:
 	movq %rax, (%rbx)
 	movq .tokens(%rip), %rax
 	cmpq $0, %rax
-	jz .L614_end
+	jz .L619_end
 	subq $48, %rsp
 	leaq .token_count(%rip), %rax
 	pushq %rax
@@ -30734,9 +30845,9 @@ compile_file:
 	movl 8(%rax), %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L614_end
+	jmp .L619_end
 	addq $48, %rsp
-.L614_end:
+.L619_end:
 	leaq .token_index(%rip), %rax
 	pushq %rax
 	movl -4(%rbp), %eax
@@ -30768,10 +30879,10 @@ main:
 	setne %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L615_end
+	jz .L620_end
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_741(%rip), %rax
+	leaq .str_749(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
@@ -30780,16 +30891,16 @@ main:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L615_end
+	jmp .L620_end
 	addq $16, %rsp
-.L615_end:
+.L620_end:
 	movq -12(%rbp), %rax
 	pushq %rax
 	movl $1, %edx
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	leaq .str_742(%rip), %rdx
+	leaq .str_750(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -30797,23 +30908,23 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L616_elseif_0
+	jz .L621_elseif_0
 	subq $16, %rsp
 	leaq .current_target(%rip), %rax
 	pushq %rax
 	movl $0, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L616_end
+	jmp .L621_end
 	addq $16, %rsp
-.L616_elseif_0:
+.L621_elseif_0:
 	movq -12(%rbp), %rax
 	pushq %rax
 	movl $1, %edx
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	leaq .str_743(%rip), %rdx
+	leaq .str_751(%rip), %rdx
 	movq %rax, %rdi
 	movq %rdx, %rsi
 	call strcmp
@@ -30821,19 +30932,19 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L616_else
+	jz .L621_else
 	subq $16, %rsp
 	leaq .current_target(%rip), %rax
 	pushq %rax
 	movl $1, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L616_end
+	jmp .L621_end
 	addq $16, %rsp
-.L616_else:
+.L621_else:
 	subq $16, %rsp
 	subq $8, %rsp
-	leaq .str_744(%rip), %rax
+	leaq .str_752(%rip), %rax
 	pushq %rax
 	movq -12(%rbp), %rax
 	pushq %rax
@@ -30857,7 +30968,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_745(%rip), %rdx
+	leaq .str_753(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -30872,9 +30983,9 @@ main:
 	addq $16, %rsp
 	leave
 	ret
-	jmp .L616_end
+	jmp .L621_end
 	addq $16, %rsp
-.L616_end:
+.L621_end:
 	leaq .global_scope(%rip), %rax
 	pushq %rax
 	subq $8, %rsp
@@ -31031,64 +31142,8 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L620_elseif_0
+	jz .L625_elseif_0
 	subq $16, %rsp
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_746(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_747(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_748(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_749(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_750(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_751(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_752(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
-	movq .register_names_byte(%rip), %rax
-	pushq %rax
-	leaq .str_753(%rip), %rbx
-	popq %rax
-	call __append_quad
-	movq (%rax), %rax
-	addl $1, 8(%r12)
 	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_754(%rip), %rbx
@@ -31145,56 +31200,56 @@ main:
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_762(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_763(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_764(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_765(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_766(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_767(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_768(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_byte(%rip), %rax
 	pushq %rax
 	leaq .str_769(%rip), %rbx
 	popq %rax
@@ -31257,56 +31312,56 @@ main:
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_778(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_779(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_780(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_781(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_782(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_783(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_784(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_785(%rip), %rbx
 	popq %rax
@@ -31369,73 +31424,73 @@ main:
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	jmp .L620_end
-	addq $16, %rsp
-.L620_elseif_0:
-	movl .current_target(%rip), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L620_end
-	subq $16, %rsp
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_794(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_795(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_796(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_797(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_798(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_799(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_800(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_dword(%rip), %rax
+	movq .register_names_qword(%rip), %rax
 	pushq %rax
 	leaq .str_801(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
+	jmp .L625_end
+	addq $16, %rsp
+.L625_elseif_0:
+	movl .current_target(%rip), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L625_end
+	subq $16, %rsp
 	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_802(%rip), %rbx
@@ -31492,56 +31547,56 @@ main:
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_810(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_811(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_812(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_813(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_814(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_815(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_816(%rip), %rbx
 	popq %rax
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	movq .register_names_qword(%rip), %rax
+	movq .register_names_dword(%rip), %rax
 	pushq %rax
 	leaq .str_817(%rip), %rbx
 	popq %rax
@@ -31604,9 +31659,65 @@ main:
 	call __append_quad
 	movq (%rax), %rax
 	addl $1, 8(%r12)
-	jmp .L620_end
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_826(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_827(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_828(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_829(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_830(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_831(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_832(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	movq .register_names_qword(%rip), %rax
+	pushq %rax
+	leaq .str_833(%rip), %rbx
+	popq %rax
+	call __append_quad
+	movq (%rax), %rax
+	addl $1, 8(%r12)
+	jmp .L625_end
 	addq $16, %rsp
-.L620_end:
+.L625_end:
 	subq $8, %rsp
 	movq .function_registry(%rip), %rax
 	pushq %rax
@@ -31618,7 +31729,7 @@ main:
 	movq -20(%rbp), %rax
 	leaq (%rax), %rax
 	pushq %rax
-	leaq .str_826(%rip), %rax
+	leaq .str_834(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -20(%rbp), %rax
@@ -31630,7 +31741,7 @@ main:
 	subq $12, %rsp
 	movq -20(%rbp), %rax
 	pushq %rax
-	leaq .str_827(%rip), %rax
+	leaq .str_835(%rip), %rax
 	pushq %rax
 	movl $5, %eax
 	subq $4, %rsp
@@ -31651,7 +31762,7 @@ main:
 	movq -28(%rbp), %rax
 	leaq (%rax), %rax
 	pushq %rax
-	leaq .str_828(%rip), %rax
+	leaq .str_836(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -28(%rbp), %rax
@@ -31663,7 +31774,7 @@ main:
 	subq $12, %rsp
 	movq -28(%rbp), %rax
 	pushq %rax
-	leaq .str_829(%rip), %rax
+	leaq .str_837(%rip), %rax
 	pushq %rax
 	movl $5, %eax
 	subq $4, %rsp
@@ -31684,7 +31795,7 @@ main:
 	movq -36(%rbp), %rax
 	leaq (%rax), %rax
 	pushq %rax
-	leaq .str_830(%rip), %rax
+	leaq .str_838(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -36(%rbp), %rax
@@ -31696,7 +31807,7 @@ main:
 	subq $12, %rsp
 	movq -36(%rbp), %rax
 	pushq %rax
-	leaq .str_831(%rip), %rax
+	leaq .str_839(%rip), %rax
 	pushq %rax
 	movl $1, %eax
 	subq $4, %rsp
@@ -31717,7 +31828,7 @@ main:
 	movq -44(%rbp), %rax
 	leaq (%rax), %rax
 	pushq %rax
-	leaq .str_832(%rip), %rax
+	leaq .str_840(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -44(%rbp), %rax
@@ -31729,7 +31840,7 @@ main:
 	subq $12, %rsp
 	movq -44(%rbp), %rax
 	pushq %rax
-	leaq .str_833(%rip), %rax
+	leaq .str_841(%rip), %rax
 	pushq %rax
 	movl $2, %eax
 	subq $4, %rsp
@@ -31750,7 +31861,7 @@ main:
 	movq -52(%rbp), %rax
 	leaq (%rax), %rax
 	pushq %rax
-	leaq .str_834(%rip), %rax
+	leaq .str_842(%rip), %rax
 	popq %rbx
 	movq %rax, (%rbx)
 	movq -52(%rbp), %rax
@@ -31762,7 +31873,7 @@ main:
 	subq $12, %rsp
 	movq -52(%rbp), %rax
 	pushq %rax
-	leaq .str_835(%rip), %rax
+	leaq .str_843(%rip), %rax
 	pushq %rax
 	movl $3, %eax
 	subq $4, %rsp
@@ -31778,66 +31889,7 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L701_elseif_0
-	subq $64, %rsp
-	subq $8, %rsp
-	leaq .str_836(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_837(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_838(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_839(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_840(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_841(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_842(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	subq $8, %rsp
-	leaq .str_843(%rip), %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L701_end
-	addq $64, %rsp
-.L701_elseif_0:
-	movl .current_target(%rip), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L701_end
+	jz .L706_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_844(%rip), %rax
@@ -31845,9 +31897,68 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L701_end
+	subq $8, %rsp
+	leaq .str_845(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_846(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_847(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_848(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_849(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_850(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	subq $8, %rsp
+	leaq .str_851(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L706_end
 	addq $64, %rsp
-.L701_end:
+.L706_elseif_0:
+	movl .current_target(%rip), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L706_end
+	subq $64, %rsp
+	subq $8, %rsp
+	leaq .str_852(%rip), %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L706_end
+	addq $64, %rsp
+.L706_end:
 	subq $8, %rsp
 	movq -12(%rbp), %rax
 	pushq %rax
@@ -31865,7 +31976,7 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L702_elseif_0
+	jz .L707_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
 	movq .print_asm_code_x86(%rip), %rax
@@ -31933,16 +32044,16 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L702_end
+	jmp .L707_end
 	addq $64, %rsp
-.L702_elseif_0:
+.L707_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L702_end
+	jz .L707_end
 	subq $64, %rsp
 	subq $8, %rsp
 	movq .print_asm_code_aarch64(%rip), %rax
@@ -32010,53 +32121,53 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L702_end
+	jmp .L707_end
 	addq $64, %rsp
-.L702_end:
+.L707_end:
 	movl .current_target(%rip), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L703_elseif_0
+	jz .L708_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_845(%rip), %rax
+	leaq .str_853(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L703_end
+	jmp .L708_end
 	addq $64, %rsp
-.L703_elseif_0:
+.L708_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L703_end
+	jz .L708_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_846(%rip), %rax
+	leaq .str_854(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_847(%rip), %rax
+	leaq .str_855(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L703_end
+	jmp .L708_end
 	addq $64, %rsp
-.L703_end:
+.L708_end:
 	subq $64, %rsp
 	movl $0, %eax
 	movl %eax, -56(%rbp)
-.L704_for_start:
+.L709_for_start:
 	movl -56(%rbp), %eax
 	pushq %rax
 	movq .global_scope(%rip), %rax
@@ -32067,7 +32178,7 @@ main:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L704_for_end
+	jz .L709_for_end
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
 	movq (%rax), %rax
@@ -32087,12 +32198,12 @@ main:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L705_end
+	jz .L710_end
 	subq $64, %rsp
-	jmp .L704_for_inc
-	jmp .L705_end
+	jmp .L709_for_inc
+	jmp .L710_end
 	addq $64, %rsp
-.L705_end:
+.L710_end:
 	movl -60(%rbp), %eax
 	movl $7, %edx
 	cmpl %edx, %eax
@@ -32108,250 +32219,19 @@ main:
 	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L706_end
+	jz .L711_end
 	subq $64, %rsp
-	jmp .L704_for_inc
-	jmp .L706_end
+	jmp .L709_for_inc
+	jmp .L711_end
 	addq $64, %rsp
-.L706_end:
+.L711_end:
 	movl .current_target(%rip), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L707_elseif_0
-	subq $64, %rsp
-	subq $8, %rsp
-	leaq .str_848(%rip), %rax
-	pushq %rax
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -56(%rbp), %edx
-	popq %rax
-	leaq (%rax, %rdx, 8), %rax
-	movq (%rax), %rax
-	movq (%rax), %rdx
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_849(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L707_end
-	addq $64, %rsp
-.L707_elseif_0:
-	movl .current_target(%rip), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L707_end
-	subq $64, %rsp
-	subq $8, %rsp
-	leaq .str_850(%rip), %rax
-	pushq %rax
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -56(%rbp), %edx
-	popq %rax
-	leaq (%rax, %rdx, 8), %rax
-	movq (%rax), %rax
-	movq (%rax), %rdx
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_851(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L707_end
-	addq $64, %rsp
-.L707_end:
-	subq $12, %rsp
-	movl -60(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call is_pointer
-	movb %al, %al
-	addq $4, %rsp
-	addq $12, %rsp
-	pushq %rax
-	subq $4, %rsp
-	movl -60(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call is_array
-	movb %al, %dl
-	addq $4, %rsp
-	addq $4, %rsp
-	popq %rax
-	orb %dl, %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L714_elseif_0
-	subq $64, %rsp
-	subq $8, %rsp
-	leaq .str_852(%rip), %rax
-	pushq %rax
-	subq $8, %rsp
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -56(%rbp), %edx
-	popq %rax
-	leaq (%rax, %rdx, 8), %rax
-	movq (%rax), %rax
-	movq 8(%rax), %rax
-	movq (%rax), %rax
-	movq %rax, %rax
-	pushq %rax
-	call long_to_str
-	movq %rax, %rdx
-	addq $8, %rsp
-	addq $8, %rsp
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_853(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L714_end
-	addq $64, %rsp
-.L714_elseif_0:
-	movl -60(%rbp), %eax
-	movl $5, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L714_elseif_1
-	subq $64, %rsp
-	movl .current_target(%rip), %eax
-	movl $0, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L718_elseif_0
-	subq $64, %rsp
-	subq $8, %rsp
-	leaq .str_854(%rip), %rax
-	pushq %rax
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -56(%rbp), %edx
-	popq %rax
-	leaq (%rax, %rdx, 8), %rax
-	movq (%rax), %rax
-	movq 8(%rax), %rdx
-	popq %rax
-	pushq %rdx
-	pushq %rax
-	movq $64, %rdi
-	call malloc
-	movq %rax, %r15
-	movq $0, %r14
-	movq $64, %r13
-	popq %r12
-	call __append_string_to_builder
-	popq %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	leaq .str_855(%rip), %rdx
-	movq %rdx, %r12
-	subq $8, %rsp
-	call __append_string_to_builder
-	addq $8, %rsp
-	movq %r15, %rax
-	movq %rax, %rax
-	pushq %rax
-	call print
-	addq $8, %rsp
-	addq $8, %rsp
-	jmp .L718_end
-	addq $64, %rsp
-.L718_elseif_0:
-	movl .current_target(%rip), %eax
-	movl $1, %edx
-	cmpl %edx, %eax
-	sete %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L718_end
+	jz .L712_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_856(%rip), %rax
@@ -32364,7 +32244,7 @@ main:
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	movq 8(%rax), %rdx
+	movq (%rax), %rdx
 	popq %rax
 	pushq %rdx
 	pushq %rax
@@ -32392,24 +32272,20 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L718_end
+	jmp .L712_end
 	addq $64, %rsp
-.L718_end:
-	jmp .L714_end
-	addq $64, %rsp
-.L714_elseif_1:
-	movl -60(%rbp), %eax
+.L712_elseif_0:
+	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L714_elseif_2
+	jz .L712_end
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_858(%rip), %rax
 	pushq %rax
-	subq $12, %rsp
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
 	movq (%rax), %rax
@@ -32418,15 +32294,7 @@ main:
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	movq 8(%rax), %rax
-	movl (%rax), %eax
-	movl %eax, %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call int_to_str
-	movq %rax, %rdx
-	addq $4, %rsp
-	addq $12, %rsp
+	movq (%rax), %rdx
 	popq %rax
 	pushq %rdx
 	pushq %rax
@@ -32454,16 +32322,31 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L714_end
+	jmp .L712_end
 	addq $64, %rsp
-.L714_elseif_2:
+.L712_end:
+	subq $12, %rsp
 	movl -60(%rbp), %eax
-	movl $2, %edx
-	cmpl %edx, %eax
-	sete %al
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call is_pointer
+	movb %al, %al
+	addq $4, %rsp
+	addq $12, %rsp
+	pushq %rax
+	subq $4, %rsp
+	movl -60(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call is_array
+	movb %al, %dl
+	addq $4, %rsp
+	addq $4, %rsp
+	popq %rax
+	orb %dl, %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L714_end
+	jz .L719_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_860(%rip), %rax
@@ -32512,79 +32395,24 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L714_end
+	jmp .L719_end
 	addq $64, %rsp
-.L714_end:
-.L704_for_inc:
-	leaq -56(%rbp), %rax
-	pushq %rax
-	movl -56(%rbp), %eax
-	movl $1, %edx
-	addl %edx, %eax
-	popq %rbx
-	movl %eax, (%rbx)
-	jmp .L704_for_start
-.L704_for_end:
-	addq $64, %rsp
-	subq $64, %rsp
-	movl $0, %eax
-	movl %eax, -56(%rbp)
-.L731_for_start:
-	movl -56(%rbp), %eax
-	pushq %rax
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movl 8(%rax), %edx
-	popq %rax
-	cmpl %edx, %eax
-	setl %al
-	movb %al, %al
-	cmpb $0, %al
-	jz .L731_for_end
-	movq .global_scope(%rip), %rax
-	movq (%rax), %rax
-	movq (%rax), %rax
-	pushq %rax
-	movl -56(%rbp), %edx
-	popq %rax
-	leaq (%rax, %rdx, 8), %rax
-	movq (%rax), %rax
-	movl 16(%rax), %eax
-	movl %eax, -60(%rbp)
-	subq $12, %rsp
+.L719_elseif_0:
 	movl -60(%rbp), %eax
-	subq $4, %rsp
-	movl %eax, (%rsp)
-	call is_const
-	movb %al, %al
-	addq $4, %rsp
-	addq $12, %rsp
-	cmpb $0, %al
-	jz .L732_end
-	subq $64, %rsp
-	jmp .L731_for_inc
-	jmp .L732_end
-	addq $64, %rsp
-.L732_end:
-	movl -60(%rbp), %eax
-	movl $3, %edx
+	movl $5, %edx
 	cmpl %edx, %eax
-	setne %al
+	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L733_end
+	jz .L719_elseif_1
 	subq $64, %rsp
-	jmp .L731_for_inc
-	jmp .L733_end
-	addq $64, %rsp
-.L733_end:
 	movl .current_target(%rip), %eax
 	movl $0, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L734_elseif_0
+	jz .L723_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_862(%rip), %rax
@@ -32597,7 +32425,7 @@ main:
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	movq (%rax), %rdx
+	movq 8(%rax), %rdx
 	popq %rax
 	pushq %rdx
 	pushq %rax
@@ -32625,16 +32453,16 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L734_end
+	jmp .L723_end
 	addq $64, %rsp
-.L734_elseif_0:
+.L723_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L734_end
+	jz .L723_end
 	subq $64, %rsp
 	subq $8, %rsp
 	leaq .str_864(%rip), %rax
@@ -32647,7 +32475,7 @@ main:
 	popq %rax
 	leaq (%rax, %rdx, 8), %rax
 	movq (%rax), %rax
-	movq (%rax), %rdx
+	movq 8(%rax), %rdx
 	popq %rax
 	pushq %rdx
 	pushq %rax
@@ -32675,19 +32503,302 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L734_end
+	jmp .L723_end
 	addq $64, %rsp
-.L734_end:
+.L723_end:
+	jmp .L719_end
+	addq $64, %rsp
+.L719_elseif_1:
+	movl -60(%rbp), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L719_elseif_2
+	subq $64, %rsp
+	subq $8, %rsp
+	leaq .str_866(%rip), %rax
+	pushq %rax
+	subq $12, %rsp
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -56(%rbp), %edx
+	popq %rax
+	leaq (%rax, %rdx, 8), %rax
+	movq (%rax), %rax
+	movq 8(%rax), %rax
+	movl (%rax), %eax
+	movl %eax, %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call int_to_str
+	movq %rax, %rdx
+	addq $4, %rsp
+	addq $12, %rsp
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_867(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L719_end
+	addq $64, %rsp
+.L719_elseif_2:
+	movl -60(%rbp), %eax
+	movl $2, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L719_end
+	subq $64, %rsp
+	subq $8, %rsp
+	leaq .str_868(%rip), %rax
+	pushq %rax
+	subq $8, %rsp
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -56(%rbp), %edx
+	popq %rax
+	leaq (%rax, %rdx, 8), %rax
+	movq (%rax), %rax
+	movq 8(%rax), %rax
+	movq (%rax), %rax
+	movq %rax, %rax
+	pushq %rax
+	call long_to_str
+	movq %rax, %rdx
+	addq $8, %rsp
+	addq $8, %rsp
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_869(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L719_end
+	addq $64, %rsp
+.L719_end:
+.L709_for_inc:
+	leaq -56(%rbp), %rax
+	pushq %rax
+	movl -56(%rbp), %eax
+	movl $1, %edx
+	addl %edx, %eax
+	popq %rbx
+	movl %eax, (%rbx)
+	jmp .L709_for_start
+.L709_for_end:
+	addq $64, %rsp
+	subq $64, %rsp
+	movl $0, %eax
+	movl %eax, -56(%rbp)
+.L736_for_start:
+	movl -56(%rbp), %eax
+	pushq %rax
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movl 8(%rax), %edx
+	popq %rax
+	cmpl %edx, %eax
+	setl %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L736_for_end
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -56(%rbp), %edx
+	popq %rax
+	leaq (%rax, %rdx, 8), %rax
+	movq (%rax), %rax
+	movl 16(%rax), %eax
+	movl %eax, -60(%rbp)
+	subq $12, %rsp
+	movl -60(%rbp), %eax
+	subq $4, %rsp
+	movl %eax, (%rsp)
+	call is_const
+	movb %al, %al
+	addq $4, %rsp
+	addq $12, %rsp
+	cmpb $0, %al
+	jz .L737_end
+	subq $64, %rsp
+	jmp .L736_for_inc
+	jmp .L737_end
+	addq $64, %rsp
+.L737_end:
+	movl -60(%rbp), %eax
+	movl $3, %edx
+	cmpl %edx, %eax
+	setne %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L738_end
+	subq $64, %rsp
+	jmp .L736_for_inc
+	jmp .L738_end
+	addq $64, %rsp
+.L738_end:
+	movl .current_target(%rip), %eax
+	movl $0, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L739_elseif_0
+	subq $64, %rsp
+	subq $8, %rsp
+	leaq .str_870(%rip), %rax
+	pushq %rax
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -56(%rbp), %edx
+	popq %rax
+	leaq (%rax, %rdx, 8), %rax
+	movq (%rax), %rax
+	movq (%rax), %rdx
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_871(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L739_end
+	addq $64, %rsp
+.L739_elseif_0:
+	movl .current_target(%rip), %eax
+	movl $1, %edx
+	cmpl %edx, %eax
+	sete %al
+	movb %al, %al
+	cmpb $0, %al
+	jz .L739_end
+	subq $64, %rsp
+	subq $8, %rsp
+	leaq .str_872(%rip), %rax
+	pushq %rax
+	movq .global_scope(%rip), %rax
+	movq (%rax), %rax
+	movq (%rax), %rax
+	pushq %rax
+	movl -56(%rbp), %edx
+	popq %rax
+	leaq (%rax, %rdx, 8), %rax
+	movq (%rax), %rax
+	movq (%rax), %rdx
+	popq %rax
+	pushq %rdx
+	pushq %rax
+	movq $64, %rdi
+	call malloc
+	movq %rax, %r15
+	movq $0, %r14
+	movq $64, %r13
+	popq %r12
+	call __append_string_to_builder
+	popq %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	leaq .str_873(%rip), %rdx
+	movq %rdx, %r12
+	subq $8, %rsp
+	call __append_string_to_builder
+	addq $8, %rsp
+	movq %r15, %rax
+	movq %rax, %rax
+	pushq %rax
+	call print
+	addq $8, %rsp
+	addq $8, %rsp
+	jmp .L739_end
+	addq $64, %rsp
+.L739_end:
 	movl -60(%rbp), %eax
 	movl $3, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L741_end
+	jz .L746_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_866(%rip), %rax
+	leaq .str_874(%rip), %rax
 	pushq %rax
 	subq $12, %rsp
 	movq .global_scope(%rip), %rax
@@ -32724,7 +32835,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_867(%rip), %rdx
+	leaq .str_875(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -32735,10 +32846,10 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L741_end
+	jmp .L746_end
 	addq $64, %rsp
-.L741_end:
-.L731_for_inc:
+.L746_end:
+.L736_for_inc:
 	leaq -56(%rbp), %rax
 	pushq %rax
 	movl -56(%rbp), %eax
@@ -32746,8 +32857,8 @@ main:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L731_for_start
-.L731_for_end:
+	jmp .L736_for_start
+.L736_for_end:
 	addq $64, %rsp
 	movl .current_target(%rip), %eax
 	movl $0, %edx
@@ -32755,44 +32866,44 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L745_elseif_0
+	jz .L750_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_868(%rip), %rax
+	leaq .str_876(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L745_end
+	jmp .L750_end
 	addq $64, %rsp
-.L745_elseif_0:
+.L750_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L745_end
+	jz .L750_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_869(%rip), %rax
+	leaq .str_877(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_870(%rip), %rax
+	leaq .str_878(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L745_end
+	jmp .L750_end
 	addq $64, %rsp
-.L745_end:
+.L750_end:
 	subq $64, %rsp
 	movl $0, %eax
 	movl %eax, -56(%rbp)
-.L746_for_start:
+.L751_for_start:
 	movl -56(%rbp), %eax
 	pushq %rax
 	movq .global_scope(%rip), %rax
@@ -32803,7 +32914,7 @@ main:
 	setl %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L746_for_end
+	jz .L751_for_end
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
 	movq (%rax), %rax
@@ -32823,19 +32934,19 @@ main:
 	addq $4, %rsp
 	addq $12, %rsp
 	cmpb $0, %al
-	jz .L747_end
+	jz .L752_end
 	subq $64, %rsp
-	jmp .L746_for_inc
-	jmp .L747_end
+	jmp .L751_for_inc
+	jmp .L752_end
 	addq $64, %rsp
-.L747_end:
+.L752_end:
 	movl -60(%rbp), %eax
 	movl $7, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L748_end
+	jz .L753_end
 	subq $64, %rsp
 	movl .current_target(%rip), %eax
 	movl $0, %edx
@@ -32843,10 +32954,10 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L749_elseif_0
+	jz .L754_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_871(%rip), %rax
+	leaq .str_879(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
@@ -32873,7 +32984,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_872(%rip), %rdx
+	leaq .str_880(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -32884,19 +32995,19 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L749_end
+	jmp .L754_end
 	addq $64, %rsp
-.L749_elseif_0:
+.L754_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L749_end
+	jz .L754_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_873(%rip), %rax
+	leaq .str_881(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
@@ -32923,7 +33034,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_874(%rip), %rdx
+	leaq .str_882(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -32934,11 +33045,11 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L749_end
+	jmp .L754_end
 	addq $64, %rsp
-.L749_end:
+.L754_end:
 	subq $8, %rsp
-	leaq .str_875(%rip), %rax
+	leaq .str_883(%rip), %rax
 	pushq %rax
 	movq .global_scope(%rip), %rax
 	movq (%rax), %rax
@@ -32965,7 +33076,7 @@ main:
 	addq $8, %rsp
 	movq %r15, %rax
 	movq %rax, %rax
-	leaq .str_876(%rip), %rdx
+	leaq .str_884(%rip), %rdx
 	movq %rdx, %r12
 	subq $8, %rsp
 	call __append_string_to_builder
@@ -32976,10 +33087,10 @@ main:
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L748_end
+	jmp .L753_end
 	addq $64, %rsp
-.L748_end:
-.L746_for_inc:
+.L753_end:
+.L751_for_inc:
 	leaq -56(%rbp), %rax
 	pushq %rax
 	movl -56(%rbp), %eax
@@ -32987,8 +33098,8 @@ main:
 	addl %edx, %eax
 	popq %rbx
 	movl %eax, (%rbx)
-	jmp .L746_for_start
-.L746_for_end:
+	jmp .L751_for_start
+.L751_for_end:
 	addq $64, %rsp
 	movl .current_target(%rip), %eax
 	movl $0, %edx
@@ -32996,70 +33107,70 @@ main:
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L759_elseif_0
+	jz .L764_elseif_0
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_877(%rip), %rax
+	leaq .str_885(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_878(%rip), %rax
+	leaq .str_886(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_879(%rip), %rax
+	leaq .str_887(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_880(%rip), %rax
+	leaq .str_888(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L759_end
+	jmp .L764_end
 	addq $64, %rsp
-.L759_elseif_0:
+.L764_elseif_0:
 	movl .current_target(%rip), %eax
 	movl $1, %edx
 	cmpl %edx, %eax
 	sete %al
 	movb %al, %al
 	cmpb $0, %al
-	jz .L759_end
+	jz .L764_end
 	subq $64, %rsp
 	subq $8, %rsp
-	leaq .str_881(%rip), %rax
+	leaq .str_889(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_882(%rip), %rax
+	leaq .str_890(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_883(%rip), %rax
+	leaq .str_891(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
 	subq $8, %rsp
-	leaq .str_884(%rip), %rax
+	leaq .str_892(%rip), %rax
 	pushq %rax
 	call print
 	addq $8, %rsp
 	addq $8, %rsp
-	jmp .L759_end
+	jmp .L764_end
 	addq $64, %rsp
-.L759_end:
+.L764_end:
 	movl $0, %eax
 	addq $64, %rsp
 	leave
@@ -33326,28 +33437,28 @@ leave
 	.label_index:	.quad 0
 	.element_type:	.quad 0
 	.expression_type:	.quad 0
-	.print_asm_code_x86:	.quad .str_719
-	.strlen_internal_asm_code_x86:	.quad .str_720
-	.long_to_str_asm_code_x86:	.quad .str_721
-	.int_to_str_asm_code_x86:	.quad .str_722
-	.char_to_str_asm_code_x86:	.quad .str_723
-	.read_file_asm_code_x86:	.quad .str_724
-	.append_char_asm_code_x86:	.quad .str_725
-	.append_long_asm_code_x86:	.quad .str_726
-	.append_quad_asm_code_x86:	.quad .str_727
-	.append_string_to_builder_asm_code_x86:	.quad .str_728
-	.append_char_to_builder_asm_code_x86:	.quad .str_729
-	.print_asm_code_aarch64:	.quad .str_730
-	.strlen_internal_asm_code_aarch64:	.quad .str_731
-	.int_to_str_asm_code_aarch64:	.quad .str_732
-	.long_to_str_asm_code_aarch64:	.quad .str_733
-	.char_to_str_asm_code_aarch64:	.quad .str_734
-	.read_file_asm_code_aarch64:	.quad .str_735
-	.append_long_asm_code_aarch64:	.quad .str_736
-	.append_quad_asm_code_aarch64:	.quad .str_737
-	.append_char_asm_code_aarch64:	.quad .str_738
-	.append_string_to_builder_asm_code_aarch64:	.quad .str_739
-	.append_char_to_builder_asm_code_aarch64:	.quad .str_740
+	.print_asm_code_x86:	.quad .str_727
+	.strlen_internal_asm_code_x86:	.quad .str_728
+	.long_to_str_asm_code_x86:	.quad .str_729
+	.int_to_str_asm_code_x86:	.quad .str_730
+	.char_to_str_asm_code_x86:	.quad .str_731
+	.read_file_asm_code_x86:	.quad .str_732
+	.append_char_asm_code_x86:	.quad .str_733
+	.append_long_asm_code_x86:	.quad .str_734
+	.append_quad_asm_code_x86:	.quad .str_735
+	.append_string_to_builder_asm_code_x86:	.quad .str_736
+	.append_char_to_builder_asm_code_x86:	.quad .str_737
+	.print_asm_code_aarch64:	.quad .str_738
+	.strlen_internal_asm_code_aarch64:	.quad .str_739
+	.int_to_str_asm_code_aarch64:	.quad .str_740
+	.long_to_str_asm_code_aarch64:	.quad .str_741
+	.char_to_str_asm_code_aarch64:	.quad .str_742
+	.read_file_asm_code_aarch64:	.quad .str_743
+	.append_long_asm_code_aarch64:	.quad .str_744
+	.append_quad_asm_code_aarch64:	.quad .str_745
+	.append_char_asm_code_aarch64:	.quad .str_746
+	.append_string_to_builder_asm_code_aarch64:	.quad .str_747
+	.append_char_to_builder_asm_code_aarch64:	.quad .str_748
 	.char_88:	.byte 0
 	.char_89:	.byte 0
 	.char_90:	.byte 32
@@ -33430,35 +33541,35 @@ leave
 	.char_220:	.byte 108
 	.char_221:	.byte 113
 	.char_238:	.byte 0
-	.char_509:	.byte 97
-	.char_519:	.byte 97
-	.char_520:	.byte 100
-	.char_532:	.byte 97
-	.char_533:	.byte 100
-	.char_539:	.byte 97
-	.char_545:	.byte 97
-	.char_550:	.byte 97
-	.char_551:	.byte 98
-	.char_559:	.byte 97
-	.char_563:	.byte 97
-	.char_564:	.byte 98
-	.char_565:	.byte 100
-	.char_588:	.byte 97
-	.char_593:	.byte 97
-	.char_596:	.byte 100
-	.char_600:	.byte 97
-	.char_603:	.byte 97
-	.char_613:	.byte 97
-	.char_614:	.byte 97
-	.char_616:	.byte 97
-	.char_625:	.byte 0
-	.char_634:	.byte 97
-	.char_638:	.byte 97
-	.char_644:	.byte 97
-	.char_695:	.byte 97
-	.char_704:	.byte 97
-	.char_714:	.byte 97
-	.char_717:	.byte 47
+	.char_517:	.byte 97
+	.char_527:	.byte 97
+	.char_528:	.byte 100
+	.char_540:	.byte 97
+	.char_541:	.byte 100
+	.char_547:	.byte 97
+	.char_553:	.byte 97
+	.char_558:	.byte 97
+	.char_559:	.byte 98
+	.char_567:	.byte 97
+	.char_571:	.byte 97
+	.char_572:	.byte 98
+	.char_573:	.byte 100
+	.char_596:	.byte 97
+	.char_601:	.byte 97
+	.char_604:	.byte 100
+	.char_608:	.byte 97
+	.char_611:	.byte 97
+	.char_621:	.byte 97
+	.char_622:	.byte 97
+	.char_624:	.byte 97
+	.char_633:	.byte 0
+	.char_642:	.byte 97
+	.char_646:	.byte 97
+	.char_652:	.byte 97
+	.char_703:	.byte 97
+	.char_712:	.byte 97
+	.char_722:	.byte 97
+	.char_725:	.byte 47
 .section .rodata
 	.str_1:	.string "IDENT"
 	.str_2:	.string "INT"
@@ -33794,445 +33905,453 @@ leave
 	.str_414:	.string " ."
 	.str_415:	.string "\n"
 	.str_416:	.string "\tldr"
-	.str_417:	.string " "
-	.str_418:	.string ", "
-	.str_419:	.string "\n"
-	.str_420:	.string "\tmov x9, "
-	.str_421:	.string "\n"
-	.str_422:	.string "\tstr x9, "
-	.str_423:	.string "\tstr"
-	.str_424:	.string " "
-	.str_425:	.string ", "
-	.str_426:	.string "\n"
-	.str_427:	.string "\tmov"
-	.str_428:	.string " "
-	.str_429:	.string ", "
-	.str_430:	.string "\n"
-	.str_431:	.string "LEA instruction must have a memory source\n"
-	.str_432:	.string "LEA instruction must have a register destination\n"
-	.str_433:	.string "\tadd "
-	.str_434:	.string ", "
-	.str_435:	.string "\n"
-	.str_436:	.string "\tadrp "
-	.str_437:	.string ", "
-	.str_438:	.string "@PAGE\n"
-	.str_439:	.string "\tadd "
-	.str_440:	.string ", "
-	.str_441:	.string ", "
-	.str_442:	.string "@PAGEOFF\n"
-	.str_443:	.string "\tldr "
-	.str_444:	.string ", ["
-	.str_445:	.string "]\n"
-	.str_446:	.string "\tadrp "
-	.str_447:	.string ", "
-	.str_448:	.string "@PAGE\n"
-	.str_449:	.string "\tadd "
-	.str_450:	.string ", "
+	.str_417:	.string "b"
+	.str_418:	.string " "
+	.str_419:	.string ", "
+	.str_420:	.string "\n"
+	.str_421:	.string "\tmov x9, "
+	.str_422:	.string "\n"
+	.str_423:	.string "\tstr x9, "
+	.str_424:	.string "\tstr"
+	.str_425:	.string "b"
+	.str_426:	.string " "
+	.str_427:	.string ", "
+	.str_428:	.string "\n"
+	.str_429:	.string "\tmov"
+	.str_430:	.string " "
+	.str_431:	.string ", "
+	.str_432:	.string "\n"
+	.str_433:	.string "LEA instruction must have a memory source\n"
+	.str_434:	.string "LEA instruction must have a register destination\n"
+	.str_435:	.string "\tadd "
+	.str_436:	.string ", "
+	.str_437:	.string "\n"
+	.str_438:	.string "\tadrp "
+	.str_439:	.string ", "
+	.str_440:	.string "@PAGE\n"
+	.str_441:	.string "\tadd "
+	.str_442:	.string ", "
+	.str_443:	.string ", "
+	.str_444:	.string "@PAGEOFF\n"
+	.str_445:	.string "\tldr"
+	.str_446:	.string "b"
+	.str_447:	.string " "
+	.str_448:	.string ", ["
+	.str_449:	.string "]\n"
+	.str_450:	.string "\tadrp "
 	.str_451:	.string ", "
-	.str_452:	.string "@PAGEOFF\n"
-	.str_453:	.string "\tneg"
-	.str_454:	.string " "
+	.str_452:	.string "@PAGE\n"
+	.str_453:	.string "\tadd "
+	.str_454:	.string ", "
 	.str_455:	.string ", "
-	.str_456:	.string "\n"
-	.str_457:	.string "\tmvn"
+	.str_456:	.string "@PAGEOFF\n"
+	.str_457:	.string "\tneg"
 	.str_458:	.string " "
 	.str_459:	.string ", "
 	.str_460:	.string "\n"
-	.str_461:	.string "\tcmp"
+	.str_461:	.string "\tmvn"
 	.str_462:	.string " "
 	.str_463:	.string ", "
 	.str_464:	.string "\n"
-	.str_465:	.string "\ttst"
+	.str_465:	.string "\tcmp"
 	.str_466:	.string " "
 	.str_467:	.string ", "
-	.str_468:	.string "\n\tcset "
-	.str_469:	.string ", eq"
-	.str_470:	.string "\n"
-	.str_471:	.string "\tbl "
-	.str_472:	.string "\n"
-	.str_473:	.string "cset "
-	.str_474:	.string ", eq\n"
-	.str_475:	.string "\n"
-	.str_476:	.string "cset "
-	.str_477:	.string ", ne\n"
-	.str_478:	.string "\n"
-	.str_479:	.string "\tsub sp, sp, #"
-	.str_480:	.string "\n"
-	.str_481:	.string "\tstr "
-	.str_482:	.string ", [sp]\n"
-	.str_483:	.string "\tldr "
-	.str_484:	.string ", [sp]\n"
-	.str_485:	.string "\tadd sp, sp, #"
-	.str_486:	.string "\n"
-	.str_487:	.string "\tmov sp, x29\n"
-	.str_488:	.string "\tldp x29, x30, [sp], #16\n"
-	.str_489:	.string "\tret\n"
-	.str_490:	.string "\tsdiv "
-	.str_491:	.string ", "
-	.str_492:	.string ", "
-	.str_493:	.string "\n"
-	.str_494:	.string "\tsdiv "
-	.str_495:	.string ", "
-	.str_496:	.string ", "
-	.str_497:	.string "\n"
-	.str_498:	.string "\tmsub "
+	.str_468:	.string "\n"
+	.str_469:	.string "\ttst"
+	.str_470:	.string " "
+	.str_471:	.string ", "
+	.str_472:	.string "\n\tcset "
+	.str_473:	.string ", eq"
+	.str_474:	.string "\n"
+	.str_475:	.string "\tbl "
+	.str_476:	.string "\n"
+	.str_477:	.string "cset "
+	.str_478:	.string ", eq\n"
+	.str_479:	.string "\n"
+	.str_480:	.string "cset "
+	.str_481:	.string ", ne\n"
+	.str_482:	.string "\n"
+	.str_483:	.string "\tsub sp, sp, #"
+	.str_484:	.string "\n"
+	.str_485:	.string "\tstr"
+	.str_486:	.string "b"
+	.str_487:	.string " "
+	.str_488:	.string ", [sp]\n"
+	.str_489:	.string "\tldr"
+	.str_490:	.string "b"
+	.str_491:	.string " "
+	.str_492:	.string ", [sp]\n"
+	.str_493:	.string "\tadd sp, sp, #"
+	.str_494:	.string "\n"
+	.str_495:	.string "\tmov sp, x29\n"
+	.str_496:	.string "\tldp x29, x30, [sp], #16\n"
+	.str_497:	.string "\tret\n"
+	.str_498:	.string "\tsdiv "
 	.str_499:	.string ", "
 	.str_500:	.string ", "
-	.str_501:	.string ", "
-	.str_502:	.string "\n"
-	.str_503:	.string "\tmov"
-	.str_504:	.string " "
-	.str_505:	.string ", "
-	.str_506:	.string "\n"
-	.str_507:	.string "Unknown target "
-	.str_508:	.string "\n"
-	.str_510:	.string "Unary * must have a pointer or an array as a type\n"
-	.str_511:	.string "Unary minus is not allowed as lvalue\n"
-	.str_512:	.string "Unary plus is not allowed as lvalue\n"
-	.str_513:	.string "Unknown unary expression type "
+	.str_501:	.string "\n"
+	.str_502:	.string "\tsdiv "
+	.str_503:	.string ", "
+	.str_504:	.string ", "
+	.str_505:	.string "\n"
+	.str_506:	.string "\tmsub "
+	.str_507:	.string ", "
+	.str_508:	.string ", "
+	.str_509:	.string ", "
+	.str_510:	.string "\n"
+	.str_511:	.string "\tmov"
+	.str_512:	.string " "
+	.str_513:	.string ", "
 	.str_514:	.string "\n"
-	.str_515:	.string "Unknown unary expression type "
+	.str_515:	.string "Unknown target "
 	.str_516:	.string "\n"
-	.str_517:	.string "__append_char_to_builder"
-	.str_518:	.string "__append_string_to_builder"
-	.str_521:	.string "malloc"
-	.str_522:	.string "strcmp"
-	.str_523:	.string "Unknown operator to compare 2 strings "
+	.str_518:	.string "Unary * must have a pointer or an array as a type\n"
+	.str_519:	.string "Unary minus is not allowed as lvalue\n"
+	.str_520:	.string "Unary plus is not allowed as lvalue\n"
+	.str_521:	.string "Unknown unary expression type "
+	.str_522:	.string "\n"
+	.str_523:	.string "Unknown unary expression type "
 	.str_524:	.string "\n"
-	.str_525:	.string "Implicit conversion of non numeric types not implemented\n"
-	.str_526:	.string "Division not implemented for non-int types\n"
-	.str_527:	.string "Modulo not implemented for non-int types\n"
-	.str_528:	.string "Unknown binary expression type "
-	.str_529:	.string "\n"
-	.str_530:	.string "Unknown binary expression type "
-	.str_531:	.string "\n"
-	.str_534:	.string "Unknown register for function call "
-	.str_535:	.string "\n"
-	.str_536:	.string "len"
-	.str_537:	.string "len function is not allowed as lvalue\n"
-	.str_538:	.string "len function takes exactly one argument\n"
-	.str_540:	.string "strlen"
-	.str_541:	.string "Len function can only be used on strings and arrays\n"
-	.str_542:	.string "capacity"
-	.str_543:	.string "capacity function is not allowed as lvalue\n"
-	.str_544:	.string "capacity function takes exactly one argument\n"
-	.str_546:	.string "Capacity function can only be used on arrays\n"
-	.str_547:	.string "append"
-	.str_548:	.string "append function takes exactly two arguments, got "
-	.str_549:	.string "\n"
-	.str_552:	.string "__append_char"
-	.str_553:	.string "__append_long"
-	.str_554:	.string "__append_quad"
-	.str_555:	.string "User defined function call is not allowed as lvalue\n"
-	.str_556:	.string "Mismatch in number of arguments. Expected "
-	.str_557:	.string ", got "
-	.str_558:	.string "\n"
-	.str_560:	.string "Mismatch in argument size. Expected "
-	.str_561:	.string ", got "
-	.str_562:	.string "\n"
-	.str_566:	.string "Unknown register for expression into register "
-	.str_567:	.string "\n"
-	.str_568:	.string "Int expression is not allowed as lvalue\n"
-	.str_569:	.string "Long expression is not allowed as lvalue\n"
-	.str_570:	.string "True expression is not allowed as lvalue\n"
-	.str_571:	.string "False expression is not allowed as lvalue\n"
-	.str_572:	.string "Unknown const variable type "
-	.str_573:	.string "\n"
-	.str_574:	.string "Const variables cannot be lvalues\n"
-	.str_575:	.string "Global variable "
-	.str_576:	.string " not found\n"
-	.str_577:	.string "Binary expression is not allowed as lvalue\n"
-	.str_578:	.string "String literal is not allowed as lvalue\n"
-	.str_579:	.string "Char is not allowed as lvalue\n"
-	.str_580:	.string "Can't assign to void\n"
-	.str_581:	.string "New is not allowed as lvalue\n"
-	.str_582:	.string "malloc"
-	.str_583:	.string "memset"
-	.str_584:	.string "malloc"
-	.str_585:	.string "malloc"
-	.str_586:	.string "memset"
-	.str_587:	.string "New keyword can only be used to create pointers and arrays\n"
-	.str_589:	.string "Expected pointer type, got "
-	.str_590:	.string "\n"
-	.str_591:	.string "Expected struct type, got "
-	.str_592:	.string "\n"
-	.str_594:	.string "Expected string, array or pointer type, got "
-	.str_595:	.string "\n"
-	.str_597:	.string "Expected int type, got "
+	.str_525:	.string "__append_char_to_builder"
+	.str_526:	.string "__append_string_to_builder"
+	.str_529:	.string "malloc"
+	.str_530:	.string "strcmp"
+	.str_531:	.string "Unknown operator to compare 2 strings "
+	.str_532:	.string "\n"
+	.str_533:	.string "Implicit conversion of non numeric types not implemented\n"
+	.str_534:	.string "Division not implemented for non-int types\n"
+	.str_535:	.string "Modulo not implemented for non-int types\n"
+	.str_536:	.string "Unknown binary expression type "
+	.str_537:	.string "\n"
+	.str_538:	.string "Unknown binary expression type "
+	.str_539:	.string "\n"
+	.str_542:	.string "Unknown register for function call "
+	.str_543:	.string "\n"
+	.str_544:	.string "len"
+	.str_545:	.string "len function is not allowed as lvalue\n"
+	.str_546:	.string "len function takes exactly one argument\n"
+	.str_548:	.string "strlen"
+	.str_549:	.string "Len function can only be used on strings and arrays\n"
+	.str_550:	.string "capacity"
+	.str_551:	.string "capacity function is not allowed as lvalue\n"
+	.str_552:	.string "capacity function takes exactly one argument\n"
+	.str_554:	.string "Capacity function can only be used on arrays\n"
+	.str_555:	.string "append"
+	.str_556:	.string "append function takes exactly two arguments, got "
+	.str_557:	.string "\n"
+	.str_560:	.string "__append_char"
+	.str_561:	.string "__append_long"
+	.str_562:	.string "__append_quad"
+	.str_563:	.string "User defined function call is not allowed as lvalue\n"
+	.str_564:	.string "Mismatch in number of arguments. Expected "
+	.str_565:	.string ", got "
+	.str_566:	.string "\n"
+	.str_568:	.string "Mismatch in argument size. Expected "
+	.str_569:	.string ", got "
+	.str_570:	.string "\n"
+	.str_574:	.string "Unknown register for expression into register "
+	.str_575:	.string "\n"
+	.str_576:	.string "Int expression is not allowed as lvalue\n"
+	.str_577:	.string "Long expression is not allowed as lvalue\n"
+	.str_578:	.string "True expression is not allowed as lvalue\n"
+	.str_579:	.string "False expression is not allowed as lvalue\n"
+	.str_580:	.string "Unknown const variable type "
+	.str_581:	.string "\n"
+	.str_582:	.string "Const variables cannot be lvalues\n"
+	.str_583:	.string "Global variable "
+	.str_584:	.string " not found\n"
+	.str_585:	.string "Binary expression is not allowed as lvalue\n"
+	.str_586:	.string "String literal is not allowed as lvalue\n"
+	.str_587:	.string "Char is not allowed as lvalue\n"
+	.str_588:	.string "Can't assign to void\n"
+	.str_589:	.string "New is not allowed as lvalue\n"
+	.str_590:	.string "malloc"
+	.str_591:	.string "memset"
+	.str_592:	.string "malloc"
+	.str_593:	.string "malloc"
+	.str_594:	.string "memset"
+	.str_595:	.string "New keyword can only be used to create pointers and arrays\n"
+	.str_597:	.string "Expected pointer type, got "
 	.str_598:	.string "\n"
-	.str_599:	.string "NOT CURRENTLY SUPPORTED\n"
-	.str_601:	.string "Expected int type, got "
-	.str_602:	.string "\n"
-	.str_604:	.string "Expected int type, got "
-	.str_605:	.string "\n"
-	.str_606:	.string "malloc"
-	.str_607:	.string "memcpy"
-	.str_608:	.string "# Narrowing conversion from "
-	.str_609:	.string " to "
+	.str_599:	.string "Expected struct type, got "
+	.str_600:	.string "\n"
+	.str_602:	.string "Expected string, array or pointer type, got "
+	.str_603:	.string "\n"
+	.str_605:	.string "Expected int type, got "
+	.str_606:	.string "\n"
+	.str_607:	.string "NOT CURRENTLY SUPPORTED\n"
+	.str_609:	.string "Expected int type, got "
 	.str_610:	.string "\n"
-	.str_611:	.string "Unknown expression type to put in register "
-	.str_612:	.string "\n"
-	.str_615:	.string "Can't assign to void\n"
-	.str_617:	.string "Unknown expression type to assign"
+	.str_612:	.string "Expected int type, got "
+	.str_613:	.string "\n"
+	.str_614:	.string "malloc"
+	.str_615:	.string "memcpy"
+	.str_616:	.string "# Narrowing conversion from "
+	.str_617:	.string " to "
 	.str_618:	.string "\n"
-	.str_619:	.string "Implicit conversion not possible. Trying to assign type "
-	.str_620:	.string " to variable type "
-	.str_621:	.string "\n"
-	.str_622:	.string "Variable named: "
-	.str_623:	.string " already declared\n"
-	.str_624:	.string "Cannot create/assign to a variable because neither the value nor the type was provided\n"
-	.str_626:	.string "L"
-	.str_627:	.string "_elseif_"
-	.str_628:	.string "L"
-	.str_629:	.string "_else"
-	.str_630:	.string "L"
-	.str_631:	.string "_end"
-	.str_632:	.string "L"
-	.str_633:	.string "_end"
-	.str_635:	.string ".L"
-	.str_636:	.string "_elseif_"
-	.str_637:	.string ":\n"
-	.str_639:	.string ".L"
-	.str_640:	.string "_else:\n"
-	.str_641:	.string ".L"
-	.str_642:	.string "_end:\n"
-	.str_643:	.string "Return called from outside of a function\n"
-	.str_645:	.string "Type in return statement doesnt match the return type of function "
-	.str_646:	.string ". Expected "
-	.str_647:	.string ", got "
-	.str_648:	.string "\n"
-	.str_649:	.string "Underlying types are: "
-	.str_650:	.string " and "
-	.str_651:	.string "\n"
-	.str_652:	.string "main"
-	.str_653:	.string "_main"
-	.str_654:	.string "argc"
-	.str_655:	.string "argv"
-	.str_656:	.string "Return type mismatch in function "
-	.str_657:	.string ". Expected "
-	.str_658:	.string ", got "
+	.str_619:	.string "Unknown expression type to put in register "
+	.str_620:	.string "\n"
+	.str_623:	.string "Can't assign to void\n"
+	.str_625:	.string "Unknown expression type to assign"
+	.str_626:	.string "\n"
+	.str_627:	.string "Implicit conversion not possible. Trying to assign type "
+	.str_628:	.string " to variable type "
+	.str_629:	.string "\n"
+	.str_630:	.string "Variable named: "
+	.str_631:	.string " already declared\n"
+	.str_632:	.string "Cannot create/assign to a variable because neither the value nor the type was provided\n"
+	.str_634:	.string "L"
+	.str_635:	.string "_elseif_"
+	.str_636:	.string "L"
+	.str_637:	.string "_else"
+	.str_638:	.string "L"
+	.str_639:	.string "_end"
+	.str_640:	.string "L"
+	.str_641:	.string "_end"
+	.str_643:	.string ".L"
+	.str_644:	.string "_elseif_"
+	.str_645:	.string ":\n"
+	.str_647:	.string ".L"
+	.str_648:	.string "_else:\n"
+	.str_649:	.string ".L"
+	.str_650:	.string "_end:\n"
+	.str_651:	.string "Return called from outside of a function\n"
+	.str_653:	.string "Type in return statement doesnt match the return type of function "
+	.str_654:	.string ". Expected "
+	.str_655:	.string ", got "
+	.str_656:	.string "\n"
+	.str_657:	.string "Underlying types are: "
+	.str_658:	.string " and "
 	.str_659:	.string "\n"
-	.str_660:	.string "Underlying types are: "
-	.str_661:	.string " and "
-	.str_662:	.string "\n"
-	.str_663:	.string ".globl "
-	.str_664:	.string "\n"
-	.str_665:	.string ":\n"
-	.str_666:	.string "\tpushq %rbp\n"
-	.str_667:	.string "\tmovq %rsp, %rbp\n"
-	.str_668:	.string "\tstp x29, x30, [sp, #-16]!\n"
-	.str_669:	.string "\tmov x29, sp\n"
-	.str_670:	.string "main"
-	.str_671:	.string "\tmovl %edi, -4(%rbp)\n"
-	.str_672:	.string "\tmovq %rsi, -12(%rbp)\n"
-	.str_673:	.string "_main"
-	.str_674:	.string "\tstr w0, [x29, #-4]\n"
-	.str_675:	.string "\tstr x1, [x29, #-12]\n"
-	.str_676:	.string "\tleave\n\tret\n"
-	.str_677:	.string "\tldp x29, x30, [sp], #16\n"
-	.str_678:	.string "\tret\n"
-	.str_679:	.string "Break called from outside of a loop\n"
-	.str_680:	.string "L"
-	.str_681:	.string "_for_end"
-	.str_682:	.string "L"
-	.str_683:	.string "_while_end"
-	.str_684:	.string "Unknown loop type "
-	.str_685:	.string "\n"
-	.str_686:	.string "Continue called from outside of a loop\n"
-	.str_687:	.string "L"
-	.str_688:	.string "_for_inc"
-	.str_689:	.string "L"
-	.str_690:	.string "_for_inc"
-	.str_691:	.string "Unknown loop type "
-	.str_692:	.string "\n"
-	.str_693:	.string ".L"
-	.str_694:	.string "_while_start:\n"
-	.str_696:	.string "L"
-	.str_697:	.string "_while_end"
-	.str_698:	.string "L"
-	.str_699:	.string "_while_start"
-	.str_700:	.string ".L"
-	.str_701:	.string "_while_end:\n"
-	.str_702:	.string ".L"
-	.str_703:	.string "_for_start:\n"
-	.str_705:	.string "L"
-	.str_706:	.string "_for_end"
-	.str_707:	.string ".L"
-	.str_708:	.string "_for_inc:\n"
-	.str_709:	.string "L"
-	.str_710:	.string "_for_start"
-	.str_711:	.string ".L"
-	.str_712:	.string "_for_end:\n"
-	.str_713:	.string "Nested functions are not supported\n"
-	.str_715:	.string "Unknown statement type "
-	.str_716:	.string "\n"
-	.str_718:	.string ""
-	.str_719:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
-	.str_720:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
-	.str_721:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	.str_722:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	.str_723:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
-	.str_724:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
-	.str_725:	.string ".globl __append_char\n__append_char:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_char\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $1, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_char:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 1), %rax\n\tmovb %bl, (%rax)\n\tleave\n\tret\n"
-	.str_726:	.string ".globl __append_long\n__append_long:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_long\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $4, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_long:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 4), %rax\n\tmovl %ebx, (%rax)\n\tleave\n\tret\n"
-	.str_727:	.string ".globl __append_quad\n__append_quad:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_quad\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $8, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_quad:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 8), %rax\n\tmovq %rbx, (%rax)\n\tleave\n\tret\n"
-	.str_728:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %r12, %rdi\n\tcall strlen\n\tmovq %rax, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_string\n.L_grow_builder_string:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_string\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_string:\n\tleaq (%r15,%r14), %rdi\n\tmovq %r12, %rsi\n\tmovq %rbx, %rdx\n\taddq %rbx, %r14\n\tcall memcpy\n\tmovb $0, (%r15,%r14)\n\tleave\n\tret\n"
-	.str_729:	.string ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n"
-	.str_730:	.string ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_731:	.string ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\tb .loop\n.done:\n\tmov x0, x2\n\tret\n"
-	.str_732:	.string ".globl int_to_str\nint_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _int_fmt@PAGE\n\tadd x2, x2, _int_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_733:	.string ".globl long_to_str\nlong_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, x0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _long_fmt@PAGE\n\tadd x2, x2, _long_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_734:	.string ".globl char_to_str\nchar_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tstrb w19, [x0]\n\tstrb wzr, [x0, #1]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_735:	.string ".globl read_file\nread_file:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tmov w1, #0\n\tbl  _open\n\tmov x19, x0\n\n\tadrp x20, file_statbuf@PAGE\n\tadd x20, x20, file_statbuf@PAGEOFF \n\tmov x1, x20\n\tbl  _fstat\n\n\tldr x0, [x20, #0x60]\n\tmov x20, x0\n\n\tmov x0, x20\n\tadd x0, x0, #1\n\tbl  _malloc\n\tmov x21, x0\n\n\tmov x0, x19\n\tmov x1, x21\n\tmov x2, x20\n\tbl  _read\n\n\tadd x1, x21, x0\n\tstrb wzr, [x1]\n\n\tmov x0, x19\n\tbl  _close\n\n\tmov x0, x21\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_736:	.string ".globl __append_long\n__append_long:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_long\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_long:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #2\n\tstr w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_737:	.string ".globl __append_quad\n__append_quad:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_quad\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #3\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_quad:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #3\n\tstr x19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_738:	.string ".globl __append_char\n__append_char:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_char\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_char:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2\n\tstrb w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_739:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x0, x23\n\tbl _strlen\n\tmov x19, x0\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_string\n\n\t.L_grow_builder_string:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_string\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_string:\n\tadd x0, x22, x21\n\tmov x1, x23\n\tmov x2, x19\n\tadd x21, x21, x2\n\tbl _memcpy\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_740:	.string ".globl __append_string_to_builder\n__append_char_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, #1\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_char\n\n\t.L_grow_builder_char:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_char\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_char:\n\tadd x0, x22, x21\n\tstrb w23, [x22, x21]\n\tadd x21, x21, #1\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	.str_741:	.string "Usage: ./compiler [target] input_file\n"
-	.str_742:	.string "x86_64"
-	.str_743:	.string "aarch64"
-	.str_744:	.string "Unknown target "
-	.str_745:	.string "\n"
-	.str_746:	.string "%al"
-	.str_747:	.string "%bl"
-	.str_748:	.string "%cl"
-	.str_749:	.string "%dl"
-	.str_750:	.string "%sil"
-	.str_751:	.string "%dil"
-	.str_752:	.string "%bpl"
-	.str_753:	.string "%spl"
-	.str_754:	.string "%r8b"
-	.str_755:	.string "%r9b"
-	.str_756:	.string "%r10b"
-	.str_757:	.string "%r11b"
-	.str_758:	.string "%r12b"
-	.str_759:	.string "%r13b"
-	.str_760:	.string "%r14b"
-	.str_761:	.string "%r15b"
-	.str_762:	.string "%eax"
-	.str_763:	.string "%ebx"
-	.str_764:	.string "%ecx"
-	.str_765:	.string "%edx"
-	.str_766:	.string "%esi"
-	.str_767:	.string "%edi"
-	.str_768:	.string "%ebp"
-	.str_769:	.string "%esp"
-	.str_770:	.string "%r8d"
-	.str_771:	.string "%r9d"
-	.str_772:	.string "%r10d"
-	.str_773:	.string "%r11d"
-	.str_774:	.string "%r12d"
-	.str_775:	.string "%r13d"
-	.str_776:	.string "%r14d"
-	.str_777:	.string "%r15d"
-	.str_778:	.string "%rax"
-	.str_779:	.string "%rbx"
-	.str_780:	.string "%rcx"
-	.str_781:	.string "%rdx"
-	.str_782:	.string "%rsi"
-	.str_783:	.string "%rdi"
-	.str_784:	.string "%rbp"
-	.str_785:	.string "%rsp"
-	.str_786:	.string "%r8"
-	.str_787:	.string "%r9"
-	.str_788:	.string "%r10"
-	.str_789:	.string "%r11"
-	.str_790:	.string "%r12"
-	.str_791:	.string "%r13"
-	.str_792:	.string "%r14"
-	.str_793:	.string "%r15"
-	.str_794:	.string "w0"
-	.str_795:	.string "w19"
-	.str_796:	.string "w3"
-	.str_797:	.string "w2"
-	.str_798:	.string "w0"
-	.str_799:	.string "w1"
-	.str_800:	.string "w29"
-	.str_801:	.string "wsp"
-	.str_802:	.string "w4"
-	.str_803:	.string "w5"
-	.str_804:	.string "w6"
-	.str_805:	.string "w7"
-	.str_806:	.string "w23"
-	.str_807:	.string "w20"
-	.str_808:	.string "w21"
-	.str_809:	.string "w22"
-	.str_810:	.string "x0"
-	.str_811:	.string "x19"
-	.str_812:	.string "x3"
-	.str_813:	.string "x2"
-	.str_814:	.string "x1"
-	.str_815:	.string "x0"
-	.str_816:	.string "x29"
-	.str_817:	.string "sp"
-	.str_818:	.string "x4"
-	.str_819:	.string "x5"
-	.str_820:	.string "x6"
-	.str_821:	.string "x7"
-	.str_822:	.string "x23"
-	.str_823:	.string "x20"
-	.str_824:	.string "x21"
-	.str_825:	.string "x22"
-	.str_826:	.string "print"
-	.str_827:	.string "str_var"
-	.str_828:	.string "read_file"
-	.str_829:	.string "str"
-	.str_830:	.string "int_to_str"
-	.str_831:	.string "int_var"
-	.str_832:	.string "long_to_str"
-	.str_833:	.string "long_var"
-	.str_834:	.string "char_to_str"
-	.str_835:	.string "char_var"
-	.str_836:	.string ".section .text\n"
-	.str_837:	.string ".extern memcpy\n"
-	.str_838:	.string ".extern memset\n"
-	.str_839:	.string ".extern malloc\n"
-	.str_840:	.string ".extern realloc\n"
-	.str_841:	.string ".extern strcmp\n"
-	.str_842:	.string ".extern strlen\n"
-	.str_843:	.string ".extern snprintf\n"
-	.str_844:	.string ".text\n"
-	.str_845:	.string ".section .data\n"
-	.str_846:	.string ".data\n"
-	.str_847:	.string ".align 8\n"
-	.str_848:	.string "\t."
-	.str_849:	.string ":\t"
-	.str_850:	.string "\t_"
-	.str_851:	.string ":\t"
-	.str_852:	.string ".quad "
-	.str_853:	.string "\n"
-	.str_854:	.string ".quad ."
-	.str_855:	.string "\n"
-	.str_856:	.string ".quad _"
-	.str_857:	.string "\n"
-	.str_858:	.string ".quad "
-	.str_859:	.string "\n"
+	.str_660:	.string "main"
+	.str_661:	.string "_main"
+	.str_662:	.string "argc"
+	.str_663:	.string "argv"
+	.str_664:	.string "Return type mismatch in function "
+	.str_665:	.string ". Expected "
+	.str_666:	.string ", got "
+	.str_667:	.string "\n"
+	.str_668:	.string "Underlying types are: "
+	.str_669:	.string " and "
+	.str_670:	.string "\n"
+	.str_671:	.string ".globl "
+	.str_672:	.string "\n"
+	.str_673:	.string ":\n"
+	.str_674:	.string "\tpushq %rbp\n"
+	.str_675:	.string "\tmovq %rsp, %rbp\n"
+	.str_676:	.string "\tstp x29, x30, [sp, #-16]!\n"
+	.str_677:	.string "\tmov x29, sp\n"
+	.str_678:	.string "main"
+	.str_679:	.string "\tmovl %edi, -4(%rbp)\n"
+	.str_680:	.string "\tmovq %rsi, -12(%rbp)\n"
+	.str_681:	.string "_main"
+	.str_682:	.string "\tstr w0, [x29, #-4]\n"
+	.str_683:	.string "\tstr x1, [x29, #-12]\n"
+	.str_684:	.string "\tleave\n\tret\n"
+	.str_685:	.string "\tldp x29, x30, [sp], #16\n"
+	.str_686:	.string "\tret\n"
+	.str_687:	.string "Break called from outside of a loop\n"
+	.str_688:	.string "L"
+	.str_689:	.string "_for_end"
+	.str_690:	.string "L"
+	.str_691:	.string "_while_end"
+	.str_692:	.string "Unknown loop type "
+	.str_693:	.string "\n"
+	.str_694:	.string "Continue called from outside of a loop\n"
+	.str_695:	.string "L"
+	.str_696:	.string "_for_inc"
+	.str_697:	.string "L"
+	.str_698:	.string "_for_inc"
+	.str_699:	.string "Unknown loop type "
+	.str_700:	.string "\n"
+	.str_701:	.string ".L"
+	.str_702:	.string "_while_start:\n"
+	.str_704:	.string "L"
+	.str_705:	.string "_while_end"
+	.str_706:	.string "L"
+	.str_707:	.string "_while_start"
+	.str_708:	.string ".L"
+	.str_709:	.string "_while_end:\n"
+	.str_710:	.string ".L"
+	.str_711:	.string "_for_start:\n"
+	.str_713:	.string "L"
+	.str_714:	.string "_for_end"
+	.str_715:	.string ".L"
+	.str_716:	.string "_for_inc:\n"
+	.str_717:	.string "L"
+	.str_718:	.string "_for_start"
+	.str_719:	.string ".L"
+	.str_720:	.string "_for_end:\n"
+	.str_721:	.string "Nested functions are not supported\n"
+	.str_723:	.string "Unknown statement type "
+	.str_724:	.string "\n"
+	.str_726:	.string ""
+	.str_727:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
+	.str_728:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
+	.str_729:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	.str_730:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	.str_731:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
+	.str_732:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
+	.str_733:	.string ".globl __append_char\n__append_char:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_char\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $1, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_char:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 1), %rax\n\tmovb %bl, (%rax)\n\tleave\n\tret\n"
+	.str_734:	.string ".globl __append_long\n__append_long:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_long\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $4, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_long:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 4), %rax\n\tmovl %ebx, (%rax)\n\tleave\n\tret\n"
+	.str_735:	.string ".globl __append_quad\n__append_quad:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_quad\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $8, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_quad:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 8), %rax\n\tmovq %rbx, (%rax)\n\tleave\n\tret\n"
+	.str_736:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %r12, %rdi\n\tcall strlen\n\tmovq %rax, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_string\n.L_grow_builder_string:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_string\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_string:\n\tleaq (%r15,%r14), %rdi\n\tmovq %r12, %rsi\n\tmovq %rbx, %rdx\n\taddq %rbx, %r14\n\tcall memcpy\n\tmovb $0, (%r15,%r14)\n\tleave\n\tret\n"
+	.str_737:	.string ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n"
+	.str_738:	.string ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_739:	.string ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\tb .loop\n.done:\n\tmov x0, x2\n\tret\n"
+	.str_740:	.string ".globl int_to_str\nint_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _int_fmt@PAGE\n\tadd x2, x2, _int_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_741:	.string ".globl long_to_str\nlong_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, x0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _long_fmt@PAGE\n\tadd x2, x2, _long_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_742:	.string ".globl char_to_str\nchar_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tstrb w19, [x0]\n\tstrb wzr, [x0, #1]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_743:	.string ".globl read_file\nread_file:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tmov w1, #0\n\tbl  _open\n\tmov x19, x0\n\n\tadrp x20, file_statbuf@PAGE\n\tadd x20, x20, file_statbuf@PAGEOFF \n\tmov x1, x20\n\tbl  _fstat\n\n\tldr x0, [x20, #0x60]\n\tmov x20, x0\n\n\tmov x0, x20\n\tadd x0, x0, #1\n\tbl  _malloc\n\tmov x21, x0\n\n\tmov x0, x19\n\tmov x1, x21\n\tmov x2, x20\n\tbl  _read\n\n\tadd x1, x21, x0\n\tstrb wzr, [x1]\n\n\tmov x0, x19\n\tbl  _close\n\n\tmov x0, x21\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_744:	.string ".globl __append_long\n__append_long:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_long\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_long:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #2\n\tstr w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_745:	.string ".globl __append_quad\n__append_quad:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_quad\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tlsl x1, x1, #3\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_quad:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #3\n\tstr x19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_746:	.string ".globl __append_char\n__append_char:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_char\n\tadd w2, w2, w2\n\tstr w2, [x23, #8]\n\tmov x1, x2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_char:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2\n\tstrb w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_747:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x0, x23\n\tbl _strlen\n\tmov x19, x0\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_string\n\n\t.L_grow_builder_string:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_string\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_string:\n\tadd x0, x22, x21\n\tmov x1, x23\n\tmov x2, x19\n\tadd x21, x21, x2\n\tbl _memcpy\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_748:	.string ".globl __append_string_to_builder\n__append_char_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, #1\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_char\n\n\t.L_grow_builder_char:\n\tadd x20, x20, x20\n\tcmp x0, x20\n\tblt .L_grow_builder_char\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_char:\n\tadd x0, x22, x21\n\tstrb w23, [x22, x21]\n\tadd x21, x21, #1\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	.str_749:	.string "Usage: ./compiler [target] input_file\n"
+	.str_750:	.string "x86_64"
+	.str_751:	.string "aarch64"
+	.str_752:	.string "Unknown target "
+	.str_753:	.string "\n"
+	.str_754:	.string "%al"
+	.str_755:	.string "%bl"
+	.str_756:	.string "%cl"
+	.str_757:	.string "%dl"
+	.str_758:	.string "%sil"
+	.str_759:	.string "%dil"
+	.str_760:	.string "%bpl"
+	.str_761:	.string "%spl"
+	.str_762:	.string "%r8b"
+	.str_763:	.string "%r9b"
+	.str_764:	.string "%r10b"
+	.str_765:	.string "%r11b"
+	.str_766:	.string "%r12b"
+	.str_767:	.string "%r13b"
+	.str_768:	.string "%r14b"
+	.str_769:	.string "%r15b"
+	.str_770:	.string "%eax"
+	.str_771:	.string "%ebx"
+	.str_772:	.string "%ecx"
+	.str_773:	.string "%edx"
+	.str_774:	.string "%esi"
+	.str_775:	.string "%edi"
+	.str_776:	.string "%ebp"
+	.str_777:	.string "%esp"
+	.str_778:	.string "%r8d"
+	.str_779:	.string "%r9d"
+	.str_780:	.string "%r10d"
+	.str_781:	.string "%r11d"
+	.str_782:	.string "%r12d"
+	.str_783:	.string "%r13d"
+	.str_784:	.string "%r14d"
+	.str_785:	.string "%r15d"
+	.str_786:	.string "%rax"
+	.str_787:	.string "%rbx"
+	.str_788:	.string "%rcx"
+	.str_789:	.string "%rdx"
+	.str_790:	.string "%rsi"
+	.str_791:	.string "%rdi"
+	.str_792:	.string "%rbp"
+	.str_793:	.string "%rsp"
+	.str_794:	.string "%r8"
+	.str_795:	.string "%r9"
+	.str_796:	.string "%r10"
+	.str_797:	.string "%r11"
+	.str_798:	.string "%r12"
+	.str_799:	.string "%r13"
+	.str_800:	.string "%r14"
+	.str_801:	.string "%r15"
+	.str_802:	.string "w0"
+	.str_803:	.string "w19"
+	.str_804:	.string "w3"
+	.str_805:	.string "w2"
+	.str_806:	.string "w0"
+	.str_807:	.string "w1"
+	.str_808:	.string "w29"
+	.str_809:	.string "wsp"
+	.str_810:	.string "w4"
+	.str_811:	.string "w5"
+	.str_812:	.string "w6"
+	.str_813:	.string "w7"
+	.str_814:	.string "w23"
+	.str_815:	.string "w20"
+	.str_816:	.string "w21"
+	.str_817:	.string "w22"
+	.str_818:	.string "x0"
+	.str_819:	.string "x19"
+	.str_820:	.string "x3"
+	.str_821:	.string "x2"
+	.str_822:	.string "x1"
+	.str_823:	.string "x0"
+	.str_824:	.string "x29"
+	.str_825:	.string "sp"
+	.str_826:	.string "x4"
+	.str_827:	.string "x5"
+	.str_828:	.string "x6"
+	.str_829:	.string "x7"
+	.str_830:	.string "x23"
+	.str_831:	.string "x20"
+	.str_832:	.string "x21"
+	.str_833:	.string "x22"
+	.str_834:	.string "print"
+	.str_835:	.string "str_var"
+	.str_836:	.string "read_file"
+	.str_837:	.string "str"
+	.str_838:	.string "int_to_str"
+	.str_839:	.string "int_var"
+	.str_840:	.string "long_to_str"
+	.str_841:	.string "long_var"
+	.str_842:	.string "char_to_str"
+	.str_843:	.string "char_var"
+	.str_844:	.string ".section .text\n"
+	.str_845:	.string ".extern memcpy\n"
+	.str_846:	.string ".extern memset\n"
+	.str_847:	.string ".extern malloc\n"
+	.str_848:	.string ".extern realloc\n"
+	.str_849:	.string ".extern strcmp\n"
+	.str_850:	.string ".extern strlen\n"
+	.str_851:	.string ".extern snprintf\n"
+	.str_852:	.string ".text\n"
+	.str_853:	.string ".section .data\n"
+	.str_854:	.string ".data\n"
+	.str_855:	.string ".align 8\n"
+	.str_856:	.string "\t."
+	.str_857:	.string ":\t"
+	.str_858:	.string "\t_"
+	.str_859:	.string ":\t"
 	.str_860:	.string ".quad "
 	.str_861:	.string "\n"
-	.str_862:	.string "\t."
-	.str_863:	.string ":\t"
-	.str_864:	.string "\t_"
-	.str_865:	.string ":\t"
-	.str_866:	.string ".byte "
+	.str_862:	.string ".quad ."
+	.str_863:	.string "\n"
+	.str_864:	.string ".quad _"
+	.str_865:	.string "\n"
+	.str_866:	.string ".quad "
 	.str_867:	.string "\n"
-	.str_868:	.string ".section .rodata\n"
-	.str_869:	.string ".const\n"
-	.str_870:	.string ".align 8\n"
-	.str_871:	.string "\t."
-	.str_872:	.string ":\t"
-	.str_873:	.string "\t_"
-	.str_874:	.string ":\t"
-	.str_875:	.string ".string \""
-	.str_876:	.string "\"\n"
-	.str_877:	.string "\t.long_fmt:\t.string \"%ld\"\n"
-	.str_878:	.string "\t.int_fmt:\t.string \"%d\"\n"
-	.str_879:	.string ".section .bss\n"
-	.str_880:	.string "\tfile_statbuf:\t.skip 144\n"
-	.str_881:	.string "\t_long_fmt:\t.asciz \"%ld\"\n"
-	.str_882:	.string "\t_int_fmt:\t.asciz \"%d\"\n"
-	.str_883:	.string ".bss\n"
-	.str_884:	.string "\tfile_statbuf:\t.skip 144\n"
+	.str_868:	.string ".quad "
+	.str_869:	.string "\n"
+	.str_870:	.string "\t."
+	.str_871:	.string ":\t"
+	.str_872:	.string "\t_"
+	.str_873:	.string ":\t"
+	.str_874:	.string ".byte "
+	.str_875:	.string "\n"
+	.str_876:	.string ".section .rodata\n"
+	.str_877:	.string ".const\n"
+	.str_878:	.string ".align 8\n"
+	.str_879:	.string "\t."
+	.str_880:	.string ":\t"
+	.str_881:	.string "\t_"
+	.str_882:	.string ":\t"
+	.str_883:	.string ".string \""
+	.str_884:	.string "\"\n"
+	.str_885:	.string "\t.long_fmt:\t.string \"%ld\"\n"
+	.str_886:	.string "\t.int_fmt:\t.string \"%d\"\n"
+	.str_887:	.string ".section .bss\n"
+	.str_888:	.string "\tfile_statbuf:\t.skip 144\n"
+	.str_889:	.string "\t_long_fmt:\t.asciz \"%ld\"\n"
+	.str_890:	.string "\t_int_fmt:\t.asciz \"%d\"\n"
+	.str_891:	.string ".bss\n"
+	.str_892:	.string "\tfile_statbuf:\t.skip 144\n"
 	.long_fmt:	.string "%ld"
 	.int_fmt:	.string "%d"
 .section .bss
