@@ -508,9 +508,11 @@ fn emit_instruction_x86(text_buffer: TextBuffer*, instruction: Instruction*) {
 fn emit_operand_aarch64(text_buffer: TextBuffer*, operand: Operand*, size: int)
 
 fn print_insides_of_lea(text_buffer: TextBuffer*, operand: Operand*) {
+    let offset = (operand->value & (((1 as long) << 32) - 1)) as int;
     let base_register = (operand->value >> 41) & 31;
     let index_register = (operand->value >> 36) & 31;
     let scale = (operand->value >> 32) & 15;
+    let mode = (operand->value >> 46) & 3;
     let log_2_scale = 0; // TODO: make this nicer
     if (scale == 2) {
         log_2_scale = 1;
@@ -521,10 +523,18 @@ fn print_insides_of_lea(text_buffer: TextBuffer*, operand: Operand*) {
     elseif (scale == 8) {
         log_2_scale = 3;
     }
-    emit_operand_aarch64(text_buffer, make_reg(base_register), 8);
-    add_to_text_buffer(text_buffer, ", ");
-    emit_operand_aarch64(text_buffer, make_reg(index_register), 8);
-    add_to_text_buffer(text_buffer, ", lsl #" + int_to_str(log_2_scale));
+    if (mode == REGISTER_INDEXED) {
+        emit_operand_aarch64(text_buffer, make_reg(base_register), 8);
+        add_to_text_buffer(text_buffer, ", ");
+        emit_operand_aarch64(text_buffer, make_reg(index_register), 8);
+        add_to_text_buffer(text_buffer, ", lsl #" + int_to_str(log_2_scale));
+    }
+    elseif (mode == REGISTER_RELATIVE) {
+        emit_operand_aarch64(text_buffer, make_reg(base_register), 8);
+        add_to_text_buffer(text_buffer, ", ");
+        emit_operand_aarch64(text_buffer, make_imm(offset as long), 8);
+        add_to_text_buffer(text_buffer, "\n");
+    }
 }
 
 fn emit_operand_aarch64(text_buffer: TextBuffer*, operand: Operand*, size: int) {
