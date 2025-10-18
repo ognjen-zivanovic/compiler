@@ -2259,6 +2259,7 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
         print("\tleave\n\tret\n");
     }
     elseif (current_target == AARCH64) {
+        print("\tmov sp, x29\n");
         print("\tldp x29, x30, [sp], #16\n");
         print("\tret\n");
     } 
