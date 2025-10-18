@@ -728,11 +728,20 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
         }
         elseif (opcode == STORE) {
             if (instruction->src->type == IMM) {
-                add_to_text_buffer(text_buffer, "\tmov x9, ");
-                emit_operand_aarch64(text_buffer, instruction->src, size);
-                add_to_text_buffer(text_buffer, "\n");
+                if (size == 1 || size == 4) {
+                    add_to_text_buffer(text_buffer, "\tmov w9, ");
+                    emit_operand_aarch64(text_buffer, instruction->src, size);
+                    add_to_text_buffer(text_buffer, "\n");
 
-                add_to_text_buffer(text_buffer, "\tstr x9, ");
+                    add_to_text_buffer(text_buffer, "\tstr w9, ");
+                }
+                else {
+                    add_to_text_buffer(text_buffer, "\tmov x9, ");
+                    emit_operand_aarch64(text_buffer, instruction->src, size);
+                    add_to_text_buffer(text_buffer, "\n");
+
+                    add_to_text_buffer(text_buffer, "\tstr x9, ");
+                }
             }
             else {
                 add_to_text_buffer(text_buffer, "\tstr");
