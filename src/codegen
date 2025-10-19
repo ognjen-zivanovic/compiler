@@ -1070,7 +1070,7 @@ fn get_label_index(): int {
 }
 
 
-fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: char, type: int): int
+fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: long, type: int): int
 
 fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, type: int): int {
     let unary_expression_node = (node->node as UnaryExpressionNode*);
@@ -1078,7 +1078,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
     if (unary_expression_node->unary_expression_type == AT) {
         lrtype = LVALUE;
     }
-    let value_type = compile_expression_into_register(text_buffer, unary_expression_node->value, stack_frame, 'a', lrtype);
+    let value_type = compile_expression_into_register(text_buffer, unary_expression_node->value, stack_frame, RAX, lrtype);
 
     if (unary_expression_node->unary_expression_type == ASTERISK && type == RVALUE) {
         if (is_pointer(value_type) || is_array(value_type)) {
@@ -1156,7 +1156,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
 
     let preserve_rax = right_expression_type == EXPRESSION_BINARY || right_expression_type == EXPRESSION_FUNCTION_CALL || right_expression_type == EXPRESSION_ARROW || right_expression_type == EXPRESSION_UNARY || right_expression_type == EXPRESSION_INDEX || right_expression_type == EXPRESSION_AS || right_expression_type == EXPRESSION_DOUBLE_COLON;
 
-    let left_type = compile_expression_into_register(text_buffer, binary_expression_node->left, stack_frame, 'a', RVALUE);
+    let left_type = compile_expression_into_register(text_buffer, binary_expression_node->left, stack_frame, RAX, RVALUE);
 
 
     if (preserve_rax) {
@@ -1164,7 +1164,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
         push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
     }
 
-    let right_type = compile_expression_into_register(text_buffer, binary_expression_node->right, stack_frame, 'd', RVALUE);
+    let right_type = compile_expression_into_register(text_buffer, binary_expression_node->right, stack_frame, RDX, RVALUE);
 
     if (preserve_rax) {
         pop_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
@@ -1387,20 +1387,9 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
 }
 
-fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: StackFrame*, reg: char, type: int): int {
+fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: StackFrame*, reg: long, type: int): int {
     let function_call_node = (node->node as FunctionCallNode*);
     let name = function_call_node->name;
-
-    let REGREG = RAX; // VERY TEMPORARY TODO TODO Remove this
-    if (reg == 'a') {
-        REGREG = RAX;
-    }
-    elseif (reg == 'd') {
-        REGREG = RDX;
-    }
-    else {
-        error("Unknown register for function call " + reg + "\n");
-    }
 
 
     if (name == "len") {
@@ -1411,7 +1400,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             error("len function takes exactly one argument\n");
         }
         let argument = function_call_node->arguments[0];
-        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, RAX, RVALUE);
         if (argument_type == STRING_VARIABLE || argument_type == STRING_LITERAL_VARIABLE || argument_type == STRING_BUILDER_VARIABLE) {
             let alignment_offset = align_stack(text_buffer, rsp_offset);
             //add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
@@ -1421,13 +1410,13 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             add_instruction(text_buffer, make_stdlib_label("strlen"), 0 as Operand*, CALL, VOID);
 
             //add_to_text_buffer(text_buffer, "\tmovl %eax, " + get_register_for_type(reg, INT_VARIABLE) + "\n");
-            add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, INT_VARIABLE);
+            add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, INT_VARIABLE);
             dealign_stack(text_buffer, alignment_offset);
             return INT_VARIABLE;
         }
         elseif (is_array(argument_type)) {
             //add_to_text_buffer(text_buffer, "\tmovl 8(%rax), " + get_register_for_type(reg, INT_VARIABLE) + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 8, REGISTER_RELATIVE), make_reg(REGREG), LOAD, INT_VARIABLE);
+            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 8, REGISTER_RELATIVE), make_reg(reg), LOAD, INT_VARIABLE);
             return INT_VARIABLE;
         }
         else {
@@ -1442,10 +1431,10 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             error("capacity function takes exactly one argument\n");
         }
         let argument = function_call_node->arguments[0];
-        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+        let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, RAX, RVALUE);
         if (is_array(argument_type)) {
             //add_to_text_buffer(text_buffer, "\tmovl " + int_to_str(12) + "(%rax), " + get_register_for_type(reg, INT_VARIABLE) + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 12, REGISTER_RELATIVE), make_reg(REGREG), LOAD, INT_VARIABLE);
+            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 12, REGISTER_RELATIVE), make_reg(reg), LOAD, INT_VARIABLE);
 
             return INT_VARIABLE;
         }
@@ -1459,12 +1448,12 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
         }
         let alignment_offset = align_stack(text_buffer, rsp_offset);
 
-        let array_type = compile_expression_into_register(text_buffer, function_call_node->arguments[0], stack_frame, 'a', RVALUE);
+        let array_type = compile_expression_into_register(text_buffer, function_call_node->arguments[0], stack_frame, RAX, RVALUE);
 
         reserve_stack_space(text_buffer, 16);
         push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
 
-        let element_type = compile_expression_into_register(text_buffer, function_call_node->arguments[1], stack_frame, 'b', RVALUE);
+        let element_type = compile_expression_into_register(text_buffer, function_call_node->arguments[1], stack_frame, RBX, RVALUE);
 
         pop_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
         free_stack_space(text_buffer, 16);
@@ -1492,11 +1481,11 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
         if (type == RVALUE) {
             //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(element_type)) + " (%rax), " + get_register_for_type(reg, element_type) + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(REGREG), LOAD, element_type);
+            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(reg), LOAD, element_type);
         }
         elseif (type == LVALUE) {
             //add_to_text_buffer(text_buffer, "\tlea" + get_word_size(get_size(element_type)) + " (%rax), " + get_register_for_type(reg, element_type) + "\n");
-            add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, LONG_VARIABLE);
+            add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, LONG_VARIABLE);
             // Im not sure this ^^^ is correct
         }
 
@@ -1532,7 +1521,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
         for (let i = 0; i < function_call_node->arguments.len(); i = i + 1) {
             let argument = function_call_node->arguments[i];
-            let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, 'a', RVALUE);
+            let argument_type = compile_expression_into_register(text_buffer, argument, stack_frame, RAX, RVALUE);
 
             let size = get_size(argument_type);
             let word_size = get_word_size(size);
@@ -1551,7 +1540,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
         if (return_type != VOID) {
             //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(return_type)) + " " + get_register_for_type('a', return_type) + ", " + get_register_for_type(reg, return_type) + "\n");
-            add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, return_type);
+            add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, return_type);
         }
 
         if (current_target == X86_64) {
@@ -1570,26 +1559,13 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 }
 
 
-fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: char, type: int): int {
-    let REGREG = RAX; // VERY TEMPORARY TODO TODO Remove this
-    if (reg == 'a') {
-        REGREG = RAX;
-    }
-    elseif (reg == 'b') {
-        REGREG = RBX;
-    }
-    elseif (reg == 'd') {
-        REGREG = RDX;
-    }
-    else {
-        error("Unknown register for expression into register " + reg + "\n");
-    }
+fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: long, type: int): int {
     if (node->type == EXPRESSION_INT) {
         if (type == LVALUE) {
             error("Int expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str((node->node as IntNode*)->value) + ", " + register_name + "\n");
-        add_instruction(text_buffer, make_imm((node->node as IntNode*)->value as long), make_reg(REGREG), MOV, INT_VARIABLE);
+        add_instruction(text_buffer, make_imm((node->node as IntNode*)->value as long), make_reg(reg), MOV, INT_VARIABLE);
         return INT_VARIABLE;
     }
     elseif (node->type == EXPRESSION_LONG) {
@@ -1597,7 +1573,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             error("Long expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str((node->node as LongNode*)->value) + ", " + register_name + "\n");
-        add_instruction(text_buffer, make_imm((node->node as LongNode*)->value as long), make_reg(REGREG), MOV, LONG_VARIABLE);
+        add_instruction(text_buffer, make_imm((node->node as LongNode*)->value as long), make_reg(reg), MOV, LONG_VARIABLE);
         return LONG_VARIABLE;
     }
     elseif (node->type == EXPRESSION_TRUE) {
@@ -1605,7 +1581,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             error("True expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovb $1, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
-        add_instruction(text_buffer, make_imm(1 as long), make_reg(REGREG), MOV, BOOL_VARIABLE);
+        add_instruction(text_buffer, make_imm(1 as long), make_reg(reg), MOV, BOOL_VARIABLE);
 
         return BOOL_VARIABLE;
     }
@@ -1614,7 +1590,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             error("False expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovb $0, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
-        add_instruction(text_buffer, make_imm(0 as long), make_reg(REGREG), MOV, BOOL_VARIABLE);
+        add_instruction(text_buffer, make_imm(0 as long), make_reg(reg), MOV, BOOL_VARIABLE);
 
         return BOOL_VARIABLE;
     }
@@ -1628,11 +1604,11 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             }
             if (type == RVALUE) {
                 //add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
-                add_instruction(text_buffer, make_mem(make_reg(RBP), 0 as Operand*, 0, variable->offset, REGISTER_RELATIVE), make_reg(REGREG), LOAD, variable_type);
+                add_instruction(text_buffer, make_mem(make_reg(RBP), 0 as Operand*, 0, variable->offset, REGISTER_RELATIVE), make_reg(reg), LOAD, variable_type);
             }
             elseif (type == LVALUE) {
                 //add_to_text_buffer(text_buffer, "\tleaq" + " " + variable->offset.int_to_str() + "(%rbp), " + register_name + "\n");
-                add_instruction(text_buffer, make_mem(make_reg(RBP), 0 as Operand*, 0, variable->offset, REGISTER_RELATIVE), make_reg(REGREG), LEA, LONG_VARIABLE);
+                add_instruction(text_buffer, make_mem(make_reg(RBP), 0 as Operand*, 0, variable->offset, REGISTER_RELATIVE), make_reg(reg), LEA, LONG_VARIABLE);
             }
             return variable_type;
         }
@@ -1656,11 +1632,11 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                         else {
                             error("Unknown const variable type " + debug_variable_type_name(variable_type) + "\n");
                         }
-                        add_instruction(text_buffer, make_imm(*(global_variable->value as int*) as long), make_reg(REGREG), MOV, variable_type);
+                        add_instruction(text_buffer, make_imm(*(global_variable->value as int*) as long), make_reg(reg), MOV, variable_type);
                     }
                     else {
                         //add_to_text_buffer(text_buffer, "\tmov" + word_size + " ." + global_variable->name + "(%rip), " + register_name + "\n");
-                        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG), LOADGLOBL, variable_type);
+                        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(reg), LOADGLOBL, variable_type);
                     }
                 }
                 elseif (type == LVALUE) {
@@ -1668,7 +1644,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                         error("Const variables cannot be lvalues\n");
                     }
                     //add_to_text_buffer(text_buffer, "\tleaq" + " ." + global_variable->name + "(%rip), " + register_name + "\n");
-                    add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG), LEAGLOBL, LONG_VARIABLE);
+                    add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(reg), LEAGLOBL, LONG_VARIABLE);
                 }
             }
             else {
@@ -1683,14 +1659,14 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         let expression_type = compile_binary_expression(text_buffer, node, stack_frame);
         //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
-        add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, expression_type);
+        add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, expression_type);
 
         return expression_type;
     }
     elseif (node->type == EXPRESSION_UNARY) {
         let expression_type = compile_unary_expression(text_buffer, node, stack_frame, type);
         //add_to_text_buffer(text_buffer, "\tmov" + get_word_size(get_size(expression_type)) + " " + get_register_for_type('a', expression_type) + ", " + register_name + "\n");
-        add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, expression_type);
+        add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, expression_type);
         return expression_type;
     }
     elseif (node->type == EXPRESSION_STRING_LITERAL) {
@@ -1700,7 +1676,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         let string_node = (node->node as StringLiteralNode*)->name;
         let global_variable = get_global_variable(global_scope, string_node);
         //add_to_text_buffer(text_buffer, "\tleaq ." + global_variable->name + "(%rip), " + register_name + "\n");
-        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG), LEAGLOBL, LONG_VARIABLE);
+        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(reg), LEAGLOBL, LONG_VARIABLE);
         return global_variable->type;
     }
     elseif (node->type == EXPRESSION_CHAR) {
@@ -1710,7 +1686,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         let char_node = (node->node as CharNode*)->name;
         let global_variable = get_global_variable(global_scope, char_node);
         //add_to_text_buffer(text_buffer, "\tmovb ." + global_variable->name + "(%rip), " + register_name + "\n");
-        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(REGREG), LOADGLOBL, CHAR_VARIABLE);
+        add_instruction(text_buffer, make_relative_label(global_variable->name), make_reg(reg), LOADGLOBL, CHAR_VARIABLE);
         return global_variable->type;
     }
     elseif (node->type == EXPRESSION_FUNCTION_CALL) {
@@ -1746,7 +1722,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             add_instruction(text_buffer, make_stdlib_label("memset"), 0 as Operand*, CALL, VOID);
 
             //add_to_text_buffer(text_buffer, "\tmovq %rax, " + get_register_for_type(reg, node_type) + "\n");
-            add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, node_type);
+            add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, node_type);
         }
         elseif (is_array(node_type)) {
             //add_to_text_buffer(text_buffer, "\tmovq $" + int_to_str(16) + ", %rdi\n");
@@ -1779,7 +1755,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             //add_to_text_buffer(text_buffer, "\tmovq %rax, " + int_to_str(0) + "(%rbx)\n");
             add_instruction(text_buffer, make_reg(RAX), make_mem(make_reg(RBX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), STORE, LONG_VARIABLE);
             //add_to_text_buffer(text_buffer, "\tmovq %rbx, " + get_register_for_type(reg, node_type) + "\n");
-            add_instruction(text_buffer, make_reg(RBX), make_reg(REGREG), MOV, LONG_VARIABLE);
+            add_instruction(text_buffer, make_reg(RBX), make_reg(reg), MOV, LONG_VARIABLE);
         }
         else {
             error("New keyword can only be used to create pointers and arrays\n");
@@ -1793,7 +1769,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         if (node->type == EXPRESSION_DOUBLE_COLON) {
             lrtype = LVALUE;
         }
-        let left_type = compile_expression_into_register(text_buffer, access_node->left, stack_frame, 'a', lrtype);
+        let left_type = compile_expression_into_register(text_buffer, access_node->left, stack_frame, RAX, lrtype);
         if (!is_pointer(left_type)) {
             error("Expected pointer type, got " + debug_variable_type_name(left_type) + "\n");
         }
@@ -1812,17 +1788,17 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         if (type == RVALUE) {
             let word_size = get_word_size(get_size(member_type));
             //add_to_text_buffer(text_buffer, "\tmov" + word_size + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG), LOAD, member_type);
+            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(reg), LOAD, member_type);
         }
         elseif (type == LVALUE) {
             //add_to_text_buffer(text_buffer, "\tleaq" + " " + int_to_str(member_offset) + "(" + pointer_register_name + "), " + register_name + "\n");
-            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(REGREG), LEA, LONG_VARIABLE);
+            add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, member_offset, REGISTER_RELATIVE), make_reg(reg), LEA, LONG_VARIABLE);
         }
         return member_type;
     }
     elseif (node->type == EXPRESSION_INDEX) {
         let index_node = (node->node as IndexNode*);
-        let left_type = compile_expression_into_register(text_buffer, index_node->left, stack_frame, 'a', RVALUE);
+        let left_type = compile_expression_into_register(text_buffer, index_node->left, stack_frame, RAX, RVALUE);
         if (left_type != STRING_VARIABLE && !is_array(left_type) && !is_pointer(left_type)) {
             error("Expected string, array or pointer type, got " + debug_variable_type_name(left_type) + "\n");
         }
@@ -1846,7 +1822,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             reserve_stack_space(text_buffer, 16);
             push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
 
-            let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, 'd', RVALUE);
+            let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, RDX, RVALUE);
 
             if (index_type != INT_VARIABLE && index_type != LONG_VARIABLE) {
                 error("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
@@ -1861,10 +1837,10 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             }
             if (type == RVALUE) {
                 //add_to_text_buffer(text_buffer, "\tmov" + word_size + " (%rax), " + register_name + "\n");
-                add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(REGREG), LOAD, element_type);
+                add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(reg), LOAD, element_type);
             } elseif (type == LVALUE) {
                 //add_to_text_buffer(text_buffer, "\tmovq %rax, " + register_name + "\n");
-                add_instruction(text_buffer, make_reg(RAX), make_reg(REGREG), MOV, element_type);
+                add_instruction(text_buffer, make_reg(RAX), make_reg(reg), MOV, element_type);
             }
             return element_type;
         }
@@ -1877,7 +1853,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
 
             reserve_stack_space(text_buffer, 16);
             push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
-            let left_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, 'a', RVALUE);
+            let left_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, RAX, RVALUE);
 
             if (left_index_type != INT_VARIABLE && left_index_type != LONG_VARIABLE) {
                 error("Expected int type, got " + debug_variable_type_name(left_index_type) + "\n");
@@ -1891,7 +1867,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                 add_instruction(text_buffer, make_reg(RAX), make_reg(R12), MOV, LONG_VARIABLE);
             }
 
-            let right_index_type = compile_expression_into_register(text_buffer, range_node->right, stack_frame, 'a', RVALUE);
+            let right_index_type = compile_expression_into_register(text_buffer, range_node->right, stack_frame, RAX, RVALUE);
             if (right_index_type != INT_VARIABLE && right_index_type != LONG_VARIABLE) {
                 error("Expected int type, got " + debug_variable_type_name(right_index_type) + "\n");
             }
@@ -1949,7 +1925,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
 
         if (cast_size > value_size) {
             //add_to_text_buffer(text_buffer, "\tmovs" + get_word_size(value_size) + get_word_size(cast_size) + " " + get_register_for_type(reg, value_type) + ", " + get_register_for_type(reg, cast_type) + "\n");
-            add_instruction(text_buffer, make_reg(REGREG), make_reg(REGREG), encode_sizes_in_opcode(MOVS, value_type, cast_type), VOID);
+            add_instruction(text_buffer, make_reg(reg), make_reg(reg), encode_sizes_in_opcode(MOVS, value_type, cast_type), VOID);
         }
         else {
             warn("Narrowing conversion from " + debug_variable_type_name(value_type) + " to " + debug_variable_type_name(cast_type) + "\n");
@@ -1967,7 +1943,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     let variable_type = 0;
     if (text_buffer) {
         if (type == STATEMENT_ASSIGN) {
-            variable_type = compile_expression_into_register(text_buffer, assign_node->lvalue, stack_frame, 'a', LVALUE);
+            variable_type = compile_expression_into_register(text_buffer, assign_node->lvalue, stack_frame, RAX, LVALUE);
 
             reserve_stack_space(text_buffer, 16);
             push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
@@ -2012,7 +1988,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
             }
         }
         elseif (rvalue_type == EXPRESSION_FUNCTION_CALL) {
-            let return_type = compile_function_call(assign_node->rvalue, text_buffer, stack_frame, 'a', RVALUE);
+            let return_type = compile_function_call(assign_node->rvalue, text_buffer, stack_frame, RAX, RVALUE);
             if (return_type == VOID) {
                 error("Can't assign to void\n");
             }
@@ -2051,7 +2027,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
             expression_type = compile_unary_expression(text_buffer, assign_node->rvalue, stack_frame, RVALUE);
         }
         elseif (rvalue_type == EXPRESSION_VARIABLE || rvalue_type == EXPRESSION_INDEX || rvalue_type == EXPRESSION_AS || rvalue_type == EXPRESSION_NEW || rvalue_type == EXPRESSION_ARROW || rvalue_type == EXPRESSION_TRUE || rvalue_type == EXPRESSION_FALSE || rvalue_type == EXPRESSION_DOUBLE_COLON) {
-            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, 'a', RVALUE);
+            expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, RAX, RVALUE);
         }
         else {
             error("Unknown expression type to assign" + int_to_str(rvalue_type) + "\n");
@@ -2145,7 +2121,7 @@ fn compile_if(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*
 
     let conditional_node = if_statement_node->condition;
 
-    let conditional_type = compile_expression_into_register(text_buffer, conditional_node, stack_frame, 'a', RVALUE);
+    let conditional_type = compile_expression_into_register(text_buffer, conditional_node, stack_frame, RAX, RVALUE);
     //add_to_text_buffer(text_buffer, "\tcmp $0, " + get_register_for_type('a', conditional_type) + "\n");
     add_instruction(text_buffer, make_imm(0 as long), make_reg(RAX), CMP, conditional_type);
     compile_if_jump(text_buffer, if_statement_node, index, -1);
@@ -2157,7 +2133,7 @@ fn compile_if(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*
 
         add_to_text_buffer(text_buffer, ".L" + int_to_str(index) + "_elseif_" + int_to_str(i) + ":\n");
 
-        let elseif_conditional_type = compile_expression_into_register(text_buffer, elseif_conditional_node, stack_frame, 'a', RVALUE);
+        let elseif_conditional_type = compile_expression_into_register(text_buffer, elseif_conditional_node, stack_frame, RAX, RVALUE);
         //add_to_text_buffer(text_buffer, "\tcmp $0, " + get_register_for_type('a', elseif_conditional_type) + "\n");
         add_instruction(text_buffer, make_imm(0 as long), make_reg(RAX), CMP, elseif_conditional_type);
         compile_if_jump(text_buffer, if_statement_node, index, i);
@@ -2190,7 +2166,7 @@ fn compile_return(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     }
 
     let return_type = curr_func->return_type;
-    let return_expression_type = compile_expression_into_register(text_buffer, return_node->value, stack_frame, 'a', RVALUE);
+    let return_expression_type = compile_expression_into_register(text_buffer, return_node->value, stack_frame, RAX, RVALUE);
 
     if (get_underlying_type(return_type) != get_underlying_type(return_expression_type)) {
         error("Type in return statement doesnt match the return type of function " + curr_func->name + ". Expected " + debug_variable_type_name(return_type) + ", got " + debug_variable_type_name(return_expression_type) + "\n");
@@ -2329,7 +2305,7 @@ fn compile_while(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFra
 
     add_to_text_buffer(while_text_buffer, ".L" + int_to_str(index) + "_while_start:\n");
 
-    let condition_type = compile_expression_into_register(while_text_buffer, while_statement_node->condition, while_stack_frame, 'a', RVALUE);
+    let condition_type = compile_expression_into_register(while_text_buffer, while_statement_node->condition, while_stack_frame, RAX, RVALUE);
 
     //add_to_text_buffer(while_text_buffer, "\tcmp $0, " + get_register_for_type('a', condition_type) + "\n");
     add_instruction(while_text_buffer, make_imm(0 as long), make_reg(RAX), CMP, condition_type);
@@ -2369,7 +2345,7 @@ fn compile_for(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame
 
     add_to_text_buffer(for_text_buffer, ".L" + int_to_str(index) + "_for_start:\n");
 
-    let condition_type = compile_expression_into_register(for_text_buffer, condition_node, for_stack_frame, 'a', RVALUE);
+    let condition_type = compile_expression_into_register(for_text_buffer, condition_node, for_stack_frame, RAX, RVALUE);
     //add_to_text_buffer(for_text_buffer, "\tcmp $0, " + get_register_for_type('a', condition_type) + "\n");
     add_instruction(for_text_buffer, make_imm(0 as long), make_reg(RAX), CMP, condition_type);
     //add_to_text_buffer(for_text_buffer, "\tjz .L" + int_to_str(index) + "_for_end\n");
@@ -2419,7 +2395,7 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
         compile_continue(text_buffer, stack_frame, curr_loop);
     }
     elseif (statement->type == EXPRESSION_FUNCTION_CALL) {
-        compile_function_call(statement, text_buffer, stack_frame, 'a', RVALUE);
+        compile_function_call(statement, text_buffer, stack_frame, RAX, RVALUE);
     }
     elseif (statement->type == STATEMENT_WHILE) {
         compile_while(text_buffer, statement, stack_frame, curr_func);
