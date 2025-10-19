@@ -32,4 +32,10 @@ fn main(): int {
     print(int_to_str(arr[0]) + "\n");
 
     print(test(10, 20).int_to_str() + "\n");
+
+    print("This is a normal print\n");
+    warn("This is a warning\n");
+    error("This is an error\n");
+
+    print("This should not be printed because of the error\n");
 }
