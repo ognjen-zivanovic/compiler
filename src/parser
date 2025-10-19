@@ -484,28 +484,55 @@ fn get_statement(): AstNode* {
     let token = get_next_token();
 
     if (token->type == LET || token->type == CONST) {
-        if (token->type == CONST && peek_next_token()->type == LBRACE) {
-            consume_next_token();
-
-            let const_value = 0;
-
-            while (peek_next_token()->type != RBRACE) {
-                token = expect_token(IDENT);
-
-                let value = new int*;
-                *value = const_value;
-
-                add_global_variable(global_scope, token->value, value, to_const(INT_VARIABLE));
-                const_value = const_value + 1;
-
-                if (peek_next_token()->type != RBRACE) {
-                    expect_token(COMMA);
-                }
+        if (token->type == CONST) {
+            let type = INT_VARIABLE;
+            if (peek_next_token()->type == COLON) {
+                consume_next_token();
+                type = parse_type();
             }
-            expect_token(RBRACE);
-            expect_token(SEMICOLON);
-            node->type = STATEMENT_NONE;
-            return node;
+
+            if (peek_next_token()->type == LBRACE) {
+                consume_next_token();
+
+                let const_value = 0 as long;
+
+                while (peek_next_token()->type != RBRACE) {
+                    token = expect_token(IDENT);
+
+                    if (type == INT_VARIABLE) {
+                        let value = new int*;
+                        *value = const_value as int;
+
+                        add_global_variable(global_scope, token->value, value, to_const(INT_VARIABLE));
+                        const_value = const_value + 1;
+                    }
+                    elseif (type == LONG_VARIABLE) {
+                        let value = new long*;
+                        *value = const_value;
+
+                        add_global_variable(global_scope, token->value, value, to_const(LONG_VARIABLE));
+                        const_value = const_value + 1;
+                    }
+                    elseif (type == CHAR_VARIABLE) {
+                        let value = new char*;
+                        *value = const_value as char;
+
+                        add_global_variable(global_scope, token->value, value, to_const(CHAR_VARIABLE));
+                        const_value = const_value + 1;
+                    }
+                    else {
+                        error("Unknown const type " + debug_variable_type_name(type) + "\n");
+                    }
+
+                    if (peek_next_token()->type != RBRACE) {
+                        expect_token(COMMA);
+                    }
+                }
+                expect_token(RBRACE);
+                expect_token(SEMICOLON);
+                node->type = STATEMENT_NONE;
+                return node;
+            }
         }
         node->type = STATEMENT_LET;
 
