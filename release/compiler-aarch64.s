@@ -1193,7 +1193,7 @@ debug_ast_node_type_name:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl warn
 	add sp, sp, #16
 	adrp x0, _str_85@PAGE
 	add x0, x0, _str_85@PAGEOFF
@@ -1951,7 +1951,7 @@ read_char:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	b .L14_end
 	add sp, sp, #16
@@ -2001,7 +2001,7 @@ read_char:
 	adrp x0, _str_125@PAGE
 	add x0, x0, _str_125@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	b .L18_end
 	add sp, sp, #16
@@ -4024,18 +4024,39 @@ cset w0, eq
 	sub sp, sp, #16
 	adrp x0, _str_192@PAGE
 	add x0, x0, _str_192@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
 	sub sp, sp, #16
+	str x0, [sp]
 	sub sp, sp, #16
 	ldrb w0, [x29, #-1]
 	strb w0, [sp]
 	bl char_to_str
-	mov x0, x0
+	mov x2, x0
 	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_193@PAGE
+	add x2, x2, _str_193@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	b .L29_end
 	add sp, sp, #16
@@ -4080,7 +4101,7 @@ lex_all_tokens:
 	mov x0, x19
 	str x0, [x29, #-8]
 	sub sp, sp, #16
-.L40_while_start:
+.L43_while_start:
 	adrp x0, _lexer_position@PAGE
 	add x0, x0, _lexer_position@PAGEOFF
 	ldr w0, [x0]
@@ -4091,7 +4112,7 @@ lex_all_tokens:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L40_while_end
+	beq .L43_while_end
 	mov x0, #12
 	bl _malloc
 	mov x0, x0
@@ -4116,8 +4137,8 @@ lex_all_tokens:
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	b .L40_while_start
-.L40_while_end:
+	b .L43_while_start
+.L43_while_end:
 	add sp, sp, #16
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
@@ -4205,14 +4226,14 @@ get_next_token:
 	cset w0, ge
 	mov w0, w0
 	cmp wzr, w0
-	beq .L42_end
+	beq .L45_end
 	mov w0, #0
 	sxtw x0, w0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L42_end
-.L42_end:
+	b .L45_end
+.L45_end:
 	adrp x0, _token_index@PAGE
 	add x0, x0, _token_index@PAGEOFF
 	sub sp, sp, #16
@@ -4261,14 +4282,14 @@ peek_next_token:
 	cset w0, ge
 	mov w0, w0
 	cmp wzr, w0
-	beq .L43_end
+	beq .L46_end
 	mov w0, #0
 	sxtw x0, w0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L43_end
-.L43_end:
+	b .L46_end
+.L46_end:
 	adrp x0, _tokens@PAGE
 	add x0, x0, _tokens@PAGEOFF
 	ldr x0, [x0]
@@ -4305,47 +4326,15 @@ expect_token:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L44_end
+	beq .L47_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_193@PAGE
-	add x0, x0, _str_193@PAGEOFF
+	adrp x0, _str_194@PAGE
+	add x0, x0, _str_194@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
-	str w0, [sp]
-	bl debug_token_value_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_194@PAGE
-	add x2, x2, _str_194@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #-8]
-	ldr w0, [x0]
 	str w0, [sp]
 	bl debug_token_value_to_str
 	mov x2, x0
@@ -4373,12 +4362,44 @@ expect_token:
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
+	sub sp, sp, #16
 	str x0, [sp]
-	bl print
+	sub sp, sp, #16
+	ldr x0, [x29, #-8]
+	ldr w0, [x0]
+	str w0, [sp]
+	bl debug_token_value_to_str
+	mov x2, x0
 	add sp, sp, #16
-	b .L44_end
+	ldr x0, [sp]
 	add sp, sp, #16
-.L44_end:
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_196@PAGE
+	add x2, x2, _str_196@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L47_end
+	add sp, sp, #16
+.L47_end:
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
 	mov sp, x29
@@ -4399,13 +4420,13 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_elseif_0
+	beq .L54_elseif_0
 	mov w0, #1
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_elseif_0:
+	b .L54_end
+.L54_elseif_0:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #57
@@ -4413,13 +4434,13 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_elseif_1
+	beq .L54_elseif_1
 	mov w0, #2
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_elseif_1:
+	b .L54_end
+.L54_elseif_1:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #58
@@ -4427,13 +4448,13 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_elseif_2
+	beq .L54_elseif_2
 	mov w0, #3
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_elseif_2:
+	b .L54_end
+.L54_elseif_2:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #59
@@ -4441,13 +4462,13 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_elseif_3
+	beq .L54_elseif_3
 	mov w0, #4
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_elseif_3:
+	b .L54_end
+.L54_elseif_3:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #60
@@ -4455,13 +4476,13 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_elseif_4
+	beq .L54_elseif_4
 	mov w0, #5
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_elseif_4:
+	b .L54_end
+.L54_elseif_4:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #61
@@ -4469,16 +4490,16 @@ variable_type_from_token:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L51_else
+	beq .L54_else
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_else:
+	b .L54_end
+.L54_else:
 	sub sp, sp, #16
-	adrp x0, _str_196@PAGE
-	add x0, x0, _str_196@PAGEOFF
+	adrp x0, _str_197@PAGE
+	add x0, x0, _str_197@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -4505,21 +4526,21 @@ variable_type_from_token:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_197@PAGE
-	add x2, x2, _str_197@PAGEOFF
+	adrp x2, _str_198@PAGE
+	add x2, x2, _str_198@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl warn
 	add sp, sp, #16
 	mov w0, #0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L51_end
-.L51_end:
+	b .L54_end
+.L54_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -4699,7 +4720,7 @@ dereference_type:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L55_else
+	beq .L58_else
 	sub sp, sp, #16
 	add x0, x29, #-8
 
@@ -4727,9 +4748,9 @@ dereference_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L55_end
+	b .L58_end
 	add sp, sp, #16
-.L55_else:
+.L58_else:
 	sub sp, sp, #16
 	add x0, x29, #-12
 
@@ -4751,9 +4772,9 @@ dereference_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L55_end
+	b .L58_end
 	add sp, sp, #16
-.L55_end:
+.L58_end:
 	ldr w0, [x29, #-12]
 	mov w2, #16
 	lsl w0, w0, w2
@@ -4796,10 +4817,10 @@ get_struct_with_index:
 	cset w0, ge
 	mov w0, w0
 	cmp wzr, w0
-	beq .L56_end
+	beq .L59_end
 	sub sp, sp, #16
-	adrp x0, _str_198@PAGE
-	add x0, x0, _str_198@PAGEOFF
+	adrp x0, _str_199@PAGE
+	add x0, x0, _str_199@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -4825,17 +4846,17 @@ get_struct_with_index:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_199@PAGE
-	add x2, x2, _str_199@PAGEOFF
+	adrp x2, _str_200@PAGE
+	add x2, x2, _str_200@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L56_end
-.L56_end:
+	b .L59_end
+.L59_end:
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
 	ldr x0, [x0]
@@ -4863,7 +4884,7 @@ debug_variable_non_pointer_type_name:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L60_elseif_0
+	beq .L63_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _struct_registry@PAGE
@@ -4892,138 +4913,138 @@ debug_variable_non_pointer_type_name:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
+	b .L63_end
 	add sp, sp, #16
-.L60_elseif_0:
+.L63_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_1
-	adrp x0, _str_200@PAGE
-	add x0, x0, _str_200@PAGEOFF
+	beq .L63_elseif_1
+	adrp x0, _str_201@PAGE
+	add x0, x0, _str_201@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_1:
+	b .L63_end
+.L63_elseif_1:
 	ldr w0, [x29, #16]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_2
-	adrp x0, _str_201@PAGE
-	add x0, x0, _str_201@PAGEOFF
+	beq .L63_elseif_2
+	adrp x0, _str_202@PAGE
+	add x0, x0, _str_202@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_2:
+	b .L63_end
+.L63_elseif_2:
 	ldr w0, [x29, #16]
 	mov w2, #3
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_3
-	adrp x0, _str_202@PAGE
-	add x0, x0, _str_202@PAGEOFF
+	beq .L63_elseif_3
+	adrp x0, _str_203@PAGE
+	add x0, x0, _str_203@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_3:
+	b .L63_end
+.L63_elseif_3:
 	ldr w0, [x29, #16]
 	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_4
-	adrp x0, _str_203@PAGE
-	add x0, x0, _str_203@PAGEOFF
+	beq .L63_elseif_4
+	adrp x0, _str_204@PAGE
+	add x0, x0, _str_204@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_4:
+	b .L63_end
+.L63_elseif_4:
 	ldr w0, [x29, #16]
 	mov w2, #7
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_5
-	adrp x0, _str_204@PAGE
-	add x0, x0, _str_204@PAGEOFF
+	beq .L63_elseif_5
+	adrp x0, _str_205@PAGE
+	add x0, x0, _str_205@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_5:
+	b .L63_end
+.L63_elseif_5:
 	ldr w0, [x29, #16]
 	mov w2, #6
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_6
-	adrp x0, _str_205@PAGE
-	add x0, x0, _str_205@PAGEOFF
+	beq .L63_elseif_6
+	adrp x0, _str_206@PAGE
+	add x0, x0, _str_206@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_6:
+	b .L63_end
+.L63_elseif_6:
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_7
-	adrp x0, _str_206@PAGE
-	add x0, x0, _str_206@PAGEOFF
+	beq .L63_elseif_7
+	adrp x0, _str_207@PAGE
+	add x0, x0, _str_207@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_7:
+	b .L63_end
+.L63_elseif_7:
 	ldr w0, [x29, #16]
 	mov w2, #9
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_elseif_8
-	adrp x0, _str_207@PAGE
-	add x0, x0, _str_207@PAGEOFF
+	beq .L63_elseif_8
+	adrp x0, _str_208@PAGE
+	add x0, x0, _str_208@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_elseif_8:
+	b .L63_end
+.L63_elseif_8:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L60_else
-	adrp x0, _str_208@PAGE
-	add x0, x0, _str_208@PAGEOFF
+	beq .L63_else
+	adrp x0, _str_209@PAGE
+	add x0, x0, _str_209@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_else:
+	b .L63_end
+.L63_else:
 	sub sp, sp, #16
-	adrp x0, _str_209@PAGE
-	add x0, x0, _str_209@PAGEOFF
+	adrp x0, _str_210@PAGE
+	add x0, x0, _str_210@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -5049,22 +5070,22 @@ debug_variable_non_pointer_type_name:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_210@PAGE
-	add x2, x2, _str_210@PAGEOFF
+	adrp x2, _str_211@PAGE
+	add x2, x2, _str_211@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl warn
 	add sp, sp, #16
-	adrp x0, _str_211@PAGE
-	add x0, x0, _str_211@PAGEOFF
+	adrp x0, _str_212@PAGE
+	add x0, x0, _str_212@PAGEOFF
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L60_end
-.L60_end:
+	b .L63_end
+.L63_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -5079,7 +5100,7 @@ debug_variable_type_name:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L64_end
+	beq .L67_end
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	sub sp, sp, #16
@@ -5091,52 +5112,6 @@ debug_variable_type_name:
 	ldr x0, [sp]
 	add sp, sp, #16
 	eor w0, w0, w2
-	str w0, [x29, #-4]
-	sub sp, sp, #16
-	ldr w0, [x29, #-4]
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x0, x0
-	add sp, sp, #16
-	adrp x2, _str_212@PAGE
-	add x2, x2, _str_212@PAGEOFF
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	add sp, sp, #16
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-	b .L64_end
-	add sp, sp, #16
-.L64_end:
-	sub sp, sp, #16
-	ldr w0, [x29, #16]
-	str w0, [sp]
-	bl is_pointer
-	mov w0, w0
-	add sp, sp, #16
-	cmp wzr, w0
-	beq .L67_end
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr w0, [x29, #16]
-	str w0, [sp]
-	bl dereference_type
-	mov w0, w0
-	add sp, sp, #16
 	str w0, [x29, #-4]
 	sub sp, sp, #16
 	ldr w0, [x29, #-4]
@@ -5171,19 +5146,14 @@ debug_variable_type_name:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
-	bl is_array
+	bl is_pointer
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
 	beq .L70_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	sub sp, sp, #16
 	ldr w0, [x29, #16]
-	str w0, [sp]
-	bl dereference_type
-	mov w0, w0
-	add sp, sp, #16
 	str w0, [sp]
 	bl dereference_type
 	mov w0, w0
@@ -5222,6 +5192,57 @@ debug_variable_type_name:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
+	bl is_array
+	mov w0, w0
+	add sp, sp, #16
+	cmp wzr, w0
+	beq .L73_end
+	sub sp, sp, #16
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr w0, [x29, #16]
+	str w0, [sp]
+	bl dereference_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [sp]
+	bl dereference_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [x29, #-4]
+	sub sp, sp, #16
+	ldr w0, [x29, #-4]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x0, x0
+	add sp, sp, #16
+	adrp x2, _str_215@PAGE
+	add x2, x2, _str_215@PAGEOFF
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	add sp, sp, #16
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L73_end
+	add sp, sp, #16
+.L73_end:
+	sub sp, sp, #16
+	ldr w0, [x29, #16]
+	str w0, [sp]
 	bl debug_variable_non_pointer_type_name
 	mov x0, x0
 	add sp, sp, #16
@@ -5241,13 +5262,13 @@ get_size:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L73_end
+	beq .L76_end
 	mov w0, #0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L73_end
-.L73_end:
+	b .L76_end
+.L76_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
@@ -5255,7 +5276,7 @@ get_size:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L74_end
+	beq .L77_end
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	sub sp, sp, #16
@@ -5275,8 +5296,8 @@ get_size:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L74_end
-.L74_end:
+	b .L77_end
+.L77_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
@@ -5284,13 +5305,13 @@ get_size:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L75_end
+	beq .L78_end
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L75_end
-.L75_end:
+	b .L78_end
+.L78_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
@@ -5298,13 +5319,13 @@ get_size:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L76_end
+	beq .L79_end
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L76_end
-.L76_end:
+	b .L79_end
+.L79_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
@@ -5312,7 +5333,7 @@ get_size:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L77_end
+	beq .L80_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _struct_registry@PAGE
@@ -5341,122 +5362,122 @@ get_size:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L77_end
+	b .L80_end
 	add sp, sp, #16
-.L77_end:
+.L80_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_0
+	beq .L81_elseif_0
 	mov w0, #4
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_0:
+	b .L81_end
+.L81_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_1
+	beq .L81_elseif_1
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_1:
+	b .L81_end
+.L81_elseif_1:
 	ldr w0, [x29, #16]
 	mov w2, #3
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_2
+	beq .L81_elseif_2
 	mov w0, #1
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_2:
+	b .L81_end
+.L81_elseif_2:
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_3
+	beq .L81_elseif_3
 	mov w0, #1
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_3:
+	b .L81_end
+.L81_elseif_3:
 	ldr w0, [x29, #16]
 	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_4
+	beq .L81_elseif_4
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_4:
+	b .L81_end
+.L81_elseif_4:
 	ldr w0, [x29, #16]
 	mov w2, #7
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_5
+	beq .L81_elseif_5
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_5:
+	b .L81_end
+.L81_elseif_5:
 	ldr w0, [x29, #16]
 	mov w2, #6
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_elseif_6
+	beq .L81_elseif_6
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_elseif_6:
+	b .L81_end
+.L81_elseif_6:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L78_else
+	beq .L81_else
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L78_end
-.L78_else:
+	b .L81_end
+.L81_else:
 	sub sp, sp, #16
-	adrp x0, _str_215@PAGE
-	add x0, x0, _str_215@PAGEOFF
+	adrp x0, _str_216@PAGE
+	add x0, x0, _str_216@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
-	bl int_to_str
+	bl debug_variable_type_name
 	mov x2, x0
 	add sp, sp, #16
 	ldr x0, [sp]
@@ -5476,24 +5497,18 @@ get_size:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_216@PAGE
-	add x2, x2, _str_216@PAGEOFF
+	adrp x2, _str_217@PAGE
+	add x2, x2, _str_217@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_217@PAGE
-	add x0, x0, _str_217@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	str w0, [sp]
-	bl debug_variable_type_name
+	bl int_to_str
 	mov x2, x0
 	add sp, sp, #16
 	ldr x0, [sp]
@@ -5520,10 +5535,14 @@ get_size:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl warn
 	add sp, sp, #16
-	b .L78_end
-.L78_end:
+	mov w0, #0
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L81_end
+.L81_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -5537,45 +5556,45 @@ get_word_size:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L85_elseif_0
+	beq .L88_elseif_0
 	adrp x0, _char_219@PAGE
 	add x0, x0, _char_219@PAGEOFF
 	ldrb w0, [x0]
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L85_end
-.L85_elseif_0:
+	b .L88_end
+.L88_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L85_elseif_1
+	beq .L88_elseif_1
 	adrp x0, _char_220@PAGE
 	add x0, x0, _char_220@PAGEOFF
 	ldrb w0, [x0]
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L85_end
-.L85_elseif_1:
+	b .L88_end
+.L88_elseif_1:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L85_else
+	beq .L88_else
 	adrp x0, _char_221@PAGE
 	add x0, x0, _char_221@PAGEOFF
 	ldrb w0, [x0]
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L85_end
-.L85_else:
+	b .L88_end
+.L88_else:
 	sub sp, sp, #16
 	adrp x0, _str_222@PAGE
 	add x0, x0, _str_222@PAGEOFF
@@ -5611,10 +5630,10 @@ get_word_size:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L85_end
-.L85_end:
+	b .L88_end
+.L88_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -5703,7 +5722,7 @@ get_struct_member:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L90_for_start:
+.L93_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -5716,7 +5735,7 @@ get_struct_member:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L90_for_end
+	beq .L93_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0, #16]
 	ldr x0, [x0]
@@ -5737,7 +5756,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L91_end
+	beq .L94_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0, #16]
@@ -5753,10 +5772,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L91_end
+	b .L94_end
 	add sp, sp, #16
-.L91_end:
-.L90_for_inc:
+.L94_end:
+.L93_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -5767,8 +5786,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L90_for_start
-.L90_for_end:
+	b .L93_for_start
+.L93_for_end:
 	add sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _str_224@PAGE
@@ -5795,8 +5814,24 @@ cset w0, eq
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
+	sub sp, sp, #16
 	str x0, [sp]
-	bl print
+	ldr x0, [x29, #24]
+	ldr x2, [x0]
+	ldr x0, [sp]
+	add sp, sp, #16
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	adrp x2, _str_226@PAGE
+	add x2, x2, _str_226@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -5894,7 +5929,7 @@ get_struct:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L96_for_start:
+.L101_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -5907,7 +5942,7 @@ get_struct:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L96_for_end
+	beq .L101_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
 	ldr x0, [x0]
@@ -5928,7 +5963,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L97_end
+	beq .L102_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
@@ -5944,10 +5979,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L97_end
+	b .L102_end
 	add sp, sp, #16
-.L97_end:
-.L96_for_inc:
+.L102_end:
+.L101_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -5958,12 +5993,12 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L96_for_start
-.L96_for_end:
+	b .L101_for_start
+.L101_for_end:
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_226@PAGE
-	add x0, x0, _str_226@PAGEOFF
+	adrp x0, _str_227@PAGE
+	add x0, x0, _str_227@PAGEOFF
 	ldr x2, [x29, #16]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -5980,14 +6015,14 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_227@PAGE
-	add x2, x2, _str_227@PAGEOFF
+	adrp x2, _str_228@PAGE
+	add x2, x2, _str_228@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -6055,7 +6090,7 @@ get_global_variable:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L102_for_start:
+.L107_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -6068,7 +6103,7 @@ get_global_variable:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L102_for_end
+	beq .L107_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
 	ldr x0, [x0]
@@ -6089,7 +6124,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L103_end
+	beq .L108_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
@@ -6105,10 +6140,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L103_end
+	b .L108_end
 	add sp, sp, #16
-.L103_end:
-.L102_for_inc:
+.L108_end:
+.L107_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -6119,8 +6154,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L102_for_start
-.L102_for_end:
+	b .L107_for_start
+.L107_for_end:
 	add sp, sp, #16
 	mov w0, #0
 	sxtw x0, w0
@@ -6231,7 +6266,7 @@ new_stack_frame:
 	str x0, [x19]
 	ldr x0, [x29, #16]
 	cmp xzr, x0
-	beq .L104_end
+	beq .L109_end
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #8
@@ -6243,9 +6278,9 @@ new_stack_frame:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L104_end
+	b .L109_end
 	add sp, sp, #16
-.L104_end:
+.L109_end:
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
 	mov sp, x29
@@ -6273,7 +6308,7 @@ add_variable:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L105_end
+	beq .L110_end
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	add x0, x0, #8
@@ -6287,9 +6322,9 @@ add_variable:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L105_end
+	b .L110_end
 	add sp, sp, #16
-.L105_end:
+.L110_end:
 	mov x0, #16
 	bl _malloc
 	mov x0, x0
@@ -6313,7 +6348,7 @@ add_variable:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L106_else
+	beq .L111_else
 	sub sp, sp, #16
 	ldr x0, [x29, #-12]
 	add x0, x0, #8
@@ -6325,9 +6360,9 @@ add_variable:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L106_end
+	b .L111_end
 	add sp, sp, #16
-.L106_else:
+.L111_else:
 	sub sp, sp, #16
 	ldr x0, [x29, #-12]
 	add x0, x0, #8
@@ -6338,9 +6373,9 @@ add_variable:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L106_end
+	b .L111_end
 	add sp, sp, #16
-.L106_end:
+.L111_end:
 	ldr x0, [x29, #-12]
 	add x0, x0, #12
 
@@ -6377,11 +6412,11 @@ get_variable:
 	mov x29, sp
 	ldr x0, [x29, #24]
 	cmp xzr, x0
-	beq .L108_end
+	beq .L113_end
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L109_for_start:
+.L114_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -6394,7 +6429,7 @@ get_variable:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L109_for_end
+	beq .L114_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
 	ldr x0, [x0]
@@ -6415,7 +6450,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L110_end
+	beq .L115_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
@@ -6431,10 +6466,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L110_end
+	b .L115_end
 	add sp, sp, #16
-.L110_end:
-.L109_for_inc:
+.L115_end:
+.L114_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -6445,13 +6480,13 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L109_for_start
-.L109_for_end:
+	b .L114_for_start
+.L114_for_end:
 	add sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0, #12]
 	cmp xzr, x0
-	beq .L111_end
+	beq .L116_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0, #12]
@@ -6464,10 +6499,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L111_end
-.L111_end:
-	b .L108_end
-.L108_end:
+	b .L116_end
+.L116_end:
+	b .L113_end
+.L113_end:
 	mov w0, #0
 	sxtw x0, w0
 	mov sp, x29
@@ -6569,34 +6604,34 @@ set_bits:
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L112_end
+	beq .L117_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_228@PAGE
-	add x0, x0, _str_228@PAGEOFF
+	adrp x0, _str_229@PAGE
+	add x0, x0, _str_229@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L112_end
+	b .L117_end
 	add sp, sp, #16
-.L112_end:
+.L117_end:
 	ldr w0, [x29, #-8]
 	mov w2, #256
 	cmp w0, w2
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L113_end
+	beq .L118_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_229@PAGE
-	add x0, x0, _str_229@PAGEOFF
+	adrp x0, _str_230@PAGE
+	add x0, x0, _str_230@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L113_end
+	b .L118_end
 	add sp, sp, #16
-.L113_end:
+.L118_end:
 	add x0, x29, #-8
 
 	sub sp, sp, #16
@@ -6748,7 +6783,7 @@ get_underlying_type:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L114_end
+	beq .L119_end
 	add x0, x29, #16
 
 	sub sp, sp, #16
@@ -6775,8 +6810,8 @@ get_underlying_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L114_end
-.L114_end:
+	b .L119_end
+.L119_end:
 	ldr w0, [x29, #16]
 	mov w2, #5
 	cmp w0, w2
@@ -6805,7 +6840,7 @@ get_underlying_type:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L115_end
+	beq .L120_end
 	add x0, x29, #16
 
 	sub sp, sp, #16
@@ -6827,8 +6862,8 @@ get_underlying_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L115_end
-.L115_end:
+	b .L120_end
+.L120_end:
 	ldr w0, [x29, #16]
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -6985,7 +7020,7 @@ get_signature:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L120_for_start:
+.L125_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -6998,7 +7033,7 @@ get_signature:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L120_for_end
+	beq .L125_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
 	ldr x0, [x0]
@@ -7019,7 +7054,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L121_end
+	beq .L126_end
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
@@ -7035,10 +7070,10 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L121_end
+	b .L126_end
 	add sp, sp, #16
-.L121_end:
-.L120_for_inc:
+.L126_end:
+.L125_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -7049,12 +7084,12 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L120_for_start
-.L120_for_end:
+	b .L125_for_start
+.L125_for_end:
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_230@PAGE
-	add x0, x0, _str_230@PAGEOFF
+	adrp x0, _str_231@PAGE
+	add x0, x0, _str_231@PAGEOFF
 	ldr x2, [x29, #16]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -7071,14 +7106,14 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_231@PAGE
-	add x2, x2, _str_231@PAGEOFF
+	adrp x2, _str_232@PAGE
+	add x2, x2, _str_232@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -7100,7 +7135,7 @@ parse_base_type:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L125_else
+	beq .L130_else
 	sub sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _struct_registry@PAGE
@@ -7120,9 +7155,9 @@ parse_base_type:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L125_end
+	b .L130_end
 	add sp, sp, #16
-.L125_else:
+.L130_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
@@ -7134,9 +7169,9 @@ parse_base_type:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L125_end
+	b .L130_end
 	add sp, sp, #16
-.L125_end:
+.L130_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -7152,10 +7187,10 @@ parse_type:
 	add sp, sp, #0
 	str w0, [x29, #-4]
 	sub sp, sp, #16
-.L126_while_start:
+.L131_while_start:
 	mov w0, #1
 	cmp wzr, w0
-	beq .L126_while_end
+	beq .L131_while_end
 	adrp x0, _token@PAGE
 	add x0, x0, _token@PAGEOFF
 	sub sp, sp, #16
@@ -7176,7 +7211,7 @@ parse_type:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L127_elseif_0
+	beq .L132_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #0
 	bl consume_next_token
@@ -7194,9 +7229,9 @@ parse_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L127_end
+	b .L132_end
 	add sp, sp, #16
-.L127_elseif_0:
+.L132_elseif_0:
 	adrp x0, _token@PAGE
 	add x0, x0, _token@PAGEOFF
 	ldr x0, [x0]
@@ -7206,7 +7241,7 @@ parse_type:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L127_else
+	beq .L132_else
 	sub sp, sp, #16
 	sub sp, sp, #0
 	bl consume_next_token
@@ -7230,16 +7265,16 @@ parse_type:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L127_end
+	b .L132_end
 	add sp, sp, #16
-.L127_else:
+.L132_else:
 	sub sp, sp, #16
-	b .L126_while_end
-	b .L127_end
+	b .L131_while_end
+	b .L132_end
 	add sp, sp, #16
-.L127_end:
-	b .L126_while_start
-.L126_while_end:
+.L132_end:
+	b .L131_while_start
+.L131_while_end:
 	add sp, sp, #16
 	ldr w0, [x29, #-4]
 	add sp, sp, #16
@@ -7267,7 +7302,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_0
+	beq .L133_elseif_0
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7319,9 +7354,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #32
-.L128_elseif_0:
+.L133_elseif_0:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #2
@@ -7329,7 +7364,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_1
+	beq .L133_elseif_1
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7381,9 +7416,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #32
-.L128_elseif_1:
+.L133_elseif_1:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #30
@@ -7391,7 +7426,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_2
+	beq .L133_elseif_2
 	sub sp, sp, #16
 	mov x0, #12
 	bl _malloc
@@ -7415,9 +7450,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #16
-.L128_elseif_2:
+.L133_elseif_2:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #31
@@ -7425,7 +7460,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_3
+	beq .L133_elseif_3
 	sub sp, sp, #16
 	mov x0, #12
 	bl _malloc
@@ -7449,9 +7484,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #16
-.L128_elseif_3:
+.L133_elseif_3:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #0
@@ -7459,7 +7494,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_4
+	beq .L133_elseif_4
 	sub sp, sp, #16
 	sub sp, sp, #0
 	bl peek_next_token
@@ -7471,7 +7506,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L129_else
+	beq .L134_else
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7538,7 +7573,7 @@ parse_primary:
 	mov x0, x0
 	add sp, sp, #16
 	sub sp, sp, #32
-.L130_while_start:
+.L135_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -7549,7 +7584,7 @@ parse_primary:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L130_while_end
+	beq .L135_while_end
 	sub sp, sp, #16
 	mov w0, #1
 	str w0, [sp]
@@ -7574,7 +7609,7 @@ parse_primary:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L131_end
+	beq .L136_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	mov w0, #12
@@ -7582,11 +7617,11 @@ parse_primary:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L131_end
+	b .L136_end
 	add sp, sp, #32
-.L131_end:
-	b .L130_while_start
-.L130_while_end:
+.L136_end:
+	b .L135_while_start
+.L135_while_end:
 	add sp, sp, #32
 	sub sp, sp, #16
 	mov w0, #22
@@ -7608,9 +7643,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L129_end
+	b .L134_end
 	add sp, sp, #32
-.L129_else:
+.L134_else:
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7661,12 +7696,12 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L129_end
+	b .L134_end
 	add sp, sp, #32
-.L129_end:
-	b .L128_end
+.L134_end:
+	b .L133_end
 	add sp, sp, #16
-.L128_elseif_4:
+.L133_elseif_4:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #21
@@ -7674,7 +7709,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_5
+	beq .L133_elseif_5
 	sub sp, sp, #16
 	sub sp, sp, #16
 	mov w0, #1
@@ -7694,9 +7729,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #16
-.L128_elseif_5:
+.L133_elseif_5:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #3
@@ -7704,7 +7739,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_elseif_6
+	beq .L133_elseif_6
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7720,109 +7755,6 @@ parse_primary:
 	sub sp, sp, #16
 	str x0, [sp]
 	mov w0, #8
-	ldr x19, [sp]
-	add sp, sp, #16
-	str w0, [x19]
-	mov x0, #8
-	bl _malloc
-	mov x0, x0
-	mov x1, #0
-	mov x2, #8
-	bl _memset
-	mov x0, x0
-	str x0, [x29, #-24]
-	ldr x0, [x29, #-24]
-	add x0, x0, #0
-
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x0, _str_232@PAGE
-	add x0, x0, _str_232@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	sub sp, sp, #0
-	bl get_literal_index
-	mov w0, w0
-	add sp, sp, #0
-	str w0, [sp]
-	bl int_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	ldr x19, [sp]
-	add sp, sp, #16
-	str x0, [x19]
-	sub sp, sp, #32
-	adrp x0, _global_scope@PAGE
-	add x0, x0, _global_scope@PAGEOFF
-	ldr x0, [x0]
-	str x0, [sp, #20]
-	ldr x0, [x29, #-24]
-	ldr x0, [x0]
-	str x0, [sp, #12]
-	ldr x0, [x29, #-8]
-	ldr x0, [x0, #4]
-	str x0, [sp, #4]
-	mov w0, #7
-	str w0, [sp]
-	bl add_global_variable
-	add sp, sp, #32
-	ldr x0, [x29, #-16]
-	add x0, x0, #4
-
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr x0, [x29, #-24]
-	ldr x19, [sp]
-	add sp, sp, #16
-	str x0, [x19]
-	ldr x0, [x29, #-16]
-	add sp, sp, #32
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-	b .L128_end
-	add sp, sp, #32
-.L128_elseif_6:
-	ldr x0, [x29, #-8]
-	ldr w0, [x0]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L128_elseif_7
-	sub sp, sp, #32
-	mov x0, #12
-	bl _malloc
-	mov x0, x0
-	mov x1, #0
-	mov x2, #12
-	bl _memset
-	mov x0, x0
-	str x0, [x29, #-16]
-	ldr x0, [x29, #-16]
-	add x0, x0, #0
-
-	sub sp, sp, #16
-	str x0, [sp]
-	mov w0, #10
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
@@ -7882,6 +7814,109 @@ parse_primary:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #4]
 	str x0, [sp, #4]
+	mov w0, #7
+	str w0, [sp]
+	bl add_global_variable
+	add sp, sp, #32
+	ldr x0, [x29, #-16]
+	add x0, x0, #4
+
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr x0, [x29, #-24]
+	ldr x19, [sp]
+	add sp, sp, #16
+	str x0, [x19]
+	ldr x0, [x29, #-16]
+	add sp, sp, #32
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L133_end
+	add sp, sp, #32
+.L133_elseif_6:
+	ldr x0, [x29, #-8]
+	ldr w0, [x0]
+	mov w2, #4
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L133_elseif_7
+	sub sp, sp, #32
+	mov x0, #12
+	bl _malloc
+	mov x0, x0
+	mov x1, #0
+	mov x2, #12
+	bl _memset
+	mov x0, x0
+	str x0, [x29, #-16]
+	ldr x0, [x29, #-16]
+	add x0, x0, #0
+
+	sub sp, sp, #16
+	str x0, [sp]
+	mov w0, #10
+	ldr x19, [sp]
+	add sp, sp, #16
+	str w0, [x19]
+	mov x0, #8
+	bl _malloc
+	mov x0, x0
+	mov x1, #0
+	mov x2, #8
+	bl _memset
+	mov x0, x0
+	str x0, [x29, #-24]
+	ldr x0, [x29, #-24]
+	add x0, x0, #0
+
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x0, _str_234@PAGE
+	add x0, x0, _str_234@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	sub sp, sp, #0
+	bl get_literal_index
+	mov w0, w0
+	add sp, sp, #0
+	str w0, [sp]
+	bl int_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	ldr x19, [sp]
+	add sp, sp, #16
+	str x0, [x19]
+	sub sp, sp, #32
+	adrp x0, _global_scope@PAGE
+	add x0, x0, _global_scope@PAGEOFF
+	ldr x0, [x0]
+	str x0, [sp, #20]
+	ldr x0, [x29, #-24]
+	ldr x0, [x0]
+	str x0, [sp, #12]
+	ldr x0, [x29, #-8]
+	ldr x0, [x0, #4]
+	str x0, [sp, #4]
 	mov w0, #3
 	str w0, [sp]
 	bl add_global_variable
@@ -7900,9 +7935,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #32
-.L128_elseif_7:
+.L133_elseif_7:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #62
@@ -7910,7 +7945,7 @@ parse_primary:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L128_else
+	beq .L133_else
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -7965,9 +8000,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #32
-.L128_else:
+.L133_else:
 	sub sp, sp, #32
 	mov x0, #12
 	bl _malloc
@@ -8032,9 +8067,9 @@ parse_primary:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L128_end
+	b .L133_end
 	add sp, sp, #32
-.L128_end:
+.L133_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -8049,52 +8084,52 @@ get_precedence:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_0
+	beq .L141_elseif_0
 	mov w0, #1
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_0:
+	b .L141_end
+.L141_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #40
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_1
+	beq .L141_elseif_1
 	mov w0, #2
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_1:
+	b .L141_end
+.L141_elseif_1:
 	ldr w0, [x29, #16]
 	mov w2, #38
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_2
+	beq .L141_elseif_2
 	mov w0, #3
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_2:
+	b .L141_end
+.L141_elseif_2:
 	ldr w0, [x29, #16]
 	mov w2, #14
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_3
+	beq .L141_elseif_3
 	mov w0, #3
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_3:
+	b .L141_end
+.L141_elseif_3:
 	ldr w0, [x29, #16]
 	mov w2, #32
 	cmp w0, w2
@@ -8156,13 +8191,13 @@ get_precedence:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_4
+	beq .L141_elseif_4
 	mov w0, #4
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_4:
+	b .L141_end
+.L141_elseif_4:
 	ldr w0, [x29, #16]
 	mov w2, #6
 	cmp w0, w2
@@ -8180,13 +8215,13 @@ get_precedence:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_5
+	beq .L141_elseif_5
 	mov w0, #5
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_5:
+	b .L141_end
+.L141_elseif_5:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
@@ -8215,52 +8250,52 @@ get_precedence:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_6
+	beq .L141_elseif_6
 	mov w0, #6
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_6:
+	b .L141_end
+.L141_elseif_6:
 	ldr w0, [x29, #16]
 	mov w2, #41
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_7
+	beq .L141_elseif_7
 	mov w0, #7
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_7:
+	b .L141_end
+.L141_elseif_7:
 	ldr w0, [x29, #16]
 	mov w2, #42
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_8
+	beq .L141_elseif_8
 	mov w0, #8
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_8:
+	b .L141_end
+.L141_elseif_8:
 	ldr w0, [x29, #16]
 	mov w2, #43
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_9
+	beq .L141_elseif_9
 	mov w0, #9
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_9:
+	b .L141_end
+.L141_elseif_9:
 	ldr w0, [x29, #16]
 	mov w2, #44
 	cmp w0, w2
@@ -8278,13 +8313,13 @@ get_precedence:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_10
+	beq .L141_elseif_10
 	mov w0, #10
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_10:
+	b .L141_end
+.L141_elseif_10:
 	ldr w0, [x29, #16]
 	mov w2, #25
 	cmp w0, w2
@@ -8324,32 +8359,32 @@ get_precedence:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_elseif_11
+	beq .L141_elseif_11
 	mov w0, #11
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_elseif_11:
+	b .L141_end
+.L141_elseif_11:
 	ldr w0, [x29, #16]
 	mov w2, #19
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L136_else
+	beq .L141_else
 	mov w0, #12
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_else:
+	b .L141_end
+.L141_else:
 	mov w0, #0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L136_end
-.L136_end:
+	b .L141_end
+.L141_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -8364,10 +8399,10 @@ get_expression:
 	add sp, sp, #0
 	str x0, [x29, #-8]
 	sub sp, sp, #32
-.L137_while_start:
+.L142_while_start:
 	mov w0, #1
 	cmp wzr, w0
-	beq .L137_while_end
+	beq .L142_while_end
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -8387,12 +8422,12 @@ get_expression:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L138_end
+	beq .L143_end
 	sub sp, sp, #32
-	b .L137_while_end
-	b .L138_end
+	b .L142_while_end
+	b .L143_end
 	add sp, sp, #32
-.L138_end:
+.L143_end:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #20
@@ -8412,7 +8447,7 @@ get_expression:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L139_elseif_0
+	beq .L144_elseif_0
 	sub sp, sp, #64
 	mov x0, #12
 	bl _malloc
@@ -8429,7 +8464,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L140_elseif_0
+	beq .L145_elseif_0
 	sub sp, sp, #32
 	ldr x0, [x29, #-28]
 	add x0, x0, #0
@@ -8440,9 +8475,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L140_end
+	b .L145_end
 	add sp, sp, #32
-.L140_elseif_0:
+.L145_elseif_0:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #17
@@ -8450,7 +8485,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L140_end
+	beq .L145_end
 	sub sp, sp, #32
 	ldr x0, [x29, #-28]
 	add x0, x0, #0
@@ -8461,9 +8496,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L140_end
+	b .L145_end
 	add sp, sp, #32
-.L140_end:
+.L145_end:
 	sub sp, sp, #0
 	bl consume_next_token
 	add sp, sp, #0
@@ -8493,17 +8528,17 @@ get_expression:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L141_end
+	beq .L146_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_234@PAGE
-	add x0, x0, _str_234@PAGEOFF
+	adrp x0, _str_235@PAGE
+	add x0, x0, _str_235@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L141_end
+	b .L146_end
 	add sp, sp, #48
-.L141_end:
+.L146_end:
 	ldr x0, [x29, #-36]
 	add x0, x0, #0
 
@@ -8583,9 +8618,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #64
-.L139_elseif_0:
+.L144_elseif_0:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #25
@@ -8593,7 +8628,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L139_elseif_1
+	beq .L144_elseif_1
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -8669,9 +8704,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #48
-.L139_elseif_1:
+.L144_elseif_1:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #13
@@ -8679,7 +8714,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L139_elseif_2
+	beq .L144_elseif_2
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -8769,7 +8804,7 @@ get_expression:
 	bl add_argument
 	add sp, sp, #16
 	sub sp, sp, #48
-.L142_while_start:
+.L147_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -8780,7 +8815,7 @@ get_expression:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L142_while_end
+	beq .L147_while_end
 	sub sp, sp, #16
 	mov w0, #1
 	str w0, [sp]
@@ -8805,7 +8840,7 @@ get_expression:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L143_end
+	beq .L148_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #12
@@ -8813,11 +8848,11 @@ get_expression:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L143_end
+	b .L148_end
 	add sp, sp, #48
-.L143_end:
-	b .L142_while_start
-.L142_while_end:
+.L148_end:
+	b .L147_while_start
+.L147_while_end:
 	add sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #22
@@ -8842,9 +8877,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #48
-.L139_elseif_2:
+.L144_elseif_2:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #14
@@ -8852,7 +8887,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L139_elseif_3
+	beq .L144_elseif_3
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -8915,7 +8950,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L144_else
+	beq .L149_else
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -8929,9 +8964,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	strb w0, [x19]
-	b .L144_end
+	b .L149_end
 	add sp, sp, #48
-.L144_else:
+.L149_else:
 	sub sp, sp, #48
 	ldr x0, [x29, #-36]
 	add x0, x0, #16
@@ -8942,9 +8977,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	strb w0, [x19]
-	b .L144_end
+	b .L149_end
 	add sp, sp, #48
-.L144_end:
+.L149_end:
 	ldr x0, [x29, #-28]
 	add x0, x0, #4
 
@@ -8962,9 +8997,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #48
-.L139_elseif_3:
+.L144_elseif_3:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #19
@@ -8972,7 +9007,7 @@ get_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L139_else
+	beq .L144_else
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9040,9 +9075,9 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #48
-.L139_else:
+.L144_else:
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9127,11 +9162,11 @@ get_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L139_end
+	b .L144_end
 	add sp, sp, #48
-.L139_end:
-	b .L137_while_start
-.L137_while_end:
+.L144_end:
+	b .L142_while_start
+.L142_while_end:
 	add sp, sp, #32
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
@@ -9179,7 +9214,7 @@ get_statement:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_0
+	beq .L150_elseif_0
 	sub sp, sp, #32
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
@@ -9203,7 +9238,7 @@ get_statement:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L146_end
+	beq .L151_end
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9211,7 +9246,7 @@ get_statement:
 	mov w0, #0
 	str w0, [x29, #-20]
 	sub sp, sp, #32
-.L147_while_start:
+.L152_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -9222,7 +9257,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L147_while_end
+	beq .L152_while_end
 	add x0, x29, #-16
 
 	sub sp, sp, #16
@@ -9292,7 +9327,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L148_end
+	beq .L153_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	mov w0, #12
@@ -9300,11 +9335,11 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L148_end
+	b .L153_end
 	add sp, sp, #32
-.L148_end:
-	b .L147_while_start
-.L147_while_end:
+.L153_end:
+	b .L152_while_start
+.L152_while_end:
 	add sp, sp, #32
 	sub sp, sp, #16
 	mov w0, #24
@@ -9332,9 +9367,9 @@ get_statement:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L146_end
+	b .L151_end
 	add sp, sp, #32
-.L146_end:
+.L151_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
 
@@ -9417,7 +9452,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L149_end
+	beq .L154_end
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9434,9 +9469,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L149_end
+	b .L154_end
 	add sp, sp, #32
-.L149_end:
+.L154_end:
 	ldr x0, [x29, #-24]
 	add x0, x0, #0
 
@@ -9457,7 +9492,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L150_end
+	beq .L155_end
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9476,9 +9511,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L150_end
+	b .L155_end
 	add sp, sp, #32
-.L150_end:
+.L155_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #4
 
@@ -9494,9 +9529,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_0:
+.L150_elseif_0:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #27
@@ -9504,7 +9539,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_1
+	beq .L150_elseif_1
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -9620,7 +9655,7 @@ get_statement:
 	mov x0, x0
 	add sp, sp, #16
 	sub sp, sp, #48
-.L151_while_start:
+.L156_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -9631,7 +9666,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L151_while_end
+	beq .L156_while_end
 	sub sp, sp, #0
 	bl consume_next_token
 	add sp, sp, #0
@@ -9707,8 +9742,8 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L151_while_start
-.L151_while_end:
+	b .L156_while_start
+.L156_while_end:
 	add sp, sp, #48
 	sub sp, sp, #0
 	bl peek_next_token
@@ -9720,7 +9755,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L154_end
+	beq .L159_end
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9749,9 +9784,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L154_end
+	b .L159_end
 	add sp, sp, #32
-.L154_end:
+.L159_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #4
 
@@ -9761,9 +9796,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_1:
+.L150_elseif_1:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #46
@@ -9771,7 +9806,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_2
+	beq .L150_elseif_2
 	sub sp, sp, #48
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -9846,7 +9881,7 @@ get_statement:
 	mov x0, x0
 	add sp, sp, #16
 	sub sp, sp, #48
-.L155_while_start:
+.L160_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -9857,7 +9892,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L155_while_end
+	beq .L160_while_end
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [sp]
@@ -9896,7 +9931,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L156_end
+	beq .L161_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #12
@@ -9904,11 +9939,11 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L156_end
+	b .L161_end
 	add sp, sp, #48
-.L156_end:
-	b .L155_while_start
-.L155_while_end:
+.L161_end:
+	b .L160_while_start
+.L160_while_end:
 	add sp, sp, #48
 	add x0, x29, #-16
 
@@ -9935,7 +9970,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L157_end
+	beq .L162_end
 	sub sp, sp, #48
 	sub sp, sp, #0
 	bl consume_next_token
@@ -9951,9 +9986,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L157_end
+	b .L162_end
 	add sp, sp, #48
-.L157_end:
+.L162_end:
 	ldr x0, [x29, #-32]
 	add x0, x0, #16
 
@@ -9972,14 +10007,14 @@ get_statement:
 	mov w2, #1
 	sub w0, w0, w2
 	str w0, [x29, #-44]
-.L158_for_start:
+.L163_for_start:
 	ldr w0, [x29, #-44]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, ge
 	mov w0, w0
 	cmp wzr, w0
-	beq .L158_for_end
+	beq .L163_for_end
 	ldr x0, [x29, #-32]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -10020,7 +10055,7 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-.L158_for_inc:
+.L163_for_inc:
 	add x0, x29, #-44
 
 	sub sp, sp, #16
@@ -10031,8 +10066,8 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L158_for_start
-.L158_for_end:
+	b .L163_for_start
+.L163_for_end:
 	add sp, sp, #64
 	sub sp, sp, #0
 	bl peek_next_token
@@ -10044,7 +10079,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L159_end
+	beq .L164_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #23
@@ -10070,9 +10105,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L159_end
+	b .L164_end
 	add sp, sp, #48
-.L159_end:
+.L164_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #4
 
@@ -10082,9 +10117,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #48
-.L145_elseif_2:
+.L150_elseif_2:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #49
@@ -10092,7 +10127,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_3
+	beq .L150_elseif_3
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10121,7 +10156,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L160_else
+	beq .L165_else
 	sub sp, sp, #32
 	ldr x0, [x29, #-24]
 	add x0, x0, #0
@@ -10133,9 +10168,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L160_end
+	b .L165_end
 	add sp, sp, #32
-.L160_else:
+.L165_else:
 	sub sp, sp, #32
 	ldr x0, [x29, #-24]
 	add x0, x0, #0
@@ -10151,9 +10186,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L160_end
+	b .L165_end
 	add sp, sp, #32
-.L160_end:
+.L165_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #4
 
@@ -10169,9 +10204,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_3:
+.L150_elseif_3:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #50
@@ -10179,7 +10214,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_4
+	beq .L150_elseif_4
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10206,9 +10241,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L145_end
+	b .L150_end
 	add sp, sp, #16
-.L145_elseif_4:
+.L150_elseif_4:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #51
@@ -10216,7 +10251,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_5
+	beq .L150_elseif_5
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10243,9 +10278,9 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L145_end
+	b .L150_end
 	add sp, sp, #16
-.L145_elseif_5:
+.L150_elseif_5:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #52
@@ -10253,7 +10288,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_6
+	beq .L150_elseif_6
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10319,7 +10354,7 @@ get_statement:
 	mov x0, x0
 	add sp, sp, #16
 	sub sp, sp, #48
-.L161_while_start:
+.L166_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -10330,7 +10365,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L161_while_end
+	beq .L166_while_end
 	mov x0, #16
 	bl _malloc
 	mov x0, x0
@@ -10393,7 +10428,7 @@ get_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L162_end
+	beq .L167_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #12
@@ -10401,11 +10436,11 @@ get_statement:
 	bl expect_token
 	mov x0, x0
 	add sp, sp, #16
-	b .L162_end
+	b .L167_end
 	add sp, sp, #48
-.L162_end:
-	b .L161_while_start
-.L161_while_end:
+.L167_end:
+	b .L166_while_start
+.L166_while_end:
 	add sp, sp, #48
 	sub sp, sp, #16
 	mov w0, #24
@@ -10422,9 +10457,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_6:
+.L150_elseif_6:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #53
@@ -10432,7 +10467,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_7
+	beq .L150_elseif_7
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10510,9 +10545,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_7:
+.L150_elseif_7:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #54
@@ -10520,7 +10555,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_elseif_8
+	beq .L150_elseif_8
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10628,9 +10663,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_elseif_8:
+.L150_elseif_8:
 	ldr x0, [x29, #-16]
 	ldr w0, [x0]
 	mov w2, #55
@@ -10638,7 +10673,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L145_else
+	beq .L150_else
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -10689,9 +10724,9 @@ get_statement:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L145_end
+	b .L150_end
 	add sp, sp, #32
-.L145_else:
+.L150_else:
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl unconsume_token
@@ -10713,7 +10748,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L163_else
+	beq .L168_else
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
@@ -10740,8 +10775,8 @@ get_statement:
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_235@PAGE
-	add x0, x0, _str_235@PAGEOFF
+	adrp x0, _str_236@PAGE
+	add x0, x0, _str_236@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -10796,17 +10831,17 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L164_end
+	beq .L169_end
 	sub sp, sp, #32
 	sub sp, sp, #0
 	bl consume_next_token
 	add sp, sp, #0
-	b .L164_end
+	b .L169_end
 	add sp, sp, #32
-.L164_end:
-	b .L163_end
+.L169_end:
+	b .L168_end
 	add sp, sp, #32
-.L163_else:
+.L168_else:
 	sub sp, sp, #32
 	ldr x0, [x29, #-24]
 	ldr w0, [x0]
@@ -10815,7 +10850,7 @@ get_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L165_else
+	beq .L170_else
 	sub sp, sp, #32
 	sub sp, sp, #16
 	mov w0, #15
@@ -10828,13 +10863,45 @@ get_statement:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L165_end
+	b .L170_end
 	add sp, sp, #32
-.L165_else:
+.L170_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_236@PAGE
-	add x0, x0, _str_236@PAGEOFF
+	adrp x0, _str_237@PAGE
+	add x0, x0, _str_237@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr x0, [x29, #-24]
+	ldr w0, [x0]
+	str w0, [sp]
+	bl debug_ast_node_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_238@PAGE
+	add x2, x2, _str_238@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -10861,24 +10928,24 @@ get_statement:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_237@PAGE
-	add x2, x2, _str_237@PAGEOFF
+	adrp x2, _str_239@PAGE
+	add x2, x2, _str_239@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L165_end
+	b .L170_end
 	add sp, sp, #32
-.L165_end:
-	b .L163_end
+.L170_end:
+	b .L168_end
 	add sp, sp, #32
-.L163_end:
-	b .L145_end
+.L168_end:
+	b .L150_end
 	add sp, sp, #32
-.L145_end:
+.L150_end:
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
 	mov sp, x29
@@ -10925,7 +10992,7 @@ get_block:
 	add sp, sp, #16
 	str x0, [x19]
 	sub sp, sp, #16
-.L169_while_start:
+.L177_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -10936,7 +11003,7 @@ get_block:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L169_while_end
+	beq .L177_while_end
 	sub sp, sp, #0
 	bl get_statement
 	mov x0, x0
@@ -10949,8 +11016,8 @@ get_block:
 	str x0, [sp]
 	bl add_statement
 	add sp, sp, #16
-	b .L169_while_start
-.L169_while_end:
+	b .L177_while_start
+.L177_while_end:
 	add sp, sp, #16
 	ldr x0, [x29, #-8]
 	add sp, sp, #16
@@ -11012,7 +11079,7 @@ add_to_text_buffer:
 	mov x29, sp
 	ldr x0, [x29, #24]
 	cmp xzr, x0
-	beq .L170_else
+	beq .L178_else
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	mov x0, x0
@@ -11022,14 +11089,14 @@ add_to_text_buffer:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-8]
-.L171_for_start:
+.L179_for_start:
 	ldr w0, [x29, #-8]
 	ldr w2, [x29, #-4]
 	cmp w0, w2
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L171_for_end
+	beq .L179_for_end
 	ldr x0, [x29, #24]
 	ldr x0, [x0]
 	sub sp, sp, #16
@@ -11049,7 +11116,7 @@ add_to_text_buffer:
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-.L171_for_inc:
+.L179_for_inc:
 	add x0, x29, #-8
 
 	sub sp, sp, #16
@@ -11060,19 +11127,19 @@ add_to_text_buffer:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L171_for_start
-.L171_for_end:
+	b .L179_for_start
+.L179_for_end:
 	add sp, sp, #16
-	b .L170_end
+	b .L178_end
 	add sp, sp, #16
-.L170_else:
+.L178_else:
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L170_end
-.L170_end:
+	b .L178_end
+.L178_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -11084,8 +11151,8 @@ terminate_buffer:
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x19, _char_238@PAGE
-	add x19, x19, _char_238@PAGEOFF
+	adrp x19, _char_240@PAGE
+	add x19, x19, _char_240@PAGEOFF
 	ldrb w19, [x19]
 	ldr x0, [sp]
 	add sp, sp, #16
@@ -11362,7 +11429,7 @@ make_mem:
 	str x0, [x19]
 	ldr x0, [x29, #28]
 	cmp xzr, x0
-	beq .L174_else
+	beq .L182_else
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -11389,9 +11456,9 @@ make_mem:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L174_end
+	b .L182_end
 	add sp, sp, #16
-.L174_else:
+.L182_else:
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -11414,12 +11481,12 @@ make_mem:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L174_end
+	b .L182_end
 	add sp, sp, #16
-.L174_end:
+.L182_end:
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L175_else
+	beq .L183_else
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -11446,9 +11513,9 @@ make_mem:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L175_end
+	b .L183_end
 	add sp, sp, #16
-.L175_else:
+.L183_else:
 	sub sp, sp, #16
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
@@ -11471,9 +11538,9 @@ make_mem:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L175_end
+	b .L183_end
 	add sp, sp, #16
-.L175_end:
+.L183_end:
 	ldr x0, [x29, #-8]
 	add x0, x0, #0
 
@@ -11620,8 +11687,6 @@ add_instruction:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-# Narrowing conversion from long to int
-# Narrowing conversion from long to int
 .globl emit_operand_x86
 emit_operand_x86:
 	stp x29, x30, [sp, #-16]!
@@ -11633,7 +11698,7 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L177_elseif_0
+	beq .L185_elseif_0
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
 	mov w2, #31
@@ -11642,19 +11707,19 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L178_end
+	beq .L186_end
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L178_end
-.L178_end:
+	b .L186_end
+.L186_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L179_elseif_0
+	beq .L187_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -11673,15 +11738,15 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L179_end
-.L179_elseif_0:
+	b .L187_end
+.L187_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L179_elseif_1
+	beq .L187_elseif_1
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -11700,15 +11765,15 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L179_end
-.L179_elseif_1:
+	b .L187_end
+.L187_elseif_1:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L179_else
+	beq .L187_else
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -11727,11 +11792,11 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L179_end
-.L179_else:
+	b .L187_end
+.L187_else:
 	sub sp, sp, #16
-	adrp x0, _str_239@PAGE
-	add x0, x0, _str_239@PAGEOFF
+	adrp x0, _str_241@PAGE
+	add x0, x0, _str_241@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -11757,19 +11822,19 @@ emit_operand_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_240@PAGE
-	add x2, x2, _str_240@PAGEOFF
+	adrp x2, _str_242@PAGE
+	add x2, x2, _str_242@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L179_end
-.L179_end:
-	b .L177_end
-.L177_elseif_0:
+	b .L187_end
+.L187_end:
+	b .L185_end
+.L185_elseif_0:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #5
@@ -11777,7 +11842,7 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L177_elseif_1
+	beq .L185_elseif_1
 	sub sp, sp, #48
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
@@ -11845,7 +11910,7 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L183_elseif_0
+	beq .L191_elseif_0
 	sub sp, sp, #48
 	ldr w0, [x29, #-12]
 	mov w2, #0
@@ -11853,7 +11918,7 @@ emit_operand_x86:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L184_end
+	beq .L192_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
@@ -11867,51 +11932,9 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L184_end
+	b .L192_end
 	add sp, sp, #48
-.L184_end:
-	sub sp, sp, #16
-	ldr x0, [x29, #28]
-	str x0, [sp, #8]
-	adrp x0, _str_241@PAGE
-	add x0, x0, _str_241@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #28]
-	str x0, [sp, #12]
-	sub sp, sp, #16
-	ldr x0, [x29, #-20]
-	str x0, [sp]
-	bl make_reg
-	mov x0, x0
-	add sp, sp, #16
-	str x0, [sp, #4]
-	mov w0, #8
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #28]
-	str x0, [sp, #8]
-	adrp x0, _str_242@PAGE
-	add x0, x0, _str_242@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L183_end
-	add sp, sp, #48
-.L183_elseif_0:
-	ldr x0, [x29, #-8]
-	mov w2, #1
-	sxtw x2, w2
-	cmp x0, x2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L183_else
-	sub sp, sp, #48
+.L192_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -11942,6 +11965,48 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L191_end
+	add sp, sp, #48
+.L191_elseif_0:
+	ldr x0, [x29, #-8]
+	mov w2, #1
+	sxtw x2, w2
+	cmp x0, x2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L191_else
+	sub sp, sp, #48
+	sub sp, sp, #16
+	ldr x0, [x29, #28]
+	str x0, [sp, #8]
+	adrp x0, _str_245@PAGE
+	add x0, x0, _str_245@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #28]
+	str x0, [sp, #12]
+	sub sp, sp, #16
+	ldr x0, [x29, #-20]
+	str x0, [sp]
+	bl make_reg
+	mov x0, x0
+	add sp, sp, #16
+	str x0, [sp, #4]
+	mov w0, #8
+	str w0, [sp]
+	bl emit_operand_x86
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #28]
+	str x0, [sp, #8]
+	adrp x0, _str_246@PAGE
+	add x0, x0, _str_246@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #28]
 	str x0, [sp, #12]
@@ -11959,8 +12024,8 @@ emit_operand_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_245@PAGE
-	add x0, x0, _str_245@PAGEOFF
+	adrp x0, _str_247@PAGE
+	add x0, x0, _str_247@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -11979,18 +12044,18 @@ emit_operand_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_246@PAGE
-	add x0, x0, _str_246@PAGEOFF
+	adrp x0, _str_248@PAGE
+	add x0, x0, _str_248@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L183_end
+	b .L191_end
 	add sp, sp, #48
-.L183_else:
+.L191_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_247@PAGE
-	add x0, x0, _str_247@PAGEOFF
+	adrp x0, _str_249@PAGE
+	add x0, x0, _str_249@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -12016,21 +12081,21 @@ emit_operand_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_248@PAGE
-	add x2, x2, _str_248@PAGEOFF
+	adrp x2, _str_250@PAGE
+	add x2, x2, _str_250@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L183_end
+	b .L191_end
 	add sp, sp, #48
-.L183_end:
-	b .L177_end
+.L191_end:
+	b .L185_end
 	add sp, sp, #48
-.L177_elseif_1:
+.L185_elseif_1:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #1
@@ -12038,12 +12103,12 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L177_elseif_2
+	beq .L185_elseif_2
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_249@PAGE
-	add x0, x0, _str_249@PAGEOFF
+	adrp x0, _str_251@PAGE
+	add x0, x0, _str_251@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -12073,8 +12138,8 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L177_end
-.L177_elseif_2:
+	b .L185_end
+.L185_elseif_2:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #2
@@ -12094,7 +12159,7 @@ emit_operand_x86:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L177_elseif_3
+	beq .L185_elseif_3
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -12103,8 +12168,8 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L177_end
-.L177_elseif_3:
+	b .L185_end
+.L185_elseif_3:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #4
@@ -12112,12 +12177,12 @@ emit_operand_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L177_else
+	beq .L185_else
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_250@PAGE
-	add x0, x0, _str_250@PAGEOFF
+	adrp x0, _str_252@PAGE
+	add x0, x0, _str_252@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #20]
@@ -12139,8 +12204,8 @@ emit_operand_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_251@PAGE
-	add x2, x2, _str_251@PAGEOFF
+	adrp x2, _str_253@PAGE
+	add x2, x2, _str_253@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -12148,11 +12213,11 @@ emit_operand_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L177_end
-.L177_else:
+	b .L185_end
+.L185_else:
 	sub sp, sp, #16
-	adrp x0, _str_252@PAGE
-	add x0, x0, _str_252@PAGEOFF
+	adrp x0, _str_254@PAGE
+	add x0, x0, _str_254@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -12179,17 +12244,17 @@ emit_operand_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_253@PAGE
-	add x2, x2, _str_253@PAGEOFF
+	adrp x2, _str_255@PAGE
+	add x2, x2, _str_255@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L177_end
-.L177_end:
+	b .L185_end
+.L185_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -12203,41 +12268,7 @@ add_size_letter:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L196_elseif_0
-	sub sp, sp, #16
-	ldr x0, [x29, #20]
-	str x0, [sp, #8]
-	adrp x0, _str_254@PAGE
-	add x0, x0, _str_254@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L196_end
-.L196_elseif_0:
-	ldr w0, [x29, #16]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L196_elseif_1
-	sub sp, sp, #16
-	ldr x0, [x29, #20]
-	str x0, [sp, #8]
-	adrp x0, _str_255@PAGE
-	add x0, x0, _str_255@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L196_end
-.L196_elseif_1:
-	ldr w0, [x29, #16]
-	mov w2, #8
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L196_end
+	beq .L204_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #20]
 	str x0, [sp, #8]
@@ -12246,8 +12277,42 @@ add_size_letter:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L196_end
-.L196_end:
+	b .L204_end
+.L204_elseif_0:
+	ldr w0, [x29, #16]
+	mov w2, #4
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L204_elseif_1
+	sub sp, sp, #16
+	ldr x0, [x29, #20]
+	str x0, [sp, #8]
+	adrp x0, _str_257@PAGE
+	add x0, x0, _str_257@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L204_end
+.L204_elseif_1:
+	ldr w0, [x29, #16]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L204_end
+	sub sp, sp, #16
+	ldr x0, [x29, #20]
+	str x0, [sp, #8]
+	adrp x0, _str_258@PAGE
+	add x0, x0, _str_258@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L204_end
+.L204_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -12482,7 +12547,7 @@ emit_instruction_x86:
 	strb w0, [x29, #-11]
 	ldrb w0, [x29, #-9]
 	cmp wzr, w0
-	beq .L197_elseif_0
+	beq .L205_elseif_0
 	sub sp, sp, #16
 	ldr w0, [x29, #-4]
 	mov w2, #0
@@ -12523,19 +12588,19 @@ emit_instruction_x86:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_0
+	beq .L206_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_257@PAGE
-	add x0, x0, _str_257@PAGEOFF
+	adrp x0, _str_259@PAGE
+	add x0, x0, _str_259@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_0:
+.L206_elseif_0:
 	ldr w0, [x29, #-4]
 	mov w2, #3
 	cmp w0, w2
@@ -12553,45 +12618,7 @@ emit_instruction_x86:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_258@PAGE
-	add x0, x0, _str_258@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L198_end
-	add sp, sp, #16
-.L198_elseif_1:
-	ldr w0, [x29, #-4]
-	mov w2, #5
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L198_elseif_2
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_259@PAGE
-	add x0, x0, _str_259@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L198_end
-	add sp, sp, #16
-.L198_elseif_2:
-	ldr w0, [x29, #-4]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L198_elseif_3
+	beq .L206_elseif_1
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12601,16 +12628,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_3:
+.L206_elseif_1:
 	ldr w0, [x29, #-4]
-	mov w2, #13
+	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_4
+	beq .L206_elseif_2
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12620,16 +12647,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_4:
+.L206_elseif_2:
 	ldr w0, [x29, #-4]
-	mov w2, #6
+	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_5
+	beq .L206_elseif_3
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12639,16 +12666,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_5:
+.L206_elseif_3:
 	ldr w0, [x29, #-4]
-	mov w2, #10
+	mov w2, #13
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_6
+	beq .L206_elseif_4
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12658,16 +12685,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_6:
+.L206_elseif_4:
 	ldr w0, [x29, #-4]
-	mov w2, #11
+	mov w2, #6
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_elseif_7
+	beq .L206_elseif_5
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12677,16 +12704,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_elseif_7:
+.L206_elseif_5:
 	ldr w0, [x29, #-4]
-	mov w2, #12
+	mov w2, #10
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L198_else
+	beq .L206_elseif_6
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12696,13 +12723,51 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_else:
+.L206_elseif_6:
+	ldr w0, [x29, #-4]
+	mov w2, #11
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L206_elseif_7
 	sub sp, sp, #16
 	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_266@PAGE
 	add x0, x0, _str_266@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L206_end
+	add sp, sp, #16
+.L206_elseif_7:
+	ldr w0, [x29, #-4]
+	mov w2, #12
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L206_else
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_267@PAGE
+	add x0, x0, _str_267@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L206_end
+	add sp, sp, #16
+.L206_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_268@PAGE
+	add x0, x0, _str_268@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -12728,18 +12793,18 @@ emit_instruction_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_267@PAGE
-	add x2, x2, _str_267@PAGEOFF
+	adrp x2, _str_269@PAGE
+	add x2, x2, _str_269@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L198_end
+	b .L206_end
 	add sp, sp, #16
-.L198_end:
+.L206_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #4]
@@ -12747,42 +12812,6 @@ emit_instruction_x86:
 	str w0, [sp]
 	bl add_size_letter
 	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_268@PAGE
-	add x0, x0, _str_268@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_269@PAGE
-	add x0, x0, _str_269@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -12791,36 +12820,6 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L197_end
-	add sp, sp, #16
-.L197_elseif_0:
-	ldrb w0, [x29, #-10]
-	cmp wzr, w0
-	beq .L197_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_271@PAGE
-	add x0, x0, _str_271@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl add_size_letter
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_272@PAGE
-	add x0, x0, _str_272@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -12834,8 +12833,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_273@PAGE
-	add x0, x0, _str_273@PAGEOFF
+	adrp x0, _str_271@PAGE
+	add x0, x0, _str_271@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -12852,8 +12851,74 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_272@PAGE
+	add x0, x0, _str_272@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L205_end
+	add sp, sp, #16
+.L205_elseif_0:
+	ldrb w0, [x29, #-10]
+	cmp wzr, w0
+	beq .L205_elseif_1
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_273@PAGE
+	add x0, x0, _str_273@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl add_size_letter
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_274@PAGE
 	add x0, x0, _str_274@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_x86
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_275@PAGE
+	add x0, x0, _str_275@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_x86
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_276@PAGE
+	add x0, x0, _str_276@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -12863,45 +12928,7 @@ emit_instruction_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L202_elseif_0
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_275@PAGE
-	add x0, x0, _str_275@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L202_end
-	add sp, sp, #16
-.L202_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #25
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L202_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_276@PAGE
-	add x0, x0, _str_276@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L202_end
-	add sp, sp, #16
-.L202_elseif_1:
-	ldr w0, [x29, #-4]
-	mov w2, #26
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L202_elseif_2
+	beq .L210_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12911,16 +12938,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L202_end
+	b .L210_end
 	add sp, sp, #16
-.L202_elseif_2:
+.L210_elseif_0:
 	ldr w0, [x29, #-4]
-	mov w2, #27
+	mov w2, #25
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L202_elseif_3
+	beq .L210_elseif_1
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12930,16 +12957,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L202_end
+	b .L210_end
 	add sp, sp, #16
-.L202_elseif_3:
+.L210_elseif_1:
 	ldr w0, [x29, #-4]
-	mov w2, #28
+	mov w2, #26
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L202_elseif_4
+	beq .L210_elseif_2
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12949,16 +12976,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L202_end
+	b .L210_end
 	add sp, sp, #16
-.L202_elseif_4:
+.L210_elseif_2:
 	ldr w0, [x29, #-4]
-	mov w2, #29
+	mov w2, #27
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L202_end
+	beq .L210_elseif_3
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -12968,9 +12995,17 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L202_end
+	b .L210_end
 	add sp, sp, #16
-.L202_end:
+.L210_elseif_3:
+	ldr w0, [x29, #-4]
+	mov w2, #28
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L210_elseif_4
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -12979,6 +13014,17 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L210_end
+	add sp, sp, #16
+.L210_elseif_4:
+	ldr w0, [x29, #-4]
+	mov w2, #29
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L210_end
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -12987,6 +13033,9 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L210_end
+	add sp, sp, #16
+.L210_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -12995,21 +13044,6 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L197_end
-	add sp, sp, #16
-.L197_elseif_1:
-	ldrb w0, [x29, #-11]
-	cmp wzr, w0
-	beq .L197_else
-	sub sp, sp, #16
-	ldr w0, [x29, #-4]
-	mov w2, #30
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L203_elseif_0
-	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13018,17 +13052,6 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L203_end
-	add sp, sp, #16
-.L203_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #31
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L203_else
-	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13037,13 +13060,55 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L203_end
+	b .L205_end
 	add sp, sp, #16
-.L203_else:
+.L205_elseif_1:
+	ldrb w0, [x29, #-11]
+	cmp wzr, w0
+	beq .L205_else
+	sub sp, sp, #16
+	ldr w0, [x29, #-4]
+	mov w2, #30
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L211_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_286@PAGE
 	add x0, x0, _str_286@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L211_end
+	add sp, sp, #16
+.L211_elseif_0:
+	ldr w0, [x29, #-4]
+	mov w2, #31
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L211_else
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_287@PAGE
+	add x0, x0, _str_287@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L211_end
+	add sp, sp, #16
+.L211_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_288@PAGE
+	add x0, x0, _str_288@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -13069,56 +13134,18 @@ emit_instruction_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_287@PAGE
-	add x2, x2, _str_287@PAGEOFF
+	adrp x2, _str_289@PAGE
+	add x2, x2, _str_289@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L203_end
+	b .L211_end
 	add sp, sp, #16
-.L203_end:
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_288@PAGE
-	add x0, x0, _str_288@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_289@PAGE
-	add x0, x0, _str_289@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L197_end
-	add sp, sp, #16
-.L197_else:
-	sub sp, sp, #16
-	ldr w0, [x29, #-4]
-	mov w2, #15
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_0
-	sub sp, sp, #16
+.L211_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13127,13 +13154,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #16
+	sub sp, sp, #32
 	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
-	bl add_size_letter
-	add sp, sp, #16
+	bl emit_operand_x86
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13142,16 +13172,18 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
+	b .L205_end
+	add sp, sp, #16
+.L205_else:
+	sub sp, sp, #16
+	ldr w0, [x29, #-4]
+	mov w2, #15
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_0
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13160,25 +13192,6 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #16
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_293@PAGE
-	add x0, x0, _str_293@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #4]
@@ -13189,8 +13202,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_294@PAGE
-	add x0, x0, _str_294@PAGEOFF
+	adrp x0, _str_293@PAGE
+	add x0, x0, _str_293@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13207,27 +13220,27 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_295@PAGE
-	add x0, x0, _str_295@PAGEOFF
+	adrp x0, _str_294@PAGE
+	add x0, x0, _str_294@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_1:
+.L215_elseif_0:
 	ldr w0, [x29, #-4]
-	mov w2, #14
+	mov w2, #16
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_2
+	beq .L215_elseif_1
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_296@PAGE
-	add x0, x0, _str_296@PAGEOFF
+	adrp x0, _str_295@PAGE
+	add x0, x0, _str_295@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13241,8 +13254,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_297@PAGE
-	add x0, x0, _str_297@PAGEOFF
+	adrp x0, _str_296@PAGE
+	add x0, x0, _str_296@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13250,7 +13263,7 @@ emit_instruction_x86:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -13259,21 +13272,37 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_297@PAGE
+	add x0, x0, _str_297@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_1:
+	ldr w0, [x29, #-4]
+	mov w2, #14
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_2
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_298@PAGE
 	add x0, x0, _str_298@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
+	sub sp, sp, #16
 	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
+	bl add_size_letter
+	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13286,7 +13315,7 @@ emit_instruction_x86:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -13300,25 +13329,6 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_2:
-	ldr w0, [x29, #-4]
-	mov w2, #17
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_3
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_301@PAGE
-	add x0, x0, _str_301@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -13332,27 +13342,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_302@PAGE
-	add x0, x0, _str_302@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_3:
-	ldr w0, [x29, #-4]
-	mov w2, #20
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_4
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_303@PAGE
-	add x0, x0, _str_303@PAGEOFF
+	adrp x0, _str_301@PAGE
+	add x0, x0, _str_301@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13369,21 +13360,58 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_302@PAGE
+	add x0, x0, _str_302@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_2:
+	ldr w0, [x29, #-4]
+	mov w2, #17
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_3
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_303@PAGE
+	add x0, x0, _str_303@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_x86
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_304@PAGE
 	add x0, x0, _str_304@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_4:
+.L215_elseif_3:
 	ldr w0, [x29, #-4]
-	mov w2, #21
+	mov w2, #20
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_5
+	beq .L215_elseif_4
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -13411,16 +13439,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_5:
+.L215_elseif_4:
 	ldr w0, [x29, #-4]
-	mov w2, #18
+	mov w2, #21
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_6
+	beq .L215_elseif_5
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -13430,13 +13458,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #16
+	sub sp, sp, #32
 	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
-	bl add_size_letter
-	add sp, sp, #16
+	bl emit_operand_x86
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13445,40 +13476,22 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_5:
+	ldr w0, [x29, #-4]
+	mov w2, #18
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_6
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_309@PAGE
 	add x0, x0, _str_309@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_6:
-	ldr w0, [x29, #-4]
-	mov w2, #19
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_7
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_310@PAGE
-	add x0, x0, _str_310@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13492,8 +13505,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_311@PAGE
-	add x0, x0, _str_311@PAGEOFF
+	adrp x0, _str_310@PAGE
+	add x0, x0, _str_310@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13510,22 +13523,37 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_311@PAGE
+	add x0, x0, _str_311@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_6:
+	ldr w0, [x29, #-4]
+	mov w2, #19
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_7
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_312@PAGE
 	add x0, x0, _str_312@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_7:
-	ldr w0, [x29, #-4]
-	mov w2, #8
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_8
 	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl add_size_letter
+	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13540,7 +13568,7 @@ emit_instruction_x86:
 	ldr x0, [x29, #16]
 	ldr x0, [x0]
 	str x0, [sp, #4]
-	mov w0, #1
+	ldr w0, [x29, #-8]
 	str w0, [sp]
 	bl emit_operand_x86
 	add sp, sp, #32
@@ -13552,6 +13580,17 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_7:
+	ldr w0, [x29, #-4]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_8
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13560,13 +13599,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #16
+	sub sp, sp, #32
 	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
 	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
+	mov w0, #1
 	str w0, [sp]
-	bl add_size_letter
-	add sp, sp, #16
+	bl emit_operand_x86
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13583,6 +13625,29 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl add_size_letter
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_318@PAGE
+	add x0, x0, _str_318@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_319@PAGE
+	add x0, x0, _str_319@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -13596,27 +13661,27 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_318@PAGE
-	add x0, x0, _str_318@PAGEOFF
+	adrp x0, _str_320@PAGE
+	add x0, x0, _str_320@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_8:
+.L215_elseif_8:
 	ldr w0, [x29, #-4]
 	mov w2, #9
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_9
+	beq .L215_elseif_9
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_319@PAGE
-	add x0, x0, _str_319@PAGEOFF
+	adrp x0, _str_321@PAGE
+	add x0, x0, _str_321@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13633,16 +13698,16 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_320@PAGE
-	add x0, x0, _str_320@PAGEOFF
+	adrp x0, _str_322@PAGE
+	add x0, x0, _str_322@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_321@PAGE
-	add x0, x0, _str_321@PAGEOFF
+	adrp x0, _str_323@PAGE
+	add x0, x0, _str_323@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13656,16 +13721,16 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_322@PAGE
-	add x0, x0, _str_322@PAGEOFF
+	adrp x0, _str_324@PAGE
+	add x0, x0, _str_324@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_323@PAGE
-	add x0, x0, _str_323@PAGEOFF
+	adrp x0, _str_325@PAGE
+	add x0, x0, _str_325@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13682,67 +13747,21 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_324@PAGE
-	add x0, x0, _str_324@PAGEOFF
+	adrp x0, _str_326@PAGE
+	add x0, x0, _str_326@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_9:
+.L215_elseif_9:
 	ldr w0, [x29, #-4]
 	mov w2, #32
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_10
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_325@PAGE
-	add x0, x0, _str_325@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_10:
-	ldr w0, [x29, #-4]
-	mov w2, #33
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_11
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_326@PAGE
-	add x0, x0, _str_326@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L207_end
-	add sp, sp, #16
-.L207_elseif_11:
-	ldr w0, [x29, #-4]
-	mov w2, #7
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L207_elseif_12
-	sub sp, sp, #16
-	ldr w0, [x29, #-8]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L208_elseif_0
+	beq .L215_elseif_10
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -13752,16 +13771,17 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_x86
-	add sp, sp, #32
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_10:
+	ldr w0, [x29, #-4]
+	mov w2, #33
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_11
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13770,38 +13790,30 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L215_end
+	add sp, sp, #16
+.L215_elseif_11:
+	ldr w0, [x29, #-4]
+	mov w2, #7
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L215_elseif_12
+	sub sp, sp, #16
+	ldr w0, [x29, #-8]
+	mov w2, #4
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L216_elseif_0
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_329@PAGE
 	add x0, x0, _str_329@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_330@PAGE
-	add x0, x0, _str_330@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L208_end
-	add sp, sp, #16
-.L208_elseif_0:
-	ldr w0, [x29, #-8]
-	mov w2, #8
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L208_else
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_331@PAGE
-	add x0, x0, _str_331@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13818,11 +13830,38 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_330@PAGE
+	add x0, x0, _str_330@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_331@PAGE
+	add x0, x0, _str_331@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_332@PAGE
 	add x0, x0, _str_332@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L216_end
+	add sp, sp, #16
+.L216_elseif_0:
+	ldr w0, [x29, #-8]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L216_else
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13831,6 +13870,16 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_x86
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13839,13 +13888,29 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L208_end
-	add sp, sp, #16
-.L208_else:
 	sub sp, sp, #16
-	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_335@PAGE
 	add x0, x0, _str_335@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_336@PAGE
+	add x0, x0, _str_336@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L216_end
+	add sp, sp, #16
+.L216_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_337@PAGE
+	add x0, x0, _str_337@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -13871,28 +13936,28 @@ emit_instruction_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_336@PAGE
-	add x2, x2, _str_336@PAGEOFF
+	adrp x2, _str_338@PAGE
+	add x2, x2, _str_338@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L208_end
+	b .L216_end
 	add sp, sp, #16
-.L208_end:
-	b .L207_end
+.L216_end:
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_12:
+.L215_elseif_12:
 	ldr w0, [x29, #-4]
 	mov w2, #23
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_elseif_13
+	beq .L215_elseif_13
 	sub sp, sp, #16
 	ldr w0, [x29, #-8]
 	mov w2, #4
@@ -13900,13 +13965,13 @@ emit_instruction_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L212_elseif_0
+	beq .L220_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_337@PAGE
-	add x0, x0, _str_337@PAGEOFF
+	adrp x0, _str_339@PAGE
+	add x0, x0, _str_339@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -13920,22 +13985,6 @@ emit_instruction_x86:
 	str w0, [sp]
 	bl emit_operand_x86
 	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_338@PAGE
-	add x0, x0, _str_338@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_339@PAGE
-	add x0, x0, _str_339@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -13952,6 +14001,22 @@ emit_instruction_x86:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_342@PAGE
+	add x0, x0, _str_342@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_343@PAGE
+	add x0, x0, _str_343@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -13965,27 +14030,27 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_342@PAGE
-	add x0, x0, _str_342@PAGEOFF
+	adrp x0, _str_344@PAGE
+	add x0, x0, _str_344@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L212_end
+	b .L220_end
 	add sp, sp, #16
-.L212_elseif_0:
+.L220_elseif_0:
 	ldr w0, [x29, #-8]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L212_else
+	beq .L220_else
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_343@PAGE
-	add x0, x0, _str_343@PAGEOFF
+	adrp x0, _str_345@PAGE
+	add x0, x0, _str_345@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14002,22 +14067,6 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_344@PAGE
-	add x0, x0, _str_344@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_345@PAGE
-	add x0, x0, _str_345@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
 	adrp x0, _str_346@PAGE
 	add x0, x0, _str_346@PAGEOFF
 	str x0, [sp]
@@ -14028,6 +14077,22 @@ emit_instruction_x86:
 	str x0, [sp, #8]
 	adrp x0, _str_347@PAGE
 	add x0, x0, _str_347@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_348@PAGE
+	add x0, x0, _str_348@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_349@PAGE
+	add x0, x0, _str_349@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14044,18 +14109,18 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_348@PAGE
-	add x0, x0, _str_348@PAGEOFF
+	adrp x0, _str_350@PAGE
+	add x0, x0, _str_350@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L212_end
+	b .L220_end
 	add sp, sp, #16
-.L212_else:
+.L220_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_349@PAGE
-	add x0, x0, _str_349@PAGEOFF
+	adrp x0, _str_351@PAGE
+	add x0, x0, _str_351@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -14081,21 +14146,21 @@ emit_instruction_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_350@PAGE
-	add x2, x2, _str_350@PAGEOFF
+	adrp x2, _str_352@PAGE
+	add x2, x2, _str_352@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L212_end
+	b .L220_end
 	add sp, sp, #16
-.L212_end:
-	b .L207_end
+.L220_end:
+	b .L215_end
 	add sp, sp, #16
-.L207_elseif_13:
+.L215_elseif_13:
 	ldr w0, [x29, #-4]
 	mov w2, #22
 	and w0, w0, w2
@@ -14105,13 +14170,13 @@ emit_instruction_x86:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L207_else
+	beq .L215_else
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_351@PAGE
-	add x0, x0, _str_351@PAGEOFF
+	adrp x0, _str_353@PAGE
+	add x0, x0, _str_353@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14146,8 +14211,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_352@PAGE
-	add x0, x0, _str_352@PAGEOFF
+	adrp x0, _str_354@PAGE
+	add x0, x0, _str_354@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14164,8 +14229,8 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_353@PAGE
-	add x0, x0, _str_353@PAGEOFF
+	adrp x0, _str_355@PAGE
+	add x0, x0, _str_355@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14182,18 +14247,18 @@ emit_instruction_x86:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_354@PAGE
-	add x0, x0, _str_354@PAGEOFF
+	adrp x0, _str_356@PAGE
+	add x0, x0, _str_356@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #32
-.L207_else:
+.L215_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_355@PAGE
-	add x0, x0, _str_355@PAGEOFF
+	adrp x0, _str_357@PAGE
+	add x0, x0, _str_357@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -14219,26 +14284,25 @@ emit_instruction_x86:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_356@PAGE
-	add x2, x2, _str_356@PAGEOFF
+	adrp x2, _str_358@PAGE
+	add x2, x2, _str_358@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L207_end
+	b .L215_end
 	add sp, sp, #16
-.L207_end:
-	b .L197_end
+.L215_end:
+	b .L205_end
 	add sp, sp, #16
-.L197_end:
+.L205_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-# Narrowing conversion from long to int
 .globl print_insides_of_lea
 print_insides_of_lea:
 	stp x29, x30, [sp, #-16]!
@@ -14312,7 +14376,7 @@ print_insides_of_lea:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L219_elseif_0
+	beq .L227_elseif_0
 	sub sp, sp, #48
 	add x0, x29, #-40
 
@@ -14322,9 +14386,9 @@ print_insides_of_lea:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L219_end
+	b .L227_end
 	add sp, sp, #48
-.L219_elseif_0:
+.L227_elseif_0:
 	ldr x0, [x29, #-28]
 	mov w2, #4
 	sxtw x2, w2
@@ -14332,7 +14396,7 @@ print_insides_of_lea:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L219_elseif_1
+	beq .L227_elseif_1
 	sub sp, sp, #48
 	add x0, x29, #-40
 
@@ -14342,9 +14406,9 @@ print_insides_of_lea:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L219_end
+	b .L227_end
 	add sp, sp, #48
-.L219_elseif_1:
+.L227_elseif_1:
 	ldr x0, [x29, #-28]
 	mov w2, #8
 	sxtw x2, w2
@@ -14352,7 +14416,7 @@ print_insides_of_lea:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L219_end
+	beq .L227_end
 	sub sp, sp, #48
 	add x0, x29, #-40
 
@@ -14362,9 +14426,9 @@ print_insides_of_lea:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L219_end
+	b .L227_end
 	add sp, sp, #48
-.L219_end:
+.L227_end:
 	ldr x0, [x29, #-36]
 	mov w2, #1
 	sxtw x2, w2
@@ -14372,7 +14436,7 @@ print_insides_of_lea:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L220_elseif_0
+	beq .L228_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
@@ -14391,8 +14455,8 @@ print_insides_of_lea:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_357@PAGE
-	add x0, x0, _str_357@PAGEOFF
+	adrp x0, _str_359@PAGE
+	add x0, x0, _str_359@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14413,8 +14477,8 @@ print_insides_of_lea:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_358@PAGE
-	add x0, x0, _str_358@PAGEOFF
+	adrp x0, _str_360@PAGE
+	add x0, x0, _str_360@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -14443,9 +14507,9 @@ print_insides_of_lea:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L220_end
+	b .L228_end
 	add sp, sp, #48
-.L220_elseif_0:
+.L228_elseif_0:
 	ldr x0, [x29, #-36]
 	mov w2, #0
 	sxtw x2, w2
@@ -14453,7 +14517,7 @@ print_insides_of_lea:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L220_end
+	beq .L228_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
@@ -14472,8 +14536,8 @@ print_insides_of_lea:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_359@PAGE
-	add x0, x0, _str_359@PAGEOFF
+	adrp x0, _str_361@PAGE
+	add x0, x0, _str_361@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14495,19 +14559,18 @@ print_insides_of_lea:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_360@PAGE
-	add x0, x0, _str_360@PAGEOFF
+	adrp x0, _str_362@PAGE
+	add x0, x0, _str_362@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L220_end
+	b .L228_end
 	add sp, sp, #48
-.L220_end:
+.L228_end:
 	add sp, sp, #48
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-# Narrowing conversion from long to int
 .globl emit_operand_aarch64
 emit_operand_aarch64:
 	stp x29, x30, [sp, #-16]!
@@ -14519,7 +14582,7 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_elseif_0
+	beq .L231_elseif_0
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
 	mov w2, #31
@@ -14528,7 +14591,7 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L224_end
+	beq .L232_end
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
@@ -14546,47 +14609,47 @@ emit_operand_aarch64:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L225_elseif_0
+	beq .L233_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_361@PAGE
-	add x0, x0, _str_361@PAGEOFF
+	adrp x0, _str_363@PAGE
+	add x0, x0, _str_363@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L225_end
-.L225_elseif_0:
+	b .L233_end
+.L233_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L225_else
+	beq .L233_else
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_362@PAGE
-	add x0, x0, _str_362@PAGEOFF
+	adrp x0, _str_364@PAGE
+	add x0, x0, _str_364@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L225_end
-.L225_else:
+	b .L233_end
+.L233_else:
 	sub sp, sp, #16
-	adrp x0, _str_363@PAGE
-	add x0, x0, _str_363@PAGEOFF
+	adrp x0, _str_365@PAGE
+	add x0, x0, _str_365@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L225_end
-.L225_end:
+	b .L233_end
+.L233_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L224_end
-.L224_end:
+	b .L232_end
+.L232_end:
 	ldr w0, [x29, #16]
 	mov w2, #4
 	cmp w0, w2
@@ -14604,7 +14667,7 @@ emit_operand_aarch64:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L226_elseif_0
+	beq .L234_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -14627,15 +14690,15 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L226_end
-.L226_elseif_0:
+	b .L234_end
+.L234_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L226_else
+	beq .L234_else
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -14658,11 +14721,11 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L226_end
-.L226_else:
+	b .L234_end
+.L234_else:
 	sub sp, sp, #16
-	adrp x0, _str_364@PAGE
-	add x0, x0, _str_364@PAGEOFF
+	adrp x0, _str_366@PAGE
+	add x0, x0, _str_366@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -14688,19 +14751,19 @@ emit_operand_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_365@PAGE
-	add x2, x2, _str_365@PAGEOFF
+	adrp x2, _str_367@PAGE
+	add x2, x2, _str_367@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L226_end
-.L226_end:
-	b .L223_end
-.L223_elseif_0:
+	b .L234_end
+.L234_end:
+	b .L231_end
+.L231_elseif_0:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #5
@@ -14708,7 +14771,7 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_elseif_1
+	beq .L231_elseif_1
 	sub sp, sp, #16
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
@@ -14727,13 +14790,13 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L230_elseif_0
+	beq .L238_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_366@PAGE
-	add x0, x0, _str_366@PAGEOFF
+	adrp x0, _str_368@PAGE
+	add x0, x0, _str_368@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14786,13 +14849,13 @@ emit_operand_aarch64:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L231_end
+	beq .L239_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_367@PAGE
-	add x0, x0, _str_367@PAGEOFF
+	adrp x0, _str_369@PAGE
+	add x0, x0, _str_369@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -14821,20 +14884,20 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L231_end
+	b .L239_end
 	add sp, sp, #32
-.L231_end:
+.L239_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_368@PAGE
-	add x0, x0, _str_368@PAGEOFF
+	adrp x0, _str_370@PAGE
+	add x0, x0, _str_370@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L230_end
+	b .L238_end
 	add sp, sp, #32
-.L230_elseif_0:
+.L238_elseif_0:
 	ldr x0, [x29, #-8]
 	mov w2, #1
 	sxtw x2, w2
@@ -14842,13 +14905,13 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L230_end
+	beq .L238_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_369@PAGE
-	add x0, x0, _str_369@PAGEOFF
+	adrp x0, _str_371@PAGE
+	add x0, x0, _str_371@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -14862,17 +14925,17 @@ emit_operand_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_370@PAGE
-	add x0, x0, _str_370@PAGEOFF
+	adrp x0, _str_372@PAGE
+	add x0, x0, _str_372@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L230_end
+	b .L238_end
 	add sp, sp, #16
-.L230_end:
-	b .L223_end
+.L238_end:
+	b .L231_end
 	add sp, sp, #16
-.L223_elseif_1:
+.L231_elseif_1:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #1
@@ -14880,7 +14943,7 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_elseif_2
+	beq .L231_elseif_2
 	ldr x0, [x29, #20]
 	ldr x0, [x0]
 	sub sp, sp, #16
@@ -14897,50 +14960,8 @@ emit_operand_aarch64:
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L234_end
+	beq .L242_end
 	sub sp, sp, #16
-	adrp x0, _str_371@PAGE
-	add x0, x0, _str_371@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #20]
-	ldr x0, [x0]
-	str x0, [sp]
-	bl long_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_372@PAGE
-	add x2, x2, _str_372@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	b .L234_end
-.L234_end:
-	sub sp, sp, #16
-	ldr x0, [x29, #28]
-	str x0, [sp, #8]
 	adrp x0, _str_373@PAGE
 	add x0, x0, _str_373@PAGEOFF
 	sub sp, sp, #16
@@ -14969,11 +14990,53 @@ emit_operand_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
+	adrp x2, _str_374@PAGE
+	add x2, x2, _str_374@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L242_end
+.L242_end:
+	sub sp, sp, #16
+	ldr x0, [x29, #28]
+	str x0, [sp, #8]
+	adrp x0, _str_375@PAGE
+	add x0, x0, _str_375@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr x0, [x29, #20]
+	ldr x0, [x0]
+	str x0, [sp]
+	bl long_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L223_end
-.L223_elseif_2:
+	b .L231_end
+.L231_elseif_2:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #2
@@ -14981,7 +15044,7 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_elseif_3
+	beq .L231_elseif_3
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
@@ -14990,8 +15053,8 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L223_end
-.L223_elseif_3:
+	b .L231_end
+.L231_elseif_3:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #3
@@ -14999,12 +15062,12 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_elseif_4
+	beq .L231_elseif_4
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_374@PAGE
-	add x0, x0, _str_374@PAGEOFF
+	adrp x0, _str_376@PAGE
+	add x0, x0, _str_376@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #20]
@@ -15029,8 +15092,8 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L223_end
-.L223_elseif_4:
+	b .L231_end
+.L231_elseif_4:
 	ldr x0, [x29, #20]
 	ldr w0, [x0, #8]
 	mov w2, #4
@@ -15038,12 +15101,12 @@ emit_operand_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L223_else
+	beq .L231_else
 	sub sp, sp, #16
 	ldr x0, [x29, #28]
 	str x0, [sp, #8]
-	adrp x0, _str_375@PAGE
-	add x0, x0, _str_375@PAGEOFF
+	adrp x0, _str_377@PAGE
+	add x0, x0, _str_377@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #20]
@@ -15068,11 +15131,11 @@ emit_operand_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L223_end
-.L223_else:
+	b .L231_end
+.L231_else:
 	sub sp, sp, #16
-	adrp x0, _str_376@PAGE
-	add x0, x0, _str_376@PAGEOFF
+	adrp x0, _str_378@PAGE
+	add x0, x0, _str_378@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -15099,17 +15162,17 @@ emit_operand_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_377@PAGE
-	add x2, x2, _str_377@PAGEOFF
+	adrp x2, _str_379@PAGE
+	add x2, x2, _str_379@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L223_end
-.L223_end:
+	b .L231_end
+.L231_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -15300,7 +15363,7 @@ emit_instruction_aarch64:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L247_end
+	beq .L255_end
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	ldr x0, [x0, #8]
@@ -15310,7 +15373,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L248_end
+	beq .L256_end
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	ldr x0, [x0, #8]
@@ -15338,9 +15401,9 @@ emit_instruction_aarch64:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L248_end
+	b .L256_end
 	add sp, sp, #16
-.L248_end:
+.L256_end:
 	ldr x0, [x29, #16]
 	ldr x0, [x0]
 	ldr w0, [x0, #8]
@@ -15349,7 +15412,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L249_end
+	beq .L257_end
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	ldr x0, [x0]
@@ -15360,7 +15423,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L250_else
+	beq .L258_else
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	add x0, x0, #0
@@ -15377,28 +15440,28 @@ emit_instruction_aarch64:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L250_end
+	b .L258_end
 	add sp, sp, #16
-.L250_else:
+.L258_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_378@PAGE
-	add x0, x0, _str_378@PAGEOFF
+	adrp x0, _str_380@PAGE
+	add x0, x0, _str_380@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L250_end
+	b .L258_end
 	add sp, sp, #16
-.L250_end:
-	b .L249_end
+.L258_end:
+	b .L257_end
 	add sp, sp, #16
-.L249_end:
-	b .L247_end
+.L257_end:
+	b .L255_end
 	add sp, sp, #16
-.L247_end:
+.L255_end:
 	ldrb w0, [x29, #-9]
 	cmp wzr, w0
-	beq .L251_elseif_0
+	beq .L259_elseif_0
 	sub sp, sp, #16
 	ldr w0, [x29, #-4]
 	mov w2, #4
@@ -15406,7 +15469,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_elseif_0
+	beq .L260_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	ldr x0, [x0, #8]
@@ -15416,34 +15479,8 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L253_end
+	beq .L261_end
 	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_379@PAGE
-	add x0, x0, _str_379@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_380@PAGE
-	add x0, x0, _str_380@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15456,7 +15493,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -15482,7 +15519,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -15496,12 +15533,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-	b .L253_end
-	add sp, sp, #16
-.L253_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15510,17 +15541,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
-	add sp, sp, #16
-.L252_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #5
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L252_elseif_1
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15529,17 +15559,12 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L261_end
 	add sp, sp, #16
-.L252_elseif_1:
-	ldr w0, [x29, #-4]
-	mov w2, #6
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L252_elseif_2
-	sub sp, sp, #16
+.L261_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15548,16 +15573,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_elseif_2:
+.L260_elseif_0:
 	ldr w0, [x29, #-4]
-	mov w2, #10
+	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_elseif_3
+	beq .L260_elseif_1
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15567,16 +15592,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_elseif_3:
+.L260_elseif_1:
 	ldr w0, [x29, #-4]
-	mov w2, #11
+	mov w2, #6
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_elseif_4
+	beq .L260_elseif_2
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15586,16 +15611,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_elseif_4:
+.L260_elseif_2:
 	ldr w0, [x29, #-4]
-	mov w2, #12
+	mov w2, #10
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_elseif_5
+	beq .L260_elseif_3
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15605,16 +15630,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_elseif_5:
+.L260_elseif_3:
 	ldr w0, [x29, #-4]
-	mov w2, #8
+	mov w2, #11
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_elseif_6
+	beq .L260_elseif_4
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15624,16 +15649,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_elseif_6:
+.L260_elseif_4:
 	ldr w0, [x29, #-4]
-	mov w2, #9
+	mov w2, #12
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L252_else
+	beq .L260_elseif_5
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15643,13 +15668,51 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_else:
+.L260_elseif_5:
+	ldr w0, [x29, #-4]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L260_elseif_6
 	sub sp, sp, #16
 	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_393@PAGE
 	add x0, x0, _str_393@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L260_end
+	add sp, sp, #16
+.L260_elseif_6:
+	ldr w0, [x29, #-4]
+	mov w2, #9
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L260_else
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_394@PAGE
+	add x0, x0, _str_394@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L260_end
+	add sp, sp, #16
+.L260_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_395@PAGE
+	add x0, x0, _str_395@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -15675,54 +15738,18 @@ emit_instruction_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_394@PAGE
-	add x2, x2, _str_394@PAGEOFF
+	adrp x2, _str_396@PAGE
+	add x2, x2, _str_396@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L252_end
+	b .L260_end
 	add sp, sp, #16
-.L252_end:
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_395@PAGE
-	add x0, x0, _str_395@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_396@PAGE
-	add x0, x0, _str_396@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+.L260_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15735,7 +15762,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -15749,29 +15776,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L251_end
-	add sp, sp, #16
-.L251_elseif_0:
-	ldrb w0, [x29, #-10]
-	cmp wzr, w0
-	beq .L251_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_399@PAGE
-	add x0, x0, _str_399@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_400@PAGE
-	add x0, x0, _str_400@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -15785,8 +15789,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_401@PAGE
-	add x0, x0, _str_401@PAGEOFF
+	adrp x0, _str_399@PAGE
+	add x0, x0, _str_399@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -15803,8 +15807,67 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_400@PAGE
+	add x0, x0, _str_400@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L259_end
+	add sp, sp, #16
+.L259_elseif_0:
+	ldrb w0, [x29, #-10]
+	cmp wzr, w0
+	beq .L259_elseif_1
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_401@PAGE
+	add x0, x0, _str_401@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_402@PAGE
 	add x0, x0, _str_402@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_403@PAGE
+	add x0, x0, _str_403@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_404@PAGE
+	add x0, x0, _str_404@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -15814,45 +15877,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L257_elseif_0
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_403@PAGE
-	add x0, x0, _str_403@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L257_end
-	add sp, sp, #16
-.L257_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #25
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L257_elseif_1
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_404@PAGE
-	add x0, x0, _str_404@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L257_end
-	add sp, sp, #16
-.L257_elseif_1:
-	ldr w0, [x29, #-4]
-	mov w2, #26
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L257_elseif_2
+	beq .L265_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15862,16 +15887,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L257_end
+	b .L265_end
 	add sp, sp, #16
-.L257_elseif_2:
+.L265_elseif_0:
 	ldr w0, [x29, #-4]
-	mov w2, #27
+	mov w2, #25
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L257_elseif_3
+	beq .L265_elseif_1
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15881,16 +15906,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L257_end
+	b .L265_end
 	add sp, sp, #16
-.L257_elseif_3:
+.L265_elseif_1:
 	ldr w0, [x29, #-4]
-	mov w2, #28
+	mov w2, #26
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L257_elseif_4
+	beq .L265_elseif_2
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15900,16 +15925,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L257_end
+	b .L265_end
 	add sp, sp, #16
-.L257_elseif_4:
+.L265_elseif_2:
 	ldr w0, [x29, #-4]
-	mov w2, #29
+	mov w2, #27
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L257_end
+	beq .L265_elseif_3
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15919,9 +15944,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L257_end
+	b .L265_end
 	add sp, sp, #16
-.L257_end:
+.L265_elseif_3:
+	ldr w0, [x29, #-4]
+	mov w2, #28
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L265_elseif_4
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15930,20 +15963,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L251_end
+	b .L265_end
 	add sp, sp, #16
-.L251_elseif_1:
-	ldrb w0, [x29, #-11]
-	cmp wzr, w0
-	beq .L251_else
-	sub sp, sp, #16
+.L265_elseif_4:
 	ldr w0, [x29, #-4]
-	mov w2, #30
+	mov w2, #29
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L258_elseif_0
+	beq .L265_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -15953,17 +15982,9 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L258_end
+	b .L265_end
 	add sp, sp, #16
-.L258_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #31
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L258_else
-	sub sp, sp, #16
+.L265_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -15972,13 +15993,55 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L258_end
+	b .L259_end
 	add sp, sp, #16
-.L258_else:
+.L259_elseif_1:
+	ldrb w0, [x29, #-11]
+	cmp wzr, w0
+	beq .L259_else
+	sub sp, sp, #16
+	ldr w0, [x29, #-4]
+	mov w2, #30
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L266_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_412@PAGE
 	add x0, x0, _str_412@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L266_end
+	add sp, sp, #16
+.L266_elseif_0:
+	ldr w0, [x29, #-4]
+	mov w2, #31
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L266_else
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_413@PAGE
+	add x0, x0, _str_413@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L266_end
+	add sp, sp, #16
+.L266_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_414@PAGE
+	add x0, x0, _str_414@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -16004,23 +16067,23 @@ emit_instruction_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_413@PAGE
-	add x2, x2, _str_413@PAGEOFF
+	adrp x2, _str_415@PAGE
+	add x2, x2, _str_415@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L258_end
+	b .L266_end
 	add sp, sp, #16
-.L258_end:
+.L266_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_414@PAGE
-	add x0, x0, _str_414@PAGEOFF
+	adrp x0, _str_416@PAGE
+	add x0, x0, _str_416@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16037,14 +16100,14 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_415@PAGE
-	add x0, x0, _str_415@PAGEOFF
+	adrp x0, _str_417@PAGE
+	add x0, x0, _str_417@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L251_end
+	b .L259_end
 	add sp, sp, #16
-.L251_else:
+.L259_else:
 	sub sp, sp, #16
 	ldr w0, [x29, #-4]
 	mov w2, #2
@@ -16052,13 +16115,13 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_0
+	beq .L270_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_416@PAGE
-	add x0, x0, _str_416@PAGEOFF
+	adrp x0, _str_418@PAGE
+	add x0, x0, _str_418@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16068,24 +16131,24 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L263_end
+	beq .L271_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_417@PAGE
-	add x0, x0, _str_417@PAGEOFF
+	adrp x0, _str_419@PAGE
+	add x0, x0, _str_419@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L263_end
+	b .L271_end
 	add sp, sp, #16
-.L263_end:
+.L271_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_418@PAGE
-	add x0, x0, _str_418@PAGEOFF
+	adrp x0, _str_420@PAGE
+	add x0, x0, _str_420@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16099,72 +16162,6 @@ emit_instruction_aarch64:
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_419@PAGE
-	add x0, x0, _str_419@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_420@PAGE
-	add x0, x0, _str_420@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_0:
-	ldr w0, [x29, #-4]
-	mov w2, #1
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_1
-	sub sp, sp, #16
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	ldr w0, [x0, #8]
-	mov w2, #1
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L264_else
-	sub sp, sp, #16
-	ldr w0, [x29, #-8]
-	mov w2, #1
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-8]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	cmp wzr, w0
-	beq .L265_else
-	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16191,23 +16188,51 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_0:
+	ldr w0, [x29, #-4]
+	mov w2, #1
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_1
+	sub sp, sp, #16
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	ldr w0, [x0, #8]
+	mov w2, #1
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L272_else
+	sub sp, sp, #16
+	ldr w0, [x29, #-8]
+	mov w2, #1
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-8]
+	mov w2, #4
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	cmp wzr, w0
+	beq .L273_else
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_423@PAGE
 	add x0, x0, _str_423@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L265_end
-	add sp, sp, #16
-.L265_else:
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_424@PAGE
-	add x0, x0, _str_424@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16224,11 +16249,23 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_424@PAGE
+	add x0, x0, _str_424@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_425@PAGE
 	add x0, x0, _str_425@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L273_end
+	add sp, sp, #16
+.L273_else:
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16237,18 +16274,44 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L265_end
-	add sp, sp, #16
-.L265_end:
-	b .L264_end
-	add sp, sp, #16
-.L264_else:
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_427@PAGE
 	add x0, x0, _str_427@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_428@PAGE
+	add x0, x0, _str_428@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L273_end
+	add sp, sp, #16
+.L273_end:
+	b .L272_end
+	add sp, sp, #16
+.L272_else:
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_429@PAGE
+	add x0, x0, _str_429@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16258,37 +16321,8 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L266_end
+	beq .L274_end
 	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_428@PAGE
-	add x0, x0, _str_428@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L266_end
-	add sp, sp, #16
-.L266_end:
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_429@PAGE
-	add x0, x0, _str_429@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16297,69 +16331,14 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L264_end
+	b .L274_end
 	add sp, sp, #16
-.L264_end:
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+.L274_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_431@PAGE
 	add x0, x0, _str_431@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_1:
-	ldr w0, [x29, #-4]
-	mov w2, #0
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_2
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_432@PAGE
-	add x0, x0, _str_432@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_433@PAGE
-	add x0, x0, _str_433@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_434@PAGE
-	add x0, x0, _str_434@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16376,21 +16355,105 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_432@PAGE
+	add x0, x0, _str_432@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L272_end
+	add sp, sp, #16
+.L272_end:
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_433@PAGE
+	add x0, x0, _str_433@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_1:
+	ldr w0, [x29, #-4]
+	mov w2, #0
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_2
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_434@PAGE
+	add x0, x0, _str_434@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_435@PAGE
 	add x0, x0, _str_435@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_436@PAGE
+	add x0, x0, _str_436@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
 	add sp, sp, #16
-.L262_elseif_2:
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_437@PAGE
+	add x0, x0, _str_437@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_2:
 	ldr w0, [x29, #-4]
 	mov w2, #3
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_3
+	beq .L270_elseif_3
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
 	ldr x0, [x0]
@@ -16400,17 +16463,17 @@ emit_instruction_aarch64:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L267_end
+	beq .L275_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_436@PAGE
-	add x0, x0, _str_436@PAGEOFF
+	adrp x0, _str_438@PAGE
+	add x0, x0, _str_438@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L267_end
+	b .L275_end
 	add sp, sp, #16
-.L267_end:
+.L275_end:
 	ldr x0, [x29, #16]
 	ldr x0, [x0, #8]
 	ldr w0, [x0, #8]
@@ -16419,22 +16482,22 @@ emit_instruction_aarch64:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L268_end
+	beq .L276_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_437@PAGE
-	add x0, x0, _str_437@PAGEOFF
+	adrp x0, _str_439@PAGE
+	add x0, x0, _str_439@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L268_end
+	b .L276_end
 	add sp, sp, #16
-.L268_end:
+.L276_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_438@PAGE
-	add x0, x0, _str_438@PAGEOFF
+	adrp x0, _str_440@PAGE
+	add x0, x0, _str_440@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16451,8 +16514,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_439@PAGE
-	add x0, x0, _str_439@PAGEOFF
+	adrp x0, _str_441@PAGE
+	add x0, x0, _str_441@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16467,27 +16530,27 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_440@PAGE
-	add x0, x0, _str_440@PAGEOFF
+	adrp x0, _str_442@PAGE
+	add x0, x0, _str_442@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	b .L270_end
 	add sp, sp, #16
-.L262_elseif_3:
+.L270_elseif_3:
 	ldr w0, [x29, #-4]
 	mov w2, #34
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_4
+	beq .L270_elseif_4
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_441@PAGE
-	add x0, x0, _str_441@PAGEOFF
+	adrp x0, _str_443@PAGE
+	add x0, x0, _str_443@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16501,32 +16564,6 @@ emit_instruction_aarch64:
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_442@PAGE
-	add x0, x0, _str_442@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_443@PAGE
-	add x0, x0, _str_443@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16539,9 +16576,9 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
-	mov w0, #8
+	ldr w0, [x29, #-8]
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
@@ -16550,6 +16587,14 @@ emit_instruction_aarch64:
 	str x0, [sp, #8]
 	adrp x0, _str_445@PAGE
 	add x0, x0, _str_445@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_446@PAGE
+	add x0, x0, _str_446@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16566,8 +16611,26 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_446@PAGE
-	add x0, x0, _str_446@PAGEOFF
+	adrp x0, _str_447@PAGE
+	add x0, x0, _str_447@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	mov w0, #8
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_448@PAGE
+	add x0, x0, _str_448@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16584,16 +16647,16 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_447@PAGE
-	add x0, x0, _str_447@PAGEOFF
+	adrp x0, _str_449@PAGE
+	add x0, x0, _str_449@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_448@PAGE
-	add x0, x0, _str_448@PAGEOFF
+	adrp x0, _str_450@PAGE
+	add x0, x0, _str_450@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16603,24 +16666,24 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L269_end
+	beq .L277_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_449@PAGE
-	add x0, x0, _str_449@PAGEOFF
+	adrp x0, _str_451@PAGE
+	add x0, x0, _str_451@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L269_end
+	b .L277_end
 	add sp, sp, #16
-.L269_end:
+.L277_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_450@PAGE
-	add x0, x0, _str_450@PAGEOFF
+	adrp x0, _str_452@PAGE
+	add x0, x0, _str_452@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16634,43 +16697,6 @@ emit_instruction_aarch64:
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_451@PAGE
-	add x0, x0, _str_451@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	mov w0, #8
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_452@PAGE
-	add x0, x0, _str_452@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_4:
-	ldr w0, [x29, #-4]
-	mov w2, #35
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_5
-	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16697,16 +16723,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_4:
+	ldr w0, [x29, #-4]
+	mov w2, #35
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_5
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16715,6 +16742,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	mov w0, #8
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16727,9 +16764,9 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
-	mov w0, #8
+	ldr w0, [x29, #-8]
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
@@ -16741,16 +16778,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	mov w0, #8
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16763,9 +16790,9 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
+	mov w0, #8
 	str w0, [sp]
 	bl emit_operand_aarch64
 	add sp, sp, #32
@@ -16777,17 +16804,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_5:
-	ldr w0, [x29, #-4]
-	mov w2, #15
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_6
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	mov w0, #8
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16796,6 +16822,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16804,16 +16840,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_5:
+	ldr w0, [x29, #-4]
+	mov w2, #15
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_6
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16822,16 +16859,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16840,17 +16867,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_6:
-	ldr w0, [x29, #-4]
-	mov w2, #16
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_7
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16859,6 +16885,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16867,16 +16903,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_6:
+	ldr w0, [x29, #-4]
+	mov w2, #16
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_7
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16885,16 +16922,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16903,38 +16930,11 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_7:
-	ldr w0, [x29, #-4]
-	mov w2, #13
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_8
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_468@PAGE
-	add x0, x0, _str_468@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_469@PAGE
-	add x0, x0, _str_469@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -16943,8 +16943,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_470@PAGE
-	add x0, x0, _str_470@PAGEOFF
+	adrp x0, _str_468@PAGE
+	add x0, x0, _str_468@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -16961,22 +16961,48 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_469@PAGE
+	add x0, x0, _str_469@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_7:
+	ldr w0, [x29, #-4]
+	mov w2, #13
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_8
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_470@PAGE
+	add x0, x0, _str_470@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_471@PAGE
 	add x0, x0, _str_471@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_8:
-	ldr w0, [x29, #-4]
-	mov w2, #14
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_9
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16985,6 +17011,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -16993,16 +17029,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_8:
+	ldr w0, [x29, #-4]
+	mov w2, #14
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_9
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17011,16 +17048,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17033,7 +17060,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17047,33 +17074,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_477@PAGE
-	add x0, x0, _str_477@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_9:
-	ldr w0, [x29, #-4]
-	mov w2, #17
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_10
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_478@PAGE
-	add x0, x0, _str_478@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
@@ -17087,21 +17087,47 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_477@PAGE
+	add x0, x0, _str_477@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_478@PAGE
+	add x0, x0, _str_478@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_479@PAGE
 	add x0, x0, _str_479@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	b .L270_end
 	add sp, sp, #16
-.L262_elseif_10:
+.L270_elseif_9:
 	ldr w0, [x29, #-4]
-	mov w2, #20
+	mov w2, #17
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_11
+	beq .L270_elseif_10
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -17115,7 +17141,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17129,30 +17155,22 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_10:
+	ldr w0, [x29, #-4]
+	mov w2, #20
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_11
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_482@PAGE
 	add x0, x0, _str_482@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_11:
-	ldr w0, [x29, #-4]
-	mov w2, #21
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_12
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_483@PAGE
-	add x0, x0, _str_483@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17169,11 +17187,30 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_483@PAGE
+	add x0, x0, _str_483@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_484@PAGE
 	add x0, x0, _str_484@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_11:
+	ldr w0, [x29, #-4]
+	mov w2, #21
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_12
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17182,22 +17219,48 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_486@PAGE
+	add x0, x0, _str_486@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
 	add sp, sp, #16
-.L262_elseif_12:
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_487@PAGE
+	add x0, x0, _str_487@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_12:
 	ldr w0, [x29, #-4]
 	mov w2, #18
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_13
+	beq .L270_elseif_13
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_486@PAGE
-	add x0, x0, _str_486@PAGEOFF
+	adrp x0, _str_488@PAGE
+	add x0, x0, _str_488@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -17223,8 +17286,8 @@ emit_instruction_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_487@PAGE
-	add x2, x2, _str_487@PAGEOFF
+	adrp x2, _str_489@PAGE
+	add x2, x2, _str_489@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -17235,8 +17298,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_488@PAGE
-	add x0, x0, _str_488@PAGEOFF
+	adrp x0, _str_490@PAGE
+	add x0, x0, _str_490@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17246,24 +17309,24 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L273_end
+	beq .L281_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_489@PAGE
-	add x0, x0, _str_489@PAGEOFF
+	adrp x0, _str_491@PAGE
+	add x0, x0, _str_491@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L273_end
+	b .L281_end
 	add sp, sp, #16
-.L273_end:
+.L281_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_490@PAGE
-	add x0, x0, _str_490@PAGEOFF
+	adrp x0, _str_492@PAGE
+	add x0, x0, _str_492@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17280,27 +17343,27 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_491@PAGE
-	add x0, x0, _str_491@PAGEOFF
+	adrp x0, _str_493@PAGE
+	add x0, x0, _str_493@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	b .L270_end
 	add sp, sp, #16
-.L262_elseif_13:
+.L270_elseif_13:
 	ldr w0, [x29, #-4]
 	mov w2, #19
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_14
+	beq .L270_elseif_14
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_492@PAGE
-	add x0, x0, _str_492@PAGEOFF
+	adrp x0, _str_494@PAGE
+	add x0, x0, _str_494@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17310,24 +17373,24 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L274_end
+	beq .L282_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_493@PAGE
-	add x0, x0, _str_493@PAGEOFF
+	adrp x0, _str_495@PAGE
+	add x0, x0, _str_495@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L274_end
+	b .L282_end
 	add sp, sp, #16
-.L274_end:
+.L282_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_494@PAGE
-	add x0, x0, _str_494@PAGEOFF
+	adrp x0, _str_496@PAGE
+	add x0, x0, _str_496@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17344,16 +17407,16 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_495@PAGE
-	add x0, x0, _str_495@PAGEOFF
+	adrp x0, _str_497@PAGE
+	add x0, x0, _str_497@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_496@PAGE
-	add x0, x0, _str_496@PAGEOFF
+	adrp x0, _str_498@PAGE
+	add x0, x0, _str_498@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -17379,8 +17442,8 @@ emit_instruction_aarch64:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_497@PAGE
-	add x2, x2, _str_497@PAGEOFF
+	adrp x2, _str_499@PAGE
+	add x2, x2, _str_499@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -17388,43 +17451,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	b .L270_end
 	add sp, sp, #16
-.L262_elseif_14:
+.L270_elseif_14:
 	ldr w0, [x29, #-4]
 	mov w2, #32
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_elseif_15
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_498@PAGE
-	add x0, x0, _str_498@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_499@PAGE
-	add x0, x0, _str_499@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_15:
-	ldr w0, [x29, #-4]
-	mov w2, #33
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_16
+	beq .L270_elseif_15
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
@@ -17434,17 +17470,6 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_16:
-	ldr w0, [x29, #-4]
-	mov w2, #7
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_17
-	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17453,16 +17478,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_15:
+	ldr w0, [x29, #-4]
+	mov w2, #33
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_16
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17471,16 +17497,17 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_16:
+	ldr w0, [x29, #-4]
+	mov w2, #7
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_17
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17493,7 +17520,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17507,17 +17534,16 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
-	add sp, sp, #16
-.L262_elseif_17:
-	ldr w0, [x29, #-4]
-	mov w2, #23
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L262_elseif_18
-	sub sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17529,13 +17555,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
-	sub sp, sp, #16
-	mov w0, #3
-	sxtw x0, w0
-	str x0, [sp]
-	bl make_reg
-	mov x0, x0
-	add sp, sp, #16
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17549,65 +17570,22 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_17:
+	ldr w0, [x29, #-4]
+	mov w2, #23
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L270_elseif_18
+	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
 	adrp x0, _str_507@PAGE
 	add x0, x0, _str_507@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_508@PAGE
-	add x0, x0, _str_508@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_509@PAGE
-	add x0, x0, _str_509@PAGEOFF
-	str x0, [sp]
-	bl add_to_text_buffer
-	add sp, sp, #16
-	sub sp, sp, #32
-	ldr x0, [x29, #24]
-	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
-	str x0, [sp, #4]
-	ldr w0, [x29, #-8]
-	str w0, [sp]
-	bl emit_operand_aarch64
-	add sp, sp, #32
-	sub sp, sp, #16
-	ldr x0, [x29, #24]
-	str x0, [sp, #8]
-	adrp x0, _str_510@PAGE
-	add x0, x0, _str_510@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17629,6 +17607,50 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
+	adrp x0, _str_508@PAGE
+	add x0, x0, _str_508@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_509@PAGE
+	add x0, x0, _str_509@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_510@PAGE
+	add x0, x0, _str_510@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
 	adrp x0, _str_511@PAGE
 	add x0, x0, _str_511@PAGEOFF
 	str x0, [sp]
@@ -17638,7 +17660,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	ldr x0, [x29, #16]
-	ldr x0, [x0]
+	ldr x0, [x0, #8]
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17655,8 +17677,13 @@ emit_instruction_aarch64:
 	sub sp, sp, #32
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
-	ldr x0, [x29, #16]
-	ldr x0, [x0, #8]
+	sub sp, sp, #16
+	mov w0, #3
+	sxtw x0, w0
+	str x0, [sp]
+	bl make_reg
+	mov x0, x0
+	add sp, sp, #16
 	str x0, [sp, #4]
 	ldr w0, [x29, #-8]
 	str w0, [sp]
@@ -17670,9 +17697,45 @@ emit_instruction_aarch64:
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L262_end
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_514@PAGE
+	add x0, x0, _str_514@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
 	add sp, sp, #16
-.L262_elseif_18:
+	sub sp, sp, #32
+	ldr x0, [x29, #24]
+	str x0, [sp, #12]
+	ldr x0, [x29, #16]
+	ldr x0, [x0, #8]
+	str x0, [sp, #4]
+	ldr w0, [x29, #-8]
+	str w0, [sp]
+	bl emit_operand_aarch64
+	add sp, sp, #32
+	sub sp, sp, #16
+	ldr x0, [x29, #24]
+	str x0, [sp, #8]
+	adrp x0, _str_515@PAGE
+	add x0, x0, _str_515@PAGEOFF
+	str x0, [sp]
+	bl add_to_text_buffer
+	add sp, sp, #16
+	b .L270_end
+	add sp, sp, #16
+.L270_elseif_18:
 	ldr w0, [x29, #-4]
 	mov w2, #22
 	and w0, w0, w2
@@ -17682,7 +17745,7 @@ emit_instruction_aarch64:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L262_end
+	beq .L270_end
 	sub sp, sp, #32
 	ldr w0, [x29, #-4]
 	mov w2, #16
@@ -17715,21 +17778,21 @@ emit_instruction_aarch64:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L278_else
+	beq .L286_else
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_514@PAGE
-	add x0, x0, _str_514@PAGEOFF
+	adrp x0, _str_516@PAGE
+	add x0, x0, _str_516@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_515@PAGE
-	add x0, x0, _str_515@PAGEOFF
+	adrp x0, _str_517@PAGE
+	add x0, x0, _str_517@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17746,8 +17809,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_516@PAGE
-	add x0, x0, _str_516@PAGEOFF
+	adrp x0, _str_518@PAGE
+	add x0, x0, _str_518@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17764,14 +17827,14 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_517@PAGE
-	add x0, x0, _str_517@PAGEOFF
+	adrp x0, _str_519@PAGE
+	add x0, x0, _str_519@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L278_end
+	b .L286_end
 	add sp, sp, #32
-.L278_else:
+.L286_else:
 	sub sp, sp, #32
 	add x0, x29, #-8
 
@@ -17784,16 +17847,16 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_518@PAGE
-	add x0, x0, _str_518@PAGEOFF
+	adrp x0, _str_520@PAGE
+	add x0, x0, _str_520@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_519@PAGE
-	add x0, x0, _str_519@PAGEOFF
+	adrp x0, _str_521@PAGE
+	add x0, x0, _str_521@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17810,8 +17873,8 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_520@PAGE
-	add x0, x0, _str_520@PAGEOFF
+	adrp x0, _str_522@PAGE
+	add x0, x0, _str_522@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
@@ -17828,20 +17891,20 @@ emit_instruction_aarch64:
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
-	adrp x0, _str_521@PAGE
-	add x0, x0, _str_521@PAGEOFF
+	adrp x0, _str_523@PAGE
+	add x0, x0, _str_523@PAGEOFF
 	str x0, [sp]
 	bl add_to_text_buffer
 	add sp, sp, #16
-	b .L278_end
+	b .L286_end
 	add sp, sp, #32
-.L278_end:
-	b .L262_end
+.L286_end:
+	b .L270_end
 	add sp, sp, #32
-.L262_end:
-	b .L251_end
+.L270_end:
+	b .L259_end
 	add sp, sp, #16
-.L251_end:
+.L259_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -17858,7 +17921,7 @@ emit_instruction:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L279_elseif_0
+	beq .L287_elseif_0
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17866,8 +17929,8 @@ emit_instruction:
 	str x0, [sp]
 	bl emit_instruction_x86
 	add sp, sp, #16
-	b .L279_end
-.L279_elseif_0:
+	b .L287_end
+.L287_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -17876,7 +17939,7 @@ emit_instruction:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L279_else
+	beq .L287_else
 	sub sp, sp, #16
 	ldr x0, [x29, #24]
 	str x0, [sp, #8]
@@ -17884,11 +17947,11 @@ emit_instruction:
 	str x0, [sp]
 	bl emit_instruction_aarch64
 	add sp, sp, #16
-	b .L279_end
-.L279_else:
+	b .L287_end
+.L287_else:
 	sub sp, sp, #16
-	adrp x0, _str_522@PAGE
-	add x0, x0, _str_522@PAGEOFF
+	adrp x0, _str_524@PAGE
+	add x0, x0, _str_524@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -17916,17 +17979,17 @@ emit_instruction:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_523@PAGE
-	add x2, x2, _str_523@PAGEOFF
+	adrp x2, _str_525@PAGE
+	add x2, x2, _str_525@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L279_end
-.L279_end:
+	b .L287_end
+.L287_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18004,7 +18067,7 @@ align_stack:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L283_else
+	beq .L291_else
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #16
@@ -18024,7 +18087,7 @@ align_stack:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L284_end
+	beq .L292_end
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #20]
@@ -18063,23 +18126,23 @@ align_stack:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L284_end
+	b .L292_end
 	add sp, sp, #16
-.L284_end:
+.L292_end:
 	ldr w0, [x29, #-4]
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L283_end
+	b .L291_end
 	add sp, sp, #16
-.L283_else:
+.L291_else:
 	mov w0, #0
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L283_end
-.L283_end:
+	b .L291_end
+.L291_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18095,14 +18158,14 @@ dealign_stack:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L285_end
+	beq .L293_end
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L286_end
+	beq .L294_end
 	sub sp, sp, #32
 	ldr x0, [x29, #20]
 	str x0, [sp, #24]
@@ -18140,10 +18203,10 @@ dealign_stack:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L286_end
-.L286_end:
-	b .L285_end
-.L285_end:
+	b .L294_end
+.L294_end:
+	b .L293_end
+.L293_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18162,7 +18225,7 @@ allocate_stack_space:
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L287_end
+	beq .L295_end
 	sub sp, sp, #16
 	add x0, x29, #-4
 
@@ -18208,9 +18271,9 @@ allocate_stack_space:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L287_end
+	b .L295_end
 	add sp, sp, #16
-.L287_end:
+.L295_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -18230,7 +18293,7 @@ deallocate_stack_space:
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L288_end
+	beq .L296_end
 	sub sp, sp, #16
 	add x0, x29, #-4
 
@@ -18276,9 +18339,9 @@ deallocate_stack_space:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L288_end
+	b .L296_end
 	add sp, sp, #16
-.L288_end:
+.L296_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -18295,7 +18358,7 @@ push_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L289_elseif_0
+	beq .L297_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr w0, [x29, #24]
@@ -18310,7 +18373,7 @@ push_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L290_else
+	beq .L298_else
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -18326,9 +18389,9 @@ push_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L290_end
+	b .L298_end
 	add sp, sp, #16
-.L290_else:
+.L298_else:
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -18388,9 +18451,9 @@ push_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L290_end
+	b .L298_end
 	add sp, sp, #16
-.L290_end:
+.L298_end:
 	adrp x0, _rsp_offset@PAGE
 	add x0, x0, _rsp_offset@PAGEOFF
 	sub sp, sp, #16
@@ -18412,9 +18475,9 @@ push_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L289_end
+	b .L297_end
 	add sp, sp, #16
-.L289_elseif_0:
+.L297_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -18423,7 +18486,7 @@ push_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L289_end
+	beq .L297_end
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
 	str x0, [sp, #24]
@@ -18457,8 +18520,8 @@ push_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L289_end
-.L289_end:
+	b .L297_end
+.L297_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18474,7 +18537,7 @@ pop_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L291_elseif_0
+	beq .L299_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr w0, [x29, #24]
@@ -18489,7 +18552,7 @@ pop_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L292_else
+	beq .L300_else
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -18505,9 +18568,9 @@ pop_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L292_end
+	b .L300_end
 	add sp, sp, #16
-.L292_else:
+.L300_else:
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -18567,9 +18630,9 @@ pop_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L292_end
+	b .L300_end
 	add sp, sp, #16
-.L292_end:
+.L300_end:
 	adrp x0, _rsp_offset@PAGE
 	add x0, x0, _rsp_offset@PAGEOFF
 	sub sp, sp, #16
@@ -18591,9 +18654,9 @@ pop_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L291_end
+	b .L299_end
 	add sp, sp, #16
-.L291_elseif_0:
+.L299_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -18602,7 +18665,7 @@ pop_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L291_end
+	beq .L299_end
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
 	str x0, [sp, #24]
@@ -18636,8 +18699,8 @@ pop_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L291_end
-.L291_end:
+	b .L299_end
+.L299_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18653,7 +18716,7 @@ reserve_stack_space:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L293_end
+	beq .L301_end
 	sub sp, sp, #32
 	ldr x0, [x29, #20]
 	str x0, [sp, #24]
@@ -18679,8 +18742,8 @@ reserve_stack_space:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L293_end
-.L293_end:
+	b .L301_end
+.L301_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18696,7 +18759,7 @@ free_stack_space:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L294_end
+	beq .L302_end
 	sub sp, sp, #32
 	ldr x0, [x29, #20]
 	str x0, [sp, #24]
@@ -18722,8 +18785,8 @@ free_stack_space:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L294_end
-.L294_end:
+	b .L302_end
+.L302_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -18769,7 +18832,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L295_end
+	beq .L303_end
 	sub sp, sp, #16
 	add x0, x29, #-12
 
@@ -18779,9 +18842,9 @@ compile_unary_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L295_end
+	b .L303_end
 	add sp, sp, #16
-.L295_end:
+.L303_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
 	str x0, [sp, #21]
@@ -18790,8 +18853,8 @@ compile_unary_expression:
 	str x0, [sp, #13]
 	ldr x0, [x29, #20]
 	str x0, [sp, #5]
-	adrp x0, _char_524@PAGE
-	add x0, x0, _char_524@PAGEOFF
+	adrp x0, _char_526@PAGE
+	add x0, x0, _char_526@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	ldr w0, [x29, #-12]
@@ -18818,7 +18881,7 @@ compile_unary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L296_end
+	beq .L304_end
 	sub sp, sp, #16
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
@@ -18839,7 +18902,7 @@ compile_unary_expression:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L297_else
+	beq .L305_else
 	sub sp, sp, #16
 	add x0, x29, #-16
 
@@ -18854,22 +18917,22 @@ compile_unary_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L297_end
+	b .L305_end
 	add sp, sp, #16
-.L297_else:
+.L305_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_525@PAGE
-	add x0, x0, _str_525@PAGEOFF
+	adrp x0, _str_527@PAGE
+	add x0, x0, _str_527@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L297_end
+	b .L305_end
 	add sp, sp, #16
-.L297_end:
-	b .L296_end
+.L305_end:
+	b .L304_end
 	add sp, sp, #16
-.L296_end:
+.L304_end:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #7
@@ -18877,7 +18940,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L298_elseif_0
+	beq .L306_elseif_0
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -18885,17 +18948,17 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L299_end
+	beq .L307_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_526@PAGE
-	add x0, x0, _str_526@PAGEOFF
+	adrp x0, _str_528@PAGE
+	add x0, x0, _str_528@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L299_end
+	b .L307_end
 	add sp, sp, #16
-.L299_end:
+.L307_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
 	str x0, [sp, #24]
@@ -18916,9 +18979,9 @@ compile_unary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L298_end
+	b .L306_end
 	add sp, sp, #16
-.L298_elseif_0:
+.L306_elseif_0:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #6
@@ -18926,7 +18989,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L298_elseif_1
+	beq .L306_elseif_1
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -18934,20 +18997,20 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L300_end
+	beq .L308_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_527@PAGE
-	add x0, x0, _str_527@PAGEOFF
+	adrp x0, _str_529@PAGE
+	add x0, x0, _str_529@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L300_end
+	b .L308_end
 	add sp, sp, #16
-.L300_end:
-	b .L298_end
+.L308_end:
+	b .L306_end
 	add sp, sp, #16
-.L298_elseif_1:
+.L306_elseif_1:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #8
@@ -18955,7 +19018,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L298_elseif_2
+	beq .L306_elseif_2
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #1
@@ -18963,7 +19026,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L301_elseif_0
+	beq .L309_elseif_0
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -19004,16 +19067,16 @@ compile_unary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L301_end
+	b .L309_end
 	add sp, sp, #16
-.L301_elseif_0:
+.L309_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L301_end
+	beq .L309_end
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -19040,12 +19103,12 @@ compile_unary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L301_end
+	b .L309_end
 	add sp, sp, #16
-.L301_end:
-	b .L298_end
+.L309_end:
+	b .L306_end
 	add sp, sp, #16
-.L298_elseif_2:
+.L306_elseif_2:
 	ldr x0, [x29, #-8]
 	ldr w0, [x0]
 	mov w2, #11
@@ -19053,7 +19116,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L298_else
+	beq .L306_else
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
 	mov w2, #4
@@ -19061,7 +19124,7 @@ compile_unary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L302_else
+	beq .L310_else
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -19088,9 +19151,9 @@ compile_unary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L302_end
+	b .L310_end
 	add sp, sp, #16
-.L302_else:
+.L310_else:
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -19112,16 +19175,16 @@ compile_unary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L302_end
+	b .L310_end
 	add sp, sp, #16
-.L302_end:
-	b .L298_end
+.L310_end:
+	b .L306_end
 	add sp, sp, #16
-.L298_else:
+.L306_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_528@PAGE
-	add x0, x0, _str_528@PAGEOFF
+	adrp x0, _str_530@PAGE
+	add x0, x0, _str_530@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -19148,46 +19211,6 @@ compile_unary_expression:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_529@PAGE
-	add x2, x2, _str_529@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #36]
-	str x0, [sp, #8]
-	adrp x0, _str_530@PAGE
-	add x0, x0, _str_530@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #-8]
-	ldr w0, [x0]
-	str w0, [sp]
-	bl int_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
 	adrp x2, _str_531@PAGE
 	add x2, x2, _str_531@PAGEOFF
 	mov x23, x2
@@ -19195,11 +19218,11 @@ compile_unary_expression:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl add_to_text_buffer
+	bl error
 	add sp, sp, #16
-	b .L298_end
+	b .L306_end
 	add sp, sp, #16
-.L298_end:
+.L306_end:
 	ldr w0, [x29, #-16]
 	add sp, sp, #16
 	mov sp, x29
@@ -19419,7 +19442,7 @@ compile_binary_expression:
 	str w0, [x29, #-21]
 	ldrb w0, [x29, #-17]
 	cmp wzr, w0
-	beq .L309_end
+	beq .L314_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
@@ -19447,9 +19470,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl push_register
 	add sp, sp, #32
-	b .L309_end
+	b .L314_end
 	add sp, sp, #32
-.L309_end:
+.L314_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #21]
@@ -19470,7 +19493,7 @@ compile_binary_expression:
 	str w0, [x29, #-25]
 	ldrb w0, [x29, #-17]
 	cmp wzr, w0
-	beq .L310_end
+	beq .L315_end
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -19498,9 +19521,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl free_stack_space
 	add sp, sp, #16
-	b .L310_end
+	b .L315_end
 	add sp, sp, #32
-.L310_end:
+.L315_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-25]
 	str w0, [sp]
@@ -19596,7 +19619,7 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L311_elseif_0
+	beq .L316_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -19629,25 +19652,25 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L312_else
+	beq .L317_else
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_char_into_builder
 	add sp, sp, #16
-	b .L312_end
+	b .L317_end
 	add sp, sp, #48
-.L312_else:
+.L317_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_string_into_builder
 	add sp, sp, #16
-	b .L312_end
+	b .L317_end
 	add sp, sp, #48
-.L312_end:
+.L317_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
@@ -19678,9 +19701,9 @@ compile_binary_expression:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L311_end
+	b .L316_end
 	add sp, sp, #48
-.L311_elseif_0:
+.L316_elseif_0:
 	ldr w0, [x29, #-12]
 	mov w2, #6
 	cmp w0, w2
@@ -19693,7 +19716,7 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L311_end
+	beq .L316_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
@@ -19885,25 +19908,25 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L313_else
+	beq .L318_else
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_char_into_builder
 	add sp, sp, #16
-	b .L313_end
+	b .L318_end
 	add sp, sp, #48
-.L313_else:
+.L318_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_string_into_builder
 	add sp, sp, #16
-	b .L313_end
+	b .L318_end
 	add sp, sp, #48
-.L313_end:
+.L318_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #20]
@@ -19929,25 +19952,25 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L314_else
+	beq .L319_else
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_char_into_builder
 	add sp, sp, #16
-	b .L314_end
+	b .L319_end
 	add sp, sp, #48
-.L314_else:
+.L319_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp]
 	bl compile_string_into_builder
 	add sp, sp, #16
-	b .L314_end
+	b .L319_end
 	add sp, sp, #48
-.L314_end:
+.L319_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
@@ -19985,9 +20008,9 @@ compile_binary_expression:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L311_end
+	b .L316_end
 	add sp, sp, #48
-.L311_end:
+.L316_end:
 	ldr w0, [x29, #-12]
 	mov w2, #32
 	cmp w0, w2
@@ -20055,7 +20078,7 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L315_end
+	beq .L320_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20169,7 +20192,7 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L316_elseif_0
+	beq .L321_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20191,16 +20214,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L316_end
+	b .L321_end
 	add sp, sp, #48
-.L316_elseif_0:
+.L321_elseif_0:
 	ldr w0, [x29, #-12]
 	mov w2, #33
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L316_else
+	beq .L321_else
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20222,9 +20245,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L316_end
+	b .L321_end
 	add sp, sp, #48
-.L316_else:
+.L321_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	adrp x0, _str_538@PAGE
@@ -20234,7 +20257,7 @@ compile_binary_expression:
 	sub sp, sp, #16
 	ldr w0, [x29, #-12]
 	str w0, [sp]
-	bl int_to_str
+	bl debug_token_value_to_str
 	mov x2, x0
 	add sp, sp, #16
 	ldr x0, [sp]
@@ -20261,11 +20284,11 @@ compile_binary_expression:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L316_end
+	b .L321_end
 	add sp, sp, #48
-.L316_end:
+.L321_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp, #4]
@@ -20278,9 +20301,9 @@ compile_binary_expression:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L315_end
+	b .L320_end
 	add sp, sp, #48
-.L315_end:
+.L320_end:
 	add x0, x29, #-21
 
 	sub sp, sp, #16
@@ -20313,7 +20336,7 @@ compile_binary_expression:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L320_end
+	beq .L325_end
 	sub sp, sp, #48
 	ldr w0, [x29, #-21]
 	mov w2, #3
@@ -20376,7 +20399,7 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L321_elseif_0
+	beq .L326_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr w0, [x29, #-21]
@@ -20398,7 +20421,7 @@ compile_binary_expression:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L322_elseif_0
+	beq .L327_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20442,16 +20465,16 @@ compile_binary_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L322_end
+	b .L327_end
 	add sp, sp, #48
-.L322_elseif_0:
+.L327_elseif_0:
 	ldr w0, [x29, #-43]
 	ldr w2, [x29, #-39]
 	cmp w0, w2
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L322_end
+	beq .L327_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20495,12 +20518,12 @@ compile_binary_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L322_end
+	b .L327_end
 	add sp, sp, #48
-.L322_end:
-	b .L321_end
+.L327_end:
+	b .L326_end
 	add sp, sp, #48
-.L321_elseif_0:
+.L326_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-21]
 	str w0, [sp]
@@ -20542,7 +20565,7 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L321_else
+	beq .L326_else
 	sub sp, sp, #48
 	add x0, x29, #-21
 
@@ -20560,22 +20583,84 @@ compile_binary_expression:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L321_end
+	b .L326_end
 	add sp, sp, #48
-.L321_else:
+.L326_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	adrp x0, _str_540@PAGE
 	add x0, x0, _str_540@PAGEOFF
+	sub sp, sp, #16
 	str x0, [sp]
-	bl print
+	sub sp, sp, #16
+	ldr w0, [x29, #-21]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
 	add sp, sp, #16
-	b .L321_end
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_541@PAGE
+	add x2, x2, _str_541@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr w0, [x29, #-25]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_542@PAGE
+	add x2, x2, _str_542@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L326_end
 	add sp, sp, #48
-.L321_end:
-	b .L320_end
+.L326_end:
+	b .L325_end
 	add sp, sp, #48
-.L320_end:
+.L325_end:
 	ldr w0, [x29, #-21]
 	str w0, [x29, #-39]
 	ldr w0, [x29, #-12]
@@ -20584,7 +20669,7 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_0
+	beq .L334_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20611,16 +20696,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_0:
+.L334_elseif_0:
 	ldr w0, [x29, #-12]
 	mov w2, #7
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_1
+	beq .L334_elseif_1
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20647,16 +20732,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_1:
+.L334_elseif_1:
 	ldr w0, [x29, #-12]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_2
+	beq .L334_elseif_2
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20683,16 +20768,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_2:
+.L334_elseif_2:
 	ldr w0, [x29, #-12]
 	mov w2, #9
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_3
+	beq .L334_elseif_3
 	sub sp, sp, #48
 	ldr w0, [x29, #-39]
 	mov w2, #1
@@ -20711,17 +20796,17 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L324_end
+	beq .L335_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_541@PAGE
-	add x0, x0, _str_541@PAGEOFF
+	adrp x0, _str_543@PAGE
+	add x0, x0, _str_543@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L324_end
+	b .L335_end
 	add sp, sp, #48
-.L324_end:
+.L335_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-39]
 	str w0, [sp]
@@ -20733,11 +20818,11 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L325_elseif_0
+	beq .L336_elseif_0
 	sub sp, sp, #48
-	b .L325_end
+	b .L336_end
 	add sp, sp, #48
-.L325_elseif_0:
+.L336_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-39]
 	str w0, [sp]
@@ -20749,11 +20834,11 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L325_end
+	beq .L336_end
 	sub sp, sp, #48
-	b .L325_end
+	b .L336_end
 	add sp, sp, #48
-.L325_end:
+.L336_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
@@ -20779,16 +20864,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_3:
+.L334_elseif_3:
 	ldr w0, [x29, #-12]
 	mov w2, #10
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_4
+	beq .L334_elseif_4
 	sub sp, sp, #48
 	ldr w0, [x29, #-39]
 	mov w2, #1
@@ -20807,17 +20892,17 @@ compile_binary_expression:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L326_end
+	beq .L337_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_542@PAGE
-	add x0, x0, _str_542@PAGEOFF
+	adrp x0, _str_544@PAGE
+	add x0, x0, _str_544@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L326_end
+	b .L337_end
 	add sp, sp, #48
-.L326_end:
+.L337_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-39]
 	str w0, [sp]
@@ -20829,11 +20914,11 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L327_elseif_0
+	beq .L338_elseif_0
 	sub sp, sp, #48
-	b .L327_end
+	b .L338_end
 	add sp, sp, #48
-.L327_elseif_0:
+.L338_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-39]
 	str w0, [sp]
@@ -20845,11 +20930,11 @@ compile_binary_expression:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L327_end
+	beq .L338_end
 	sub sp, sp, #48
-	b .L327_end
+	b .L338_end
 	add sp, sp, #48
-.L327_end:
+.L338_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
@@ -20875,16 +20960,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_4:
+.L334_elseif_4:
 	ldr w0, [x29, #-12]
 	mov w2, #34
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_5
+	beq .L334_elseif_5
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20911,16 +20996,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_5:
+.L334_elseif_5:
 	ldr w0, [x29, #-12]
 	mov w2, #35
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_6
+	beq .L334_elseif_6
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20947,16 +21032,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_6:
+.L334_elseif_6:
 	ldr w0, [x29, #-12]
 	mov w2, #36
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_7
+	beq .L334_elseif_7
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -20983,16 +21068,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_7:
+.L334_elseif_7:
 	ldr w0, [x29, #-12]
 	mov w2, #37
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_8
+	beq .L334_elseif_8
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21019,16 +21104,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_8:
+.L334_elseif_8:
 	ldr w0, [x29, #-12]
 	mov w2, #32
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_9
+	beq .L334_elseif_9
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21055,16 +21140,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_9:
+.L334_elseif_9:
 	ldr w0, [x29, #-12]
 	mov w2, #33
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_10
+	beq .L334_elseif_10
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21091,9 +21176,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_10:
+.L334_elseif_10:
 	ldr w0, [x29, #-12]
 	mov w2, #38
 	cmp w0, w2
@@ -21111,7 +21196,7 @@ compile_binary_expression:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_11
+	beq .L334_elseif_11
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21138,9 +21223,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_11:
+.L334_elseif_11:
 	ldr w0, [x29, #-12]
 	mov w2, #39
 	cmp w0, w2
@@ -21158,7 +21243,7 @@ compile_binary_expression:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_12
+	beq .L334_elseif_12
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21185,9 +21270,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_12:
+.L334_elseif_12:
 	ldr w0, [x29, #-12]
 	mov w2, #40
 	cmp w0, w2
@@ -21205,7 +21290,7 @@ compile_binary_expression:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_13
+	beq .L334_elseif_13
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21232,16 +21317,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_13:
+.L334_elseif_13:
 	ldr w0, [x29, #-12]
 	mov w2, #44
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_elseif_14
+	beq .L334_elseif_14
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21268,16 +21353,16 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_elseif_14:
+.L334_elseif_14:
 	ldr w0, [x29, #-12]
 	mov w2, #45
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L323_else
+	beq .L334_else
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
@@ -21304,269 +21389,9 @@ compile_binary_expression:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L323_end
+	b .L334_end
 	add sp, sp, #48
-.L323_else:
-	sub sp, sp, #48
-	sub sp, sp, #16
-	adrp x0, _str_543@PAGE
-	add x0, x0, _str_543@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr w0, [x29, #-12]
-	str w0, [sp]
-	bl int_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_544@PAGE
-	add x2, x2, _str_544@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	b .L323_end
-	add sp, sp, #48
-.L323_end:
-	ldr w0, [x29, #-12]
-	mov w2, #6
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #7
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #8
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #9
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #10
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #41
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #42
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #43
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #44
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #45
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	cmp wzr, w0
-	beq .L331_elseif_0
-	sub sp, sp, #48
-	ldr w0, [x29, #-39]
-	add sp, sp, #48
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-	b .L331_end
-	add sp, sp, #48
-.L331_elseif_0:
-	ldr w0, [x29, #-12]
-	mov w2, #34
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #35
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #36
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #37
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #32
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #33
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #38
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #39
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	sub sp, sp, #16
-	str x0, [sp]
-	ldr w0, [x29, #-12]
-	mov w2, #40
-	cmp w0, w2
-	cset w0, eq
-	mov w2, w0
-	ldr x0, [sp]
-	add sp, sp, #16
-	orr w0, w0, w2
-	mov w0, w0
-	cmp wzr, w0
-	beq .L331_else
-	sub sp, sp, #48
-	mov w0, #4
-	add sp, sp, #48
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-	b .L331_end
-	add sp, sp, #48
-.L331_else:
+.L334_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	adrp x0, _str_545@PAGE
@@ -21603,11 +21428,271 @@ compile_binary_expression:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L331_end
+	b .L334_end
 	add sp, sp, #48
-.L331_end:
+.L334_end:
+	ldr w0, [x29, #-12]
+	mov w2, #6
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #7
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #9
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #10
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #41
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #42
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #43
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #44
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #45
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	cmp wzr, w0
+	beq .L342_elseif_0
+	sub sp, sp, #48
+	ldr w0, [x29, #-39]
+	add sp, sp, #48
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L342_end
+	add sp, sp, #48
+.L342_elseif_0:
+	ldr w0, [x29, #-12]
+	mov w2, #34
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #35
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #36
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #37
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #32
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #33
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #38
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #39
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	sub sp, sp, #16
+	str x0, [sp]
+	ldr w0, [x29, #-12]
+	mov w2, #40
+	cmp w0, w2
+	cset w0, eq
+	mov w2, w0
+	ldr x0, [sp]
+	add sp, sp, #16
+	orr w0, w0, w2
+	mov w0, w0
+	cmp wzr, w0
+	beq .L342_else
+	sub sp, sp, #48
+	mov w0, #4
+	add sp, sp, #48
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+	b .L342_end
+	add sp, sp, #48
+.L342_else:
+	sub sp, sp, #48
+	sub sp, sp, #16
+	adrp x0, _str_547@PAGE
+	add x0, x0, _str_547@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr w0, [x29, #-12]
+	str w0, [sp]
+	bl int_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_548@PAGE
+	add x2, x2, _str_548@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L342_end
+	add sp, sp, #48
+.L342_end:
 	add sp, sp, #48
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -21626,14 +21711,14 @@ compile_function_call:
 	mov w0, #0
 	str w0, [x29, #-20]
 	ldrb w0, [x29, #20]
-	adrp x2, _char_547@PAGE
-	add x2, x2, _char_547@PAGEOFF
+	adrp x2, _char_549@PAGE
+	add x2, x2, _char_549@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L335_elseif_0
+	beq .L346_elseif_0
 	sub sp, sp, #32
 	add x0, x29, #-20
 
@@ -21643,18 +21728,18 @@ compile_function_call:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L335_end
+	b .L346_end
 	add sp, sp, #32
-.L335_elseif_0:
+.L346_elseif_0:
 	ldrb w0, [x29, #20]
-	adrp x2, _char_548@PAGE
-	add x2, x2, _char_548@PAGEOFF
+	adrp x2, _char_550@PAGE
+	add x2, x2, _char_550@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L335_else
+	beq .L346_else
 	sub sp, sp, #32
 	add x0, x29, #-20
 
@@ -21664,13 +21749,13 @@ compile_function_call:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L335_end
+	b .L346_end
 	add sp, sp, #32
-.L335_else:
+.L346_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_549@PAGE
-	add x0, x0, _str_549@PAGEOFF
+	adrp x0, _str_551@PAGE
+	add x0, x0, _str_551@PAGEOFF
 	ldrb w2, [x29, #20]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -21687,21 +21772,21 @@ compile_function_call:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_550@PAGE
-	add x2, x2, _str_550@PAGEOFF
+	adrp x2, _str_552@PAGE
+	add x2, x2, _str_552@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L335_end
+	b .L346_end
 	add sp, sp, #32
-.L335_end:
+.L346_end:
 	ldr x0, [x29, #-16]
-	adrp x2, _str_551@PAGE
-	add x2, x2, _str_551@PAGEOFF
+	adrp x2, _str_553@PAGE
+	add x2, x2, _str_553@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -21710,7 +21795,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L339_elseif_0
+	beq .L350_elseif_0
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -21718,17 +21803,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L340_end
+	beq .L351_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_552@PAGE
-	add x0, x0, _str_552@PAGEOFF
+	adrp x0, _str_554@PAGE
+	add x0, x0, _str_554@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L340_end
+	b .L351_end
 	add sp, sp, #32
-.L340_end:
+.L351_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr w0, [x0, #8]
@@ -21737,17 +21822,17 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L341_end
+	beq .L352_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_553@PAGE
-	add x0, x0, _str_553@PAGEOFF
+	adrp x0, _str_555@PAGE
+	add x0, x0, _str_555@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L341_end
+	b .L352_end
 	add sp, sp, #32
-.L341_end:
+.L352_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -21766,8 +21851,8 @@ cset w0, eq
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_554@PAGE
-	add x0, x0, _char_554@PAGEOFF
+	adrp x0, _char_556@PAGE
+	add x0, x0, _char_556@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -21804,7 +21889,7 @@ cset w0, eq
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L342_elseif_0
+	beq .L353_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #29]
@@ -21846,8 +21931,8 @@ cset w0, eq
 	ldr x0, [x29, #29]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_555@PAGE
-	add x0, x0, _str_555@PAGEOFF
+	adrp x0, _str_557@PAGE
+	add x0, x0, _str_557@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -21899,9 +21984,9 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L342_end
+	b .L353_end
 	add sp, sp, #48
-.L342_elseif_0:
+.L353_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-32]
 	str w0, [sp]
@@ -21909,7 +21994,7 @@ cset w0, eq
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L342_else
+	beq .L353_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -21955,25 +22040,25 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L342_end
+	b .L353_end
 	add sp, sp, #32
-.L342_else:
+.L353_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_556@PAGE
-	add x0, x0, _str_556@PAGEOFF
+	adrp x0, _str_558@PAGE
+	add x0, x0, _str_558@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L342_end
+	b .L353_end
 	add sp, sp, #32
-.L342_end:
-	b .L339_end
+.L353_end:
+	b .L350_end
 	add sp, sp, #32
-.L339_elseif_0:
+.L350_elseif_0:
 	ldr x0, [x29, #-16]
-	adrp x2, _str_557@PAGE
-	add x2, x2, _str_557@PAGEOFF
+	adrp x2, _str_559@PAGE
+	add x2, x2, _str_559@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -21982,7 +22067,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L339_elseif_1
+	beq .L350_elseif_1
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -21990,17 +22075,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L343_end
+	beq .L354_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_558@PAGE
-	add x0, x0, _str_558@PAGEOFF
+	adrp x0, _str_560@PAGE
+	add x0, x0, _str_560@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L343_end
+	b .L354_end
 	add sp, sp, #32
-.L343_end:
+.L354_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr w0, [x0, #8]
@@ -22009,17 +22094,17 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L344_end
+	beq .L355_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_559@PAGE
-	add x0, x0, _str_559@PAGEOFF
+	adrp x0, _str_561@PAGE
+	add x0, x0, _str_561@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L344_end
+	b .L355_end
 	add sp, sp, #32
-.L344_end:
+.L355_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -22038,8 +22123,8 @@ cset w0, eq
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_560@PAGE
-	add x0, x0, _char_560@PAGEOFF
+	adrp x0, _char_562@PAGE
+	add x0, x0, _char_562@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -22055,7 +22140,7 @@ cset w0, eq
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L345_else
+	beq .L356_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -22101,25 +22186,25 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L345_end
+	b .L356_end
 	add sp, sp, #32
-.L345_else:
+.L356_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_561@PAGE
-	add x0, x0, _str_561@PAGEOFF
+	adrp x0, _str_563@PAGE
+	add x0, x0, _str_563@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L345_end
+	b .L356_end
 	add sp, sp, #32
-.L345_end:
-	b .L339_end
+.L356_end:
+	b .L350_end
 	add sp, sp, #32
-.L339_elseif_1:
+.L350_elseif_1:
 	ldr x0, [x29, #-16]
-	adrp x2, _str_562@PAGE
-	add x2, x2, _str_562@PAGEOFF
+	adrp x2, _str_564@PAGE
+	add x2, x2, _str_564@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -22128,7 +22213,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L339_else
+	beq .L350_else
 	sub sp, sp, #48
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
@@ -22138,11 +22223,11 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L346_end
+	beq .L357_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_563@PAGE
-	add x0, x0, _str_563@PAGEOFF
+	adrp x0, _str_565@PAGE
+	add x0, x0, _str_565@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -22170,18 +22255,18 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_564@PAGE
-	add x2, x2, _str_564@PAGEOFF
+	adrp x2, _str_566@PAGE
+	add x2, x2, _str_566@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L346_end
+	b .L357_end
 	add sp, sp, #32
-.L346_end:
+.L357_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #29]
 	str x0, [sp, #4]
@@ -22209,8 +22294,8 @@ cset w0, eq
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_565@PAGE
-	add x0, x0, _char_565@PAGEOFF
+	adrp x0, _char_567@PAGE
+	add x0, x0, _char_567@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -22261,8 +22346,8 @@ cset w0, eq
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_566@PAGE
-	add x0, x0, _char_566@PAGEOFF
+	adrp x0, _char_568@PAGE
+	add x0, x0, _char_568@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -22315,69 +22400,7 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L350_elseif_0
-	sub sp, sp, #48
-	sub sp, sp, #32
-	ldr x0, [x29, #29]
-	str x0, [sp, #24]
-	sub sp, sp, #16
-	adrp x0, _str_567@PAGE
-	add x0, x0, _str_567@PAGEOFF
-	str x0, [sp]
-	bl make_label
-	mov x0, x0
-	add sp, sp, #16
-	str x0, [sp, #16]
-	mov w0, #0
-	sxtw x0, w0
-	str x0, [sp, #8]
-	mov w0, #17
-	str w0, [sp, #4]
-	mov w0, #9
-	str w0, [sp]
-	bl add_instruction
-	add sp, sp, #32
-	b .L350_end
-	add sp, sp, #48
-.L350_elseif_0:
-	ldr w0, [x29, #-40]
-	mov w2, #4
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L350_elseif_1
-	sub sp, sp, #48
-	sub sp, sp, #32
-	ldr x0, [x29, #29]
-	str x0, [sp, #24]
-	sub sp, sp, #16
-	adrp x0, _str_568@PAGE
-	add x0, x0, _str_568@PAGEOFF
-	str x0, [sp]
-	bl make_label
-	mov x0, x0
-	add sp, sp, #16
-	str x0, [sp, #16]
-	mov w0, #0
-	sxtw x0, w0
-	str x0, [sp, #8]
-	mov w0, #17
-	str w0, [sp, #4]
-	mov w0, #9
-	str w0, [sp]
-	bl add_instruction
-	add sp, sp, #32
-	b .L350_end
-	add sp, sp, #48
-.L350_elseif_1:
-	ldr w0, [x29, #-40]
-	mov w2, #8
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L350_end
+	beq .L361_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -22399,16 +22422,78 @@ cset w0, eq
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L350_end
+	b .L361_end
 	add sp, sp, #48
-.L350_end:
+.L361_elseif_0:
+	ldr w0, [x29, #-40]
+	mov w2, #4
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L361_elseif_1
+	sub sp, sp, #48
+	sub sp, sp, #32
+	ldr x0, [x29, #29]
+	str x0, [sp, #24]
+	sub sp, sp, #16
+	adrp x0, _str_570@PAGE
+	add x0, x0, _str_570@PAGEOFF
+	str x0, [sp]
+	bl make_label
+	mov x0, x0
+	add sp, sp, #16
+	str x0, [sp, #16]
+	mov w0, #0
+	sxtw x0, w0
+	str x0, [sp, #8]
+	mov w0, #17
+	str w0, [sp, #4]
+	mov w0, #9
+	str w0, [sp]
+	bl add_instruction
+	add sp, sp, #32
+	b .L361_end
+	add sp, sp, #48
+.L361_elseif_1:
+	ldr w0, [x29, #-40]
+	mov w2, #8
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L361_end
+	sub sp, sp, #48
+	sub sp, sp, #32
+	ldr x0, [x29, #29]
+	str x0, [sp, #24]
+	sub sp, sp, #16
+	adrp x0, _str_571@PAGE
+	add x0, x0, _str_571@PAGEOFF
+	str x0, [sp]
+	bl make_label
+	mov x0, x0
+	add sp, sp, #16
+	str x0, [sp, #16]
+	mov w0, #0
+	sxtw x0, w0
+	str x0, [sp, #8]
+	mov w0, #17
+	str w0, [sp, #4]
+	mov w0, #9
+	str w0, [sp]
+	bl add_instruction
+	add sp, sp, #32
+	b .L361_end
+	add sp, sp, #48
+.L361_end:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L351_end
+	beq .L362_end
 	sub sp, sp, #48
 	add x0, x29, #-32
 
@@ -22423,16 +22508,16 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L351_end
+	b .L362_end
 	add sp, sp, #48
-.L351_end:
+.L362_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L352_elseif_0
+	beq .L363_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -22473,16 +22558,16 @@ cset w0, eq
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L352_end
+	b .L363_end
 	add sp, sp, #48
-.L352_elseif_0:
+.L363_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L352_end
+	beq .L363_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -22509,9 +22594,9 @@ cset w0, eq
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L352_end
+	b .L363_end
 	add sp, sp, #48
-.L352_end:
+.L363_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
 	str x0, [sp, #24]
@@ -22563,9 +22648,9 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L339_end
+	b .L350_end
 	add sp, sp, #48
-.L339_else:
+.L350_else:
 	sub sp, sp, #48
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -22573,17 +22658,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L353_end
+	beq .L364_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_570@PAGE
-	add x0, x0, _str_570@PAGEOFF
+	adrp x0, _str_572@PAGE
+	add x0, x0, _str_572@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L353_end
+	b .L364_end
 	add sp, sp, #32
-.L353_end:
+.L364_end:
 	sub sp, sp, #16
 	adrp x0, _function_registry@PAGE
 	add x0, x0, _function_registry@PAGEOFF
@@ -22609,11 +22694,33 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L354_end
+	beq .L365_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_571@PAGE
-	add x0, x0, _str_571@PAGEOFF
+	adrp x0, _str_573@PAGE
+	add x0, x0, _str_573@PAGEOFF
+	ldr x2, [x29, #-16]
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_574@PAGE
+	add x2, x2, _str_574@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -22641,8 +22748,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_572@PAGE
-	add x2, x2, _str_572@PAGEOFF
+	adrp x2, _str_575@PAGE
+	add x2, x2, _str_575@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -22674,24 +22781,24 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_573@PAGE
-	add x2, x2, _str_573@PAGEOFF
+	adrp x2, _str_576@PAGE
+	add x2, x2, _str_576@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L354_end
+	b .L365_end
 	add sp, sp, #32
-.L354_end:
+.L365_end:
 	mov w0, #0
 	str w0, [x29, #-32]
 	sub sp, sp, #48
 	mov w0, #0
 	str w0, [x29, #-36]
-.L361_for_start:
+.L375_for_start:
 	ldr w0, [x29, #-36]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -22704,7 +22811,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L361_for_end
+	beq .L375_for_end
 	add x0, x29, #-32
 
 	sub sp, sp, #16
@@ -22734,7 +22841,7 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-.L361_for_inc:
+.L375_for_inc:
 	add x0, x29, #-36
 
 	sub sp, sp, #16
@@ -22745,8 +22852,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L361_for_start
-.L361_for_end:
+	b .L375_for_start
+.L375_for_end:
 	add sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #29]
@@ -22787,7 +22894,7 @@ cset w0, eq
 	sub sp, sp, #80
 	mov w0, #0
 	str w0, [x29, #-48]
-.L362_for_start:
+.L376_for_start:
 	ldr w0, [x29, #-48]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -22800,7 +22907,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L362_for_end
+	beq .L376_for_end
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -22819,8 +22926,8 @@ cset w0, eq
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_574@PAGE
-	add x0, x0, _char_574@PAGEOFF
+	adrp x0, _char_577@PAGE
+	add x0, x0, _char_577@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -22868,11 +22975,53 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L363_end
+	beq .L377_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_575@PAGE
-	add x0, x0, _str_575@PAGEOFF
+	adrp x0, _str_578@PAGE
+	add x0, x0, _str_578@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr w0, [x29, #-48]
+	str w0, [sp]
+	bl int_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_579@PAGE
+	add x2, x2, _str_579@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	ldr x2, [x29, #-16]
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	adrp x2, _str_580@PAGE
+	add x2, x2, _str_580@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -22908,8 +23057,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_576@PAGE
-	add x2, x2, _str_576@PAGEOFF
+	adrp x2, _str_581@PAGE
+	add x2, x2, _str_581@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -22939,18 +23088,18 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_577@PAGE
-	add x2, x2, _str_577@PAGEOFF
+	adrp x2, _str_582@PAGE
+	add x2, x2, _str_582@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L363_end
+	b .L377_end
 	add sp, sp, #80
-.L363_end:
+.L377_end:
 	add x0, x29, #-44
 
 	sub sp, sp, #16
@@ -22983,7 +23132,7 @@ cset w0, eq
 	str w0, [sp]
 	bl push_register
 	add sp, sp, #32
-.L362_for_inc:
+.L376_for_inc:
 	add x0, x29, #-48
 
 	sub sp, sp, #16
@@ -22994,8 +23143,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L362_for_start
-.L362_for_end:
+	b .L376_for_start
+.L376_for_end:
 	add sp, sp, #80
 	ldr x0, [x29, #-28]
 	ldr w0, [x0, #16]
@@ -23025,7 +23174,7 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L370_end
+	beq .L389_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -23052,9 +23201,9 @@ cset w0, eq
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L370_end
+	b .L389_end
 	add sp, sp, #48
-.L370_end:
+.L389_end:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -23063,12 +23212,12 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L371_end
+	beq .L390_end
 	sub sp, sp, #48
 	sub sp, sp, #64
 	mov w0, #0
 	str w0, [x29, #-52]
-.L372_for_start:
+.L391_for_start:
 	ldr w0, [x29, #-52]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -23081,7 +23230,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L372_for_end
+	beq .L391_for_end
 	sub sp, sp, #16
 	ldr x0, [x29, #-28]
 	ldr x0, [x0, #8]
@@ -23136,7 +23285,7 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-.L372_for_inc:
+.L391_for_inc:
 	add x0, x29, #-52
 
 	sub sp, sp, #16
@@ -23147,12 +23296,12 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L372_for_start
-.L372_for_end:
+	b .L391_for_start
+.L391_for_end:
 	add sp, sp, #64
-	b .L371_end
+	b .L390_end
 	add sp, sp, #48
-.L371_end:
+.L390_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #29]
 	str x0, [sp, #4]
@@ -23172,9 +23321,9 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L339_end
+	b .L350_end
 	add sp, sp, #48
-.L339_end:
+.L350_end:
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -23187,14 +23336,14 @@ compile_expression_into_register:
 	mov w0, #0
 	str w0, [x29, #-4]
 	ldrb w0, [x29, #20]
-	adrp x2, _char_578@PAGE
-	add x2, x2, _char_578@PAGEOFF
+	adrp x2, _char_583@PAGE
+	add x2, x2, _char_583@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L373_elseif_0
+	beq .L392_elseif_0
 	sub sp, sp, #16
 	add x0, x29, #-4
 
@@ -23204,18 +23353,18 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L373_end
+	b .L392_end
 	add sp, sp, #16
-.L373_elseif_0:
+.L392_elseif_0:
 	ldrb w0, [x29, #20]
-	adrp x2, _char_579@PAGE
-	add x2, x2, _char_579@PAGEOFF
+	adrp x2, _char_584@PAGE
+	add x2, x2, _char_584@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L373_elseif_1
+	beq .L392_elseif_1
 	sub sp, sp, #16
 	add x0, x29, #-4
 
@@ -23225,18 +23374,18 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L373_end
+	b .L392_end
 	add sp, sp, #16
-.L373_elseif_1:
+.L392_elseif_1:
 	ldrb w0, [x29, #20]
-	adrp x2, _char_580@PAGE
-	add x2, x2, _char_580@PAGEOFF
+	adrp x2, _char_585@PAGE
+	add x2, x2, _char_585@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L373_else
+	beq .L392_else
 	sub sp, sp, #16
 	add x0, x29, #-4
 
@@ -23246,13 +23395,13 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L373_end
+	b .L392_end
 	add sp, sp, #16
-.L373_else:
+.L392_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_581@PAGE
-	add x0, x0, _str_581@PAGEOFF
+	adrp x0, _str_586@PAGE
+	add x0, x0, _str_586@PAGEOFF
 	ldrb w2, [x29, #20]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -23269,18 +23418,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_582@PAGE
-	add x2, x2, _str_582@PAGEOFF
+	adrp x2, _str_587@PAGE
+	add x2, x2, _str_587@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L373_end
+	b .L392_end
 	add sp, sp, #16
-.L373_end:
+.L392_end:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #1
@@ -23288,7 +23437,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_0
+	beq .L396_elseif_0
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -23296,17 +23445,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L378_end
+	beq .L397_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_583@PAGE
-	add x0, x0, _str_583@PAGEOFF
+	adrp x0, _str_588@PAGE
+	add x0, x0, _str_588@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L378_end
+	b .L397_end
 	add sp, sp, #16
-.L378_end:
+.L397_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23339,9 +23488,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_0:
+.L396_elseif_0:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #2
@@ -23349,7 +23498,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_1
+	beq .L396_elseif_1
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -23357,17 +23506,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L379_end
+	beq .L398_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_584@PAGE
-	add x0, x0, _str_584@PAGEOFF
+	adrp x0, _str_589@PAGE
+	add x0, x0, _str_589@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L379_end
+	b .L398_end
 	add sp, sp, #16
-.L379_end:
+.L398_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23399,9 +23548,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_1:
+.L396_elseif_1:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #17
@@ -23409,7 +23558,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_2
+	beq .L396_elseif_2
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -23417,17 +23566,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L380_end
+	beq .L399_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_585@PAGE
-	add x0, x0, _str_585@PAGEOFF
+	adrp x0, _str_590@PAGE
+	add x0, x0, _str_590@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L380_end
+	b .L399_end
 	add sp, sp, #16
-.L380_end:
+.L399_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23458,9 +23607,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_2:
+.L396_elseif_2:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #18
@@ -23468,7 +23617,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_3
+	beq .L396_elseif_3
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -23476,17 +23625,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L381_end
+	beq .L400_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_586@PAGE
-	add x0, x0, _str_586@PAGEOFF
+	adrp x0, _str_591@PAGE
+	add x0, x0, _str_591@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L381_end
+	b .L400_end
 	add sp, sp, #16
-.L381_end:
+.L400_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23517,9 +23666,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_3:
+.L396_elseif_3:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #3
@@ -23527,7 +23676,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_4
+	beq .L396_elseif_4
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
@@ -23544,7 +23693,7 @@ compile_expression_into_register:
 	str x0, [x29, #-20]
 	ldr x0, [x29, #-20]
 	cmp xzr, x0
-	beq .L382_else
+	beq .L401_else
 	sub sp, sp, #32
 	ldr x0, [x29, #-20]
 	ldr w0, [x0, #12]
@@ -23555,7 +23704,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L383_end
+	beq .L402_end
 	sub sp, sp, #32
 	add x0, x29, #-24
 
@@ -23570,16 +23719,16 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L383_end
+	b .L402_end
 	add sp, sp, #32
-.L383_end:
+.L402_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L384_elseif_0
+	beq .L403_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -23621,16 +23770,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L384_end
+	b .L403_end
 	add sp, sp, #32
-.L384_elseif_0:
+.L403_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L384_end
+	beq .L403_end
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -23672,17 +23821,17 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L384_end
+	b .L403_end
 	add sp, sp, #32
-.L384_end:
+.L403_end:
 	ldr w0, [x29, #-24]
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L382_end
+	b .L401_end
 	add sp, sp, #32
-.L382_else:
+.L401_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
 	adrp x0, _global_scope@PAGE
@@ -23699,7 +23848,7 @@ compile_expression_into_register:
 	str w0, [x29, #-32]
 	ldr x0, [x29, #-28]
 	cmp xzr, x0
-	beq .L385_else
+	beq .L404_else
 	sub sp, sp, #32
 	add x0, x29, #-32
 
@@ -23716,7 +23865,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L386_end
+	beq .L405_end
 	sub sp, sp, #32
 	add x0, x29, #-32
 
@@ -23731,16 +23880,16 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L386_end
+	b .L405_end
 	add sp, sp, #32
-.L386_end:
+.L405_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L387_elseif_0
+	beq .L406_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr w0, [x29, #-32]
@@ -23749,7 +23898,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L388_else
+	beq .L407_else
 	sub sp, sp, #32
 	add x0, x29, #-32
 
@@ -23774,26 +23923,26 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L389_elseif_0
+	beq .L408_elseif_0
 	sub sp, sp, #32
-	b .L389_end
+	b .L408_end
 	add sp, sp, #32
-.L389_elseif_0:
+.L408_elseif_0:
 	ldr w0, [x29, #-32]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L389_else
+	beq .L408_else
 	sub sp, sp, #32
-	b .L389_end
+	b .L408_end
 	add sp, sp, #32
-.L389_else:
+.L408_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_587@PAGE
-	add x0, x0, _str_587@PAGEOFF
+	adrp x0, _str_592@PAGE
+	add x0, x0, _str_592@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -23819,18 +23968,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_588@PAGE
-	add x2, x2, _str_588@PAGEOFF
+	adrp x2, _str_593@PAGE
+	add x2, x2, _str_593@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L389_end
+	b .L408_end
 	add sp, sp, #32
-.L389_end:
+.L408_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23859,9 +24008,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L388_end
+	b .L407_end
 	add sp, sp, #32
-.L388_else:
+.L407_else:
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -23888,19 +24037,19 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L388_end
+	b .L407_end
 	add sp, sp, #32
-.L388_end:
-	b .L387_end
+.L407_end:
+	b .L406_end
 	add sp, sp, #32
-.L387_elseif_0:
+.L406_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L387_end
+	beq .L406_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr w0, [x29, #-32]
@@ -23909,17 +24058,17 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L393_end
+	beq .L412_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_589@PAGE
-	add x0, x0, _str_589@PAGEOFF
+	adrp x0, _str_594@PAGE
+	add x0, x0, _str_594@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L393_end
+	b .L412_end
 	add sp, sp, #32
-.L393_end:
+.L412_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
@@ -23945,16 +24094,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L387_end
+	b .L406_end
 	add sp, sp, #32
-.L387_end:
-	b .L385_end
+.L406_end:
+	b .L404_end
 	add sp, sp, #32
-.L385_else:
+.L404_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_590@PAGE
-	add x0, x0, _str_590@PAGEOFF
+	adrp x0, _str_595@PAGE
+	add x0, x0, _str_595@PAGEOFF
 	ldr x2, [x29, #-12]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -23971,29 +24120,29 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_591@PAGE
-	add x2, x2, _str_591@PAGEOFF
+	adrp x2, _str_596@PAGE
+	add x2, x2, _str_596@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L385_end
+	b .L404_end
 	add sp, sp, #32
-.L385_end:
+.L404_end:
 	ldr w0, [x29, #-32]
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L382_end
+	b .L401_end
 	add sp, sp, #32
-.L382_end:
-	b .L377_end
+.L401_end:
+	b .L396_end
 	add sp, sp, #32
-.L377_elseif_4:
+.L396_elseif_4:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #5
@@ -24001,7 +24150,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_5
+	beq .L396_elseif_5
 	sub sp, sp, #16
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -24009,17 +24158,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L397_end
+	beq .L416_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_592@PAGE
-	add x0, x0, _str_592@PAGEOFF
+	adrp x0, _str_597@PAGE
+	add x0, x0, _str_597@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L397_end
+	b .L416_end
 	add sp, sp, #16
-.L397_end:
+.L416_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #16]
@@ -24061,9 +24210,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_5:
+.L396_elseif_5:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #6
@@ -24071,7 +24220,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_6
+	beq .L396_elseif_6
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -24116,9 +24265,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_6:
+.L396_elseif_6:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #8
@@ -24126,7 +24275,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_7
+	beq .L396_elseif_7
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -24134,17 +24283,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L398_end
+	beq .L417_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_593@PAGE
-	add x0, x0, _str_593@PAGEOFF
+	adrp x0, _str_598@PAGE
+	add x0, x0, _str_598@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L398_end
+	b .L417_end
 	add sp, sp, #16
-.L398_end:
+.L417_end:
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
 	ldr x0, [x0]
@@ -24191,9 +24340,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #32
-.L377_elseif_7:
+.L396_elseif_7:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #10
@@ -24201,7 +24350,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_8
+	beq .L396_elseif_8
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -24209,17 +24358,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L399_end
+	beq .L418_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_594@PAGE
-	add x0, x0, _str_594@PAGEOFF
+	adrp x0, _str_599@PAGE
+	add x0, x0, _str_599@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L399_end
+	b .L418_end
 	add sp, sp, #16
-.L399_end:
+.L418_end:
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
 	ldr x0, [x0]
@@ -24266,9 +24415,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #32
-.L377_elseif_8:
+.L396_elseif_8:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #4
@@ -24276,7 +24425,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_9
+	beq .L396_elseif_9
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
@@ -24299,25 +24448,25 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L400_end
+	beq .L419_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_595@PAGE
-	add x0, x0, _str_595@PAGEOFF
+	adrp x0, _str_600@PAGE
+	add x0, x0, _str_600@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L400_end
+	b .L419_end
 	add sp, sp, #16
-.L400_end:
+.L419_end:
 	ldr w0, [x29, #-8]
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_9:
+.L396_elseif_9:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #11
@@ -24325,7 +24474,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_10
+	beq .L396_elseif_10
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #0
@@ -24333,17 +24482,17 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L401_end
+	beq .L420_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_596@PAGE
-	add x0, x0, _str_596@PAGEOFF
+	adrp x0, _str_601@PAGE
+	add x0, x0, _str_601@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L401_end
+	b .L420_end
 	add sp, sp, #16
-.L401_end:
+.L420_end:
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
 	str x0, [x29, #-12]
@@ -24368,7 +24517,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L402_elseif_0
+	beq .L421_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
@@ -24411,8 +24560,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_597@PAGE
-	add x0, x0, _str_597@PAGEOFF
+	adrp x0, _str_602@PAGE
+	add x0, x0, _str_602@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -24511,8 +24660,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_598@PAGE
-	add x0, x0, _str_598@PAGEOFF
+	adrp x0, _str_603@PAGE
+	add x0, x0, _str_603@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -24552,9 +24701,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L402_end
+	b .L421_end
 	add sp, sp, #32
-.L402_elseif_0:
+.L421_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
 	str w0, [sp]
@@ -24562,7 +24711,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L402_else
+	beq .L421_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -24593,8 +24742,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_599@PAGE
-	add x0, x0, _str_599@PAGEOFF
+	adrp x0, _str_604@PAGE
+	add x0, x0, _str_604@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -24768,8 +24917,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_600@PAGE
-	add x0, x0, _str_600@PAGEOFF
+	adrp x0, _str_605@PAGE
+	add x0, x0, _str_605@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -24876,8 +25025,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_601@PAGE
-	add x0, x0, _str_601@PAGEOFF
+	adrp x0, _str_606@PAGE
+	add x0, x0, _str_606@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -24956,19 +25105,19 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L402_end
+	b .L421_end
 	add sp, sp, #32
-.L402_else:
+.L421_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_602@PAGE
-	add x0, x0, _str_602@PAGEOFF
+	adrp x0, _str_607@PAGE
+	add x0, x0, _str_607@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L402_end
+	b .L421_end
 	add sp, sp, #32
-.L402_end:
+.L421_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #37]
 	str x0, [sp, #4]
@@ -24981,9 +25130,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #32
-.L377_elseif_10:
+.L396_elseif_10:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #13
@@ -25003,7 +25152,7 @@ compile_expression_into_register:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_11
+	beq .L396_elseif_11
 	sub sp, sp, #48
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
@@ -25017,7 +25166,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L403_end
+	beq .L422_end
 	sub sp, sp, #16
 	add x0, x29, #-16
 
@@ -25027,9 +25176,9 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L403_end
+	b .L422_end
 	add sp, sp, #16
-.L403_end:
+.L422_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #21]
@@ -25038,8 +25187,8 @@ compile_expression_into_register:
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_603@PAGE
-	add x0, x0, _char_603@PAGEOFF
+	adrp x0, _char_608@PAGE
+	add x0, x0, _char_608@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	ldr w0, [x29, #-16]
@@ -25058,11 +25207,11 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L404_end
+	beq .L423_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_604@PAGE
-	add x0, x0, _str_604@PAGEOFF
+	adrp x0, _str_609@PAGE
+	add x0, x0, _str_609@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -25088,18 +25237,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_605@PAGE
-	add x2, x2, _str_605@PAGEOFF
+	adrp x2, _str_610@PAGE
+	add x2, x2, _str_610@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L404_end
+	b .L423_end
 	add sp, sp, #32
-.L404_end:
+.L423_end:
 	add x0, x29, #-20
 
 	sub sp, sp, #16
@@ -25153,11 +25302,11 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L408_end
+	beq .L427_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_606@PAGE
-	add x0, x0, _str_606@PAGEOFF
+	adrp x0, _str_611@PAGE
+	add x0, x0, _str_611@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -25183,18 +25332,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_607@PAGE
-	add x2, x2, _str_607@PAGEOFF
+	adrp x2, _str_612@PAGE
+	add x2, x2, _str_612@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L408_end
+	b .L427_end
 	add sp, sp, #32
-.L408_end:
+.L427_end:
 	sub sp, sp, #16
 	adrp x0, _struct_registry@PAGE
 	add x0, x0, _struct_registry@PAGEOFF
@@ -25237,7 +25386,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L412_end
+	beq .L431_end
 	sub sp, sp, #48
 	add x0, x29, #-40
 
@@ -25252,9 +25401,9 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L412_end
+	b .L431_end
 	add sp, sp, #48
-.L412_end:
+.L431_end:
 	ldr x0, [x29, #-36]
 	ldr w0, [x0, #8]
 	str w0, [x29, #-44]
@@ -25264,7 +25413,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L413_elseif_0
+	beq .L432_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #16
 	sub sp, sp, #16
@@ -25317,16 +25466,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L413_end
+	b .L432_end
 	add sp, sp, #48
-.L413_elseif_0:
+.L432_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L413_end
+	beq .L432_end
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -25367,17 +25516,17 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L413_end
+	b .L432_end
 	add sp, sp, #48
-.L413_end:
+.L432_end:
 	ldr w0, [x29, #-40]
 	add sp, sp, #48
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #48
-.L377_elseif_11:
+.L396_elseif_11:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #12
@@ -25385,7 +25534,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_elseif_12
+	beq .L396_elseif_12
 	sub sp, sp, #16
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
@@ -25398,8 +25547,8 @@ compile_expression_into_register:
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_608@PAGE
-	add x0, x0, _char_608@PAGEOFF
+	adrp x0, _char_613@PAGE
+	add x0, x0, _char_613@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -25444,11 +25593,11 @@ compile_expression_into_register:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L414_end
+	beq .L433_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_609@PAGE
-	add x0, x0, _str_609@PAGEOFF
+	adrp x0, _str_614@PAGE
+	add x0, x0, _str_614@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -25474,18 +25623,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_610@PAGE
-	add x2, x2, _str_610@PAGEOFF
+	adrp x2, _str_615@PAGE
+	add x2, x2, _str_615@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L414_end
+	b .L433_end
 	add sp, sp, #16
-.L414_end:
+.L433_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
 	str w0, [sp]
@@ -25493,7 +25642,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L418_end
+	beq .L437_end
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -25534,9 +25683,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L418_end
+	b .L437_end
 	add sp, sp, #16
-.L418_end:
+.L437_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
 	str w0, [sp]
@@ -25544,7 +25693,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L419_elseif_0
+	beq .L438_elseif_0
 	sub sp, sp, #16
 	adrp x0, _element_type@PAGE
 	add x0, x0, _element_type@PAGEOFF
@@ -25564,9 +25713,9 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L419_end
+	b .L438_end
 	add sp, sp, #16
-.L419_elseif_0:
+.L438_elseif_0:
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
 	str w0, [sp]
@@ -25574,7 +25723,7 @@ compile_expression_into_register:
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L419_else
+	beq .L438_else
 	sub sp, sp, #16
 	adrp x0, _element_type@PAGE
 	add x0, x0, _element_type@PAGEOFF
@@ -25589,9 +25738,9 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L419_end
+	b .L438_end
 	add sp, sp, #16
-.L419_else:
+.L438_else:
 	sub sp, sp, #16
 	adrp x0, _element_type@PAGE
 	add x0, x0, _element_type@PAGEOFF
@@ -25601,9 +25750,9 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L419_end
+	b .L438_end
 	add sp, sp, #16
-.L419_end:
+.L438_end:
 	ldr x0, [x29, #-12]
 	ldr x0, [x0, #8]
 	ldr w0, [x0]
@@ -25612,7 +25761,7 @@ compile_expression_into_register:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L420_else
+	beq .L439_else
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #37]
@@ -25648,8 +25797,8 @@ compile_expression_into_register:
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_611@PAGE
-	add x0, x0, _char_611@PAGEOFF
+	adrp x0, _char_616@PAGE
+	add x0, x0, _char_616@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -25675,11 +25824,11 @@ compile_expression_into_register:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L421_end
+	beq .L440_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_612@PAGE
-	add x0, x0, _str_612@PAGEOFF
+	adrp x0, _str_617@PAGE
+	add x0, x0, _str_617@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -25705,18 +25854,18 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_613@PAGE
-	add x2, x2, _str_613@PAGEOFF
+	adrp x2, _str_618@PAGE
+	add x2, x2, _str_618@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L421_end
+	b .L440_end
 	add sp, sp, #32
-.L421_end:
+.L440_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #20]
@@ -25800,7 +25949,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L425_end
+	beq .L444_end
 	sub sp, sp, #32
 	adrp x0, _element_type@PAGE
 	add x0, x0, _element_type@PAGEOFF
@@ -25817,16 +25966,16 @@ compile_expression_into_register:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L425_end
+	b .L444_end
 	add sp, sp, #32
-.L425_end:
+.L444_end:
 	ldr w0, [x29, #16]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L426_elseif_0
+	beq .L445_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -25869,16 +26018,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L426_end
+	b .L445_end
 	add sp, sp, #32
-.L426_elseif_0:
+.L445_elseif_0:
 	ldr w0, [x29, #16]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L426_end
+	beq .L445_end
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -25907,9 +26056,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L426_end
+	b .L445_end
 	add sp, sp, #32
-.L426_end:
+.L445_end:
 	adrp x0, _element_type@PAGE
 	add x0, x0, _element_type@PAGEOFF
 	ldr w0, [x0]
@@ -25917,9 +26066,9 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L420_end
+	b .L439_end
 	add sp, sp, #32
-.L420_else:
+.L439_else:
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr w0, [x29, #-16]
@@ -25940,17 +26089,17 @@ compile_expression_into_register:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L427_end
+	beq .L446_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_614@PAGE
-	add x0, x0, _str_614@PAGEOFF
+	adrp x0, _str_619@PAGE
+	add x0, x0, _str_619@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L427_end
+	b .L446_end
 	add sp, sp, #16
-.L427_end:
+.L446_end:
 	ldr x0, [x29, #-12]
 	ldr x0, [x0, #8]
 	ldr x0, [x0, #4]
@@ -25989,8 +26138,8 @@ compile_expression_into_register:
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_615@PAGE
-	add x0, x0, _char_615@PAGEOFF
+	adrp x0, _char_620@PAGE
+	add x0, x0, _char_620@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -26016,11 +26165,11 @@ compile_expression_into_register:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L428_end
+	beq .L447_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_616@PAGE
-	add x0, x0, _str_616@PAGEOFF
+	adrp x0, _str_621@PAGE
+	add x0, x0, _str_621@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -26046,25 +26195,25 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_617@PAGE
-	add x2, x2, _str_617@PAGEOFF
+	adrp x2, _str_622@PAGE
+	add x2, x2, _str_622@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L428_end
+	b .L447_end
 	add sp, sp, #32
-.L428_end:
+.L447_end:
 	ldr w0, [x29, #-28]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L432_elseif_0
+	beq .L451_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -26100,16 +26249,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L432_end
+	b .L451_end
 	add sp, sp, #32
-.L432_elseif_0:
+.L451_elseif_0:
 	ldr w0, [x29, #-28]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L432_end
+	beq .L451_end
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -26136,9 +26285,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L432_end
+	b .L451_end
 	add sp, sp, #32
-.L432_end:
+.L451_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #21]
@@ -26147,8 +26296,8 @@ compile_expression_into_register:
 	str x0, [sp, #13]
 	ldr x0, [x29, #21]
 	str x0, [sp, #5]
-	adrp x0, _char_618@PAGE
-	add x0, x0, _char_618@PAGEOFF
+	adrp x0, _char_623@PAGE
+	add x0, x0, _char_623@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -26174,11 +26323,11 @@ compile_expression_into_register:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L433_end
+	beq .L452_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_619@PAGE
-	add x0, x0, _str_619@PAGEOFF
+	adrp x0, _str_624@PAGE
+	add x0, x0, _str_624@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -26204,25 +26353,25 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_620@PAGE
-	add x2, x2, _str_620@PAGEOFF
+	adrp x2, _str_625@PAGE
+	add x2, x2, _str_625@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L433_end
+	b .L452_end
 	add sp, sp, #32
-.L433_end:
+.L452_end:
 	ldr w0, [x29, #-32]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L437_elseif_0
+	beq .L456_elseif_0
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -26258,16 +26407,16 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L437_end
+	b .L456_end
 	add sp, sp, #32
-.L437_elseif_0:
+.L456_elseif_0:
 	ldr w0, [x29, #-32]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L437_end
+	beq .L456_end
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -26294,9 +26443,9 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L437_end
+	b .L456_end
 	add sp, sp, #32
-.L437_end:
+.L456_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
 	str x0, [sp, #20]
@@ -26485,8 +26634,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_621@PAGE
-	add x0, x0, _str_621@PAGEOFF
+	adrp x0, _str_626@PAGE
+	add x0, x0, _str_626@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -26580,8 +26729,8 @@ compile_expression_into_register:
 	ldr x0, [x29, #37]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_622@PAGE
-	add x0, x0, _str_622@PAGEOFF
+	adrp x0, _str_627@PAGE
+	add x0, x0, _str_627@PAGEOFF
 	str x0, [sp]
 	bl make_stdlib_label
 	mov x0, x0
@@ -26659,12 +26808,12 @@ compile_expression_into_register:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L420_end
+	b .L439_end
 	add sp, sp, #48
-.L420_end:
-	b .L377_end
+.L439_end:
+	b .L396_end
 	add sp, sp, #16
-.L377_elseif_12:
+.L396_elseif_12:
 	ldr x0, [x29, #29]
 	ldr w0, [x0]
 	mov w2, #15
@@ -26672,7 +26821,7 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L377_end
+	beq .L396_end
 	sub sp, sp, #32
 	ldr x0, [x29, #29]
 	ldr x0, [x0, #4]
@@ -26716,23 +26865,23 @@ compile_expression_into_register:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L438_end
+	beq .L457_end
 	sub sp, sp, #32
 	ldr w0, [x29, #-20]
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L438_end
+	b .L457_end
 	add sp, sp, #32
-.L438_end:
+.L457_end:
 	ldr w0, [x29, #-28]
 	ldr w2, [x29, #-24]
 	cmp w0, w2
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L439_else
+	beq .L458_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #37]
@@ -26768,13 +26917,13 @@ compile_expression_into_register:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L439_end
+	b .L458_end
 	add sp, sp, #32
-.L439_else:
+.L458_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_623@PAGE
-	add x0, x0, _str_623@PAGEOFF
+	adrp x0, _str_628@PAGE
+	add x0, x0, _str_628@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -26800,8 +26949,8 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_624@PAGE
-	add x2, x2, _str_624@PAGEOFF
+	adrp x2, _str_629@PAGE
+	add x2, x2, _str_629@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -26831,29 +26980,29 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_625@PAGE
-	add x2, x2, _str_625@PAGEOFF
+	adrp x2, _str_630@PAGE
+	add x2, x2, _str_630@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl warn
 	add sp, sp, #16
-	b .L439_end
+	b .L458_end
 	add sp, sp, #32
-.L439_end:
+.L458_end:
 	ldr w0, [x29, #-20]
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L377_end
+	b .L396_end
 	add sp, sp, #32
-.L377_end:
+.L396_end:
 	sub sp, sp, #16
-	adrp x0, _str_626@PAGE
-	add x0, x0, _str_626@PAGEOFF
+	adrp x0, _str_631@PAGE
+	add x0, x0, _str_631@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -26880,14 +27029,14 @@ compile_expression_into_register:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_627@PAGE
-	add x2, x2, _str_627@PAGEOFF
+	adrp x2, _str_632@PAGE
+	add x2, x2, _str_632@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
 	mov w0, #9
 	add sp, sp, #16
@@ -26913,7 +27062,7 @@ compile_assign:
 	str w0, [x29, #-20]
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L449_end
+	beq .L468_end
 	sub sp, sp, #32
 	ldr w0, [x29, #16]
 	mov w2, #25
@@ -26921,7 +27070,7 @@ compile_assign:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L450_end
+	beq .L469_end
 	sub sp, sp, #32
 	add x0, x29, #-20
 
@@ -26935,8 +27084,8 @@ compile_assign:
 	str x0, [sp, #13]
 	ldr x0, [x29, #20]
 	str x0, [sp, #5]
-	adrp x0, _char_628@PAGE
-	add x0, x0, _char_628@PAGEOFF
+	adrp x0, _char_633@PAGE
+	add x0, x0, _char_633@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #0
@@ -26973,16 +27122,16 @@ compile_assign:
 	str w0, [sp]
 	bl push_register
 	add sp, sp, #32
-	b .L450_end
+	b .L469_end
 	add sp, sp, #32
-.L450_end:
-	b .L449_end
+.L469_end:
+	b .L468_end
 	add sp, sp, #32
-.L449_end:
+.L468_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #16]
 	cmp xzr, x0
-	beq .L451_else
+	beq .L470_else
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #16]
@@ -26994,7 +27143,7 @@ compile_assign:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_0
+	beq .L471_elseif_0
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27010,7 +27159,7 @@ compile_assign:
 	str x0, [x29, #-32]
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L453_else
+	beq .L472_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -27038,14 +27187,14 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L453_end
+	b .L472_end
 	add sp, sp, #32
-.L453_else:
+.L472_else:
 	sub sp, sp, #48
 	ldr x0, [x29, #-8]
 	ldrb w0, [x0, #28]
 	cmp wzr, w0
-	beq .L454_end
+	beq .L473_end
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27062,9 +27211,9 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L454_end
+	b .L473_end
 	add sp, sp, #32
-.L454_end:
+.L473_end:
 	mov x0, #4
 	bl _malloc
 	mov x0, x0
@@ -27098,19 +27247,19 @@ compile_assign:
 	str w0, [sp]
 	bl add_global_variable
 	add sp, sp, #32
-	b .L453_end
+	b .L472_end
 	add sp, sp, #48
-.L453_end:
-	b .L452_end
+.L472_end:
+	b .L471_end
 	add sp, sp, #32
-.L452_elseif_0:
+.L471_elseif_0:
 	ldr w0, [x29, #-24]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_1
+	beq .L471_elseif_1
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27126,7 +27275,7 @@ compile_assign:
 	str x0, [x29, #-32]
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L455_else
+	beq .L474_else
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -27153,14 +27302,14 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L455_end
+	b .L474_end
 	add sp, sp, #32
-.L455_else:
+.L474_else:
 	sub sp, sp, #48
 	ldr x0, [x29, #-8]
 	ldrb w0, [x0, #28]
 	cmp wzr, w0
-	beq .L456_end
+	beq .L475_end
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27177,9 +27326,9 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L456_end
+	b .L475_end
 	add sp, sp, #32
-.L456_end:
+.L475_end:
 	mov x0, #8
 	bl _malloc
 	mov x0, x0
@@ -27213,19 +27362,19 @@ compile_assign:
 	str w0, [sp]
 	bl add_global_variable
 	add sp, sp, #32
-	b .L455_end
+	b .L474_end
 	add sp, sp, #48
-.L455_end:
-	b .L452_end
+.L474_end:
+	b .L471_end
 	add sp, sp, #32
-.L452_elseif_1:
+.L471_elseif_1:
 	ldr w0, [x29, #-24]
 	mov w2, #4
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_2
+	beq .L471_elseif_2
 	sub sp, sp, #32
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
@@ -27235,8 +27384,8 @@ compile_assign:
 	str x0, [sp, #13]
 	ldr x0, [x29, #20]
 	str x0, [sp, #5]
-	adrp x0, _char_629@PAGE
-	add x0, x0, _char_629@PAGEOFF
+	adrp x0, _char_634@PAGE
+	add x0, x0, _char_634@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -27251,17 +27400,17 @@ compile_assign:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L457_end
+	beq .L476_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_630@PAGE
-	add x0, x0, _str_630@PAGEOFF
+	adrp x0, _str_635@PAGE
+	add x0, x0, _str_635@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L457_end
+	b .L476_end
 	add sp, sp, #32
-.L457_end:
+.L476_end:
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
 	sub sp, sp, #16
@@ -27270,16 +27419,16 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L452_end
+	b .L471_end
 	add sp, sp, #32
-.L452_elseif_2:
+.L471_elseif_2:
 	ldr w0, [x29, #-24]
 	mov w2, #8
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_3
+	beq .L471_elseif_3
 	sub sp, sp, #48
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27307,7 +27456,7 @@ compile_assign:
 	str x0, [x29, #-40]
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L458_else
+	beq .L477_else
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -27334,9 +27483,9 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L458_end
+	b .L477_end
 	add sp, sp, #48
-.L458_else:
+.L477_else:
 	sub sp, sp, #48
 	sub sp, sp, #32
 	adrp x0, _global_scope@PAGE
@@ -27354,19 +27503,19 @@ compile_assign:
 	str w0, [sp]
 	bl add_global_variable
 	add sp, sp, #32
-	b .L458_end
+	b .L477_end
 	add sp, sp, #48
-.L458_end:
-	b .L452_end
+.L477_end:
+	b .L471_end
 	add sp, sp, #48
-.L452_elseif_3:
+.L471_elseif_3:
 	ldr w0, [x29, #-24]
 	mov w2, #10
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_4
+	beq .L471_elseif_4
 	sub sp, sp, #48
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #16]
@@ -27394,7 +27543,7 @@ compile_assign:
 	str w0, [x19]
 	ldr x0, [x29, #36]
 	cmp xzr, x0
-	beq .L459_else
+	beq .L478_else
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
@@ -27421,9 +27570,9 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L459_end
+	b .L478_end
 	add sp, sp, #48
-.L459_else:
+.L478_else:
 	sub sp, sp, #48
 	ldr x0, [x29, #-40]
 	add x0, x0, #0
@@ -27434,19 +27583,19 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L459_end
+	b .L478_end
 	add sp, sp, #48
-.L459_end:
-	b .L452_end
+.L478_end:
+	b .L471_end
 	add sp, sp, #48
-.L452_elseif_4:
+.L471_elseif_4:
 	ldr w0, [x29, #-24]
 	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_5
+	beq .L471_elseif_5
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27466,16 +27615,16 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L452_end
+	b .L471_end
 	add sp, sp, #32
-.L452_elseif_5:
+.L471_elseif_5:
 	ldr w0, [x29, #-24]
 	mov w2, #6
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_elseif_6
+	beq .L471_elseif_6
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27497,9 +27646,9 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L452_end
+	b .L471_end
 	add sp, sp, #32
-.L452_elseif_6:
+.L471_elseif_6:
 	ldr w0, [x29, #-24]
 	mov w2, #3
 	cmp w0, w2
@@ -27583,7 +27732,7 @@ compile_assign:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L452_else
+	beq .L471_else
 	sub sp, sp, #32
 	adrp x0, _expression_type@PAGE
 	add x0, x0, _expression_type@PAGEOFF
@@ -27597,8 +27746,8 @@ compile_assign:
 	str x0, [sp, #13]
 	ldr x0, [x29, #20]
 	str x0, [sp, #5]
-	adrp x0, _char_631@PAGE
-	add x0, x0, _char_631@PAGEOFF
+	adrp x0, _char_636@PAGE
+	add x0, x0, _char_636@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -27609,13 +27758,13 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L452_end
+	b .L471_end
 	add sp, sp, #32
-.L452_else:
+.L471_else:
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_632@PAGE
-	add x0, x0, _str_632@PAGEOFF
+	adrp x0, _str_637@PAGE
+	add x0, x0, _str_637@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -27641,18 +27790,18 @@ compile_assign:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_633@PAGE
-	add x2, x2, _str_633@PAGEOFF
+	adrp x2, _str_638@PAGE
+	add x2, x2, _str_638@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L452_end
+	b .L471_end
 	add sp, sp, #32
-.L452_end:
+.L471_end:
 	ldr x0, [x29, #36]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -27675,7 +27824,7 @@ compile_assign:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L463_end
+	beq .L482_end
 	sub sp, sp, #32
 	add x0, x29, #-20
 
@@ -27712,7 +27861,7 @@ compile_assign:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L464_end
+	beq .L483_end
 	sub sp, sp, #32
 	ldr w0, [x29, #-20]
 	mov w2, #8
@@ -27751,11 +27900,11 @@ compile_assign:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L465_end
+	beq .L484_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_634@PAGE
-	add x0, x0, _str_634@PAGEOFF
+	adrp x0, _str_639@PAGE
+	add x0, x0, _str_639@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -27783,8 +27932,8 @@ compile_assign:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_635@PAGE
-	add x2, x2, _str_635@PAGEOFF
+	adrp x2, _str_640@PAGE
+	add x2, x2, _str_640@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -27814,21 +27963,21 @@ compile_assign:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_636@PAGE
-	add x2, x2, _str_636@PAGEOFF
+	adrp x2, _str_641@PAGE
+	add x2, x2, _str_641@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L465_end
+	b .L484_end
 	add sp, sp, #32
-.L465_end:
-	b .L464_end
+.L484_end:
+	b .L483_end
 	add sp, sp, #32
-.L464_end:
+.L483_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #36]
 	str x0, [sp, #20]
@@ -27894,9 +28043,9 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L463_end
+	b .L482_end
 	add sp, sp, #32
-.L463_end:
+.L482_end:
 	ldr x0, [x29, #36]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -27919,7 +28068,7 @@ compile_assign:
 	and w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L472_end
+	beq .L491_end
 	sub sp, sp, #48
 	sub sp, sp, #16
 	ldr x0, [x29, #20]
@@ -27932,11 +28081,11 @@ compile_assign:
 	str x0, [x29, #-32]
 	ldr x0, [x29, #-32]
 	cmp xzr, x0
-	beq .L473_end
+	beq .L492_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_637@PAGE
-	add x0, x0, _str_637@PAGEOFF
+	adrp x0, _str_642@PAGE
+	add x0, x0, _str_642@PAGEOFF
 	ldr x2, [x29, #-16]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -27953,18 +28102,18 @@ compile_assign:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_638@PAGE
-	add x2, x2, _str_638@PAGEOFF
+	adrp x2, _str_643@PAGE
+	add x2, x2, _str_643@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L473_end
+	b .L492_end
 	add sp, sp, #32
-.L473_end:
+.L492_end:
 	add x0, x29, #-32
 
 	sub sp, sp, #16
@@ -28015,12 +28164,12 @@ compile_assign:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L472_end
+	b .L491_end
 	add sp, sp, #48
-.L472_end:
-	b .L451_end
+.L491_end:
+	b .L470_end
 	add sp, sp, #32
-.L451_else:
+.L470_else:
 	sub sp, sp, #32
 	ldr x0, [x29, #-8]
 	ldr w0, [x0, #24]
@@ -28029,17 +28178,17 @@ compile_assign:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L477_end
+	beq .L496_end
 	sub sp, sp, #32
 	sub sp, sp, #16
-	adrp x0, _str_639@PAGE
-	add x0, x0, _str_639@PAGEOFF
+	adrp x0, _str_644@PAGE
+	add x0, x0, _str_644@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L477_end
+	b .L496_end
 	add sp, sp, #32
-.L477_end:
+.L496_end:
 	mov x0, #16
 	bl _malloc
 	mov x19, x0
@@ -28059,7 +28208,7 @@ compile_assign:
 	sub sp, sp, #32
 	mov w0, #0
 	str w0, [x29, #-32]
-.L478_for_start:
+.L497_for_start:
 	ldr w0, [x29, #-32]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -28076,12 +28225,12 @@ compile_assign:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L478_for_end
+	beq .L497_for_end
 	ldr x0, [x29, #-28]
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x19, _char_640@PAGE
-	add x19, x19, _char_640@PAGEOFF
+	adrp x19, _char_645@PAGE
+	add x19, x19, _char_645@PAGEOFF
 	ldrb w19, [x19]
 	ldr x0, [sp]
 	add sp, sp, #16
@@ -28090,7 +28239,7 @@ compile_assign:
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-.L478_for_inc:
+.L497_for_inc:
 	add x0, x29, #-32
 
 	sub sp, sp, #16
@@ -28101,8 +28250,8 @@ compile_assign:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L478_for_start
-.L478_for_end:
+	b .L497_for_start
+.L497_for_end:
 	add sp, sp, #32
 	sub sp, sp, #32
 	adrp x0, _global_scope@PAGE
@@ -28120,9 +28269,9 @@ compile_assign:
 	str w0, [sp]
 	bl add_global_variable
 	add sp, sp, #32
-	b .L451_end
+	b .L470_end
 	add sp, sp, #32
-.L451_end:
+.L470_end:
 	add sp, sp, #32
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -28145,13 +28294,13 @@ compile_if_jump:
 	cset w0, gt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L480_elseif_0
+	beq .L499_elseif_0
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_641@PAGE
-	add x0, x0, _str_641@PAGEOFF
+	adrp x0, _str_646@PAGE
+	add x0, x0, _str_646@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28177,8 +28326,8 @@ compile_if_jump:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_642@PAGE
-	add x2, x2, _str_642@PAGEOFF
+	adrp x2, _str_647@PAGE
+	add x2, x2, _str_647@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28225,18 +28374,18 @@ compile_if_jump:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L480_end
-.L480_elseif_0:
+	b .L499_end
+.L499_elseif_0:
 	ldr x0, [x29, #24]
 	ldr x0, [x0, #16]
 	cmp xzr, x0
-	beq .L480_else
+	beq .L499_else
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_643@PAGE
-	add x0, x0, _str_643@PAGEOFF
+	adrp x0, _str_648@PAGE
+	add x0, x0, _str_648@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28262,8 +28411,8 @@ compile_if_jump:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_644@PAGE
-	add x2, x2, _str_644@PAGEOFF
+	adrp x2, _str_649@PAGE
+	add x2, x2, _str_649@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28282,14 +28431,14 @@ compile_if_jump:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L480_end
-.L480_else:
+	b .L499_end
+.L499_else:
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_645@PAGE
-	add x0, x0, _str_645@PAGEOFF
+	adrp x0, _str_650@PAGE
+	add x0, x0, _str_650@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28315,8 +28464,8 @@ compile_if_jump:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_646@PAGE
-	add x2, x2, _str_646@PAGEOFF
+	adrp x2, _str_651@PAGE
+	add x2, x2, _str_651@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28335,8 +28484,8 @@ compile_if_jump:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L480_end
-.L480_end:
+	b .L499_end
+.L499_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -28347,7 +28496,7 @@ compile_block:
 	sub sp, sp, #16
 	mov w0, #0
 	str w0, [x29, #-4]
-.L492_for_start:
+.L511_for_start:
 	ldr w0, [x29, #-4]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -28360,7 +28509,7 @@ compile_block:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L492_for_end
+	beq .L511_for_end
 	sub sp, sp, #48
 	ldr x0, [x29, #48]
 	str x0, [sp, #32]
@@ -28383,7 +28532,7 @@ compile_block:
 	str x0, [sp]
 	bl compile_statement
 	add sp, sp, #48
-.L492_for_inc:
+.L511_for_inc:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -28394,8 +28543,8 @@ compile_block:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L492_for_start
-.L492_for_end:
+	b .L511_for_start
+.L511_for_end:
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -28434,8 +28583,8 @@ compile_if_block:
 	ldr x0, [x29, #-16]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_647@PAGE
-	add x0, x0, _str_647@PAGEOFF
+	adrp x0, _str_652@PAGE
+	add x0, x0, _str_652@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28461,8 +28610,8 @@ compile_if_block:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_648@PAGE
-	add x2, x2, _str_648@PAGEOFF
+	adrp x2, _str_653@PAGE
+	add x2, x2, _str_653@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28537,8 +28686,8 @@ compile_if:
 	str x0, [sp, #13]
 	ldr x0, [x29, #32]
 	str x0, [sp, #5]
-	adrp x0, _char_649@PAGE
-	add x0, x0, _char_649@PAGEOFF
+	adrp x0, _char_654@PAGE
+	add x0, x0, _char_654@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -28604,7 +28753,7 @@ compile_if:
 	sub sp, sp, #48
 	mov w0, #0
 	str w0, [x29, #-28]
-.L496_for_start:
+.L515_for_start:
 	ldr w0, [x29, #-28]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -28616,7 +28765,7 @@ compile_if:
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L496_for_end
+	beq .L515_for_end
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #24]
 	ldr x0, [x0]
@@ -28631,8 +28780,8 @@ compile_if:
 	sub sp, sp, #16
 	ldr x0, [x29, #48]
 	str x0, [sp, #8]
-	adrp x0, _str_650@PAGE
-	add x0, x0, _str_650@PAGEOFF
+	adrp x0, _str_655@PAGE
+	add x0, x0, _str_655@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28658,8 +28807,8 @@ compile_if:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_651@PAGE
-	add x2, x2, _str_651@PAGEOFF
+	adrp x2, _str_656@PAGE
+	add x2, x2, _str_656@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28689,8 +28838,8 @@ compile_if:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_652@PAGE
-	add x2, x2, _str_652@PAGEOFF
+	adrp x2, _str_657@PAGE
+	add x2, x2, _str_657@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28705,8 +28854,8 @@ compile_if:
 	str x0, [sp, #13]
 	ldr x0, [x29, #32]
 	str x0, [sp, #5]
-	adrp x0, _char_653@PAGE
-	add x0, x0, _char_653@PAGEOFF
+	adrp x0, _char_658@PAGE
+	add x0, x0, _char_658@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -28775,7 +28924,7 @@ compile_if:
 	str x0, [sp]
 	bl compile_if_block
 	add sp, sp, #48
-.L496_for_inc:
+.L515_for_inc:
 	add x0, x29, #-28
 
 	sub sp, sp, #16
@@ -28786,19 +28935,19 @@ compile_if:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L496_for_start
-.L496_for_end:
+	b .L515_for_start
+.L515_for_end:
 	add sp, sp, #48
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #16]
 	cmp xzr, x0
-	beq .L503_end
+	beq .L522_end
 	sub sp, sp, #32
 	sub sp, sp, #16
 	ldr x0, [x29, #48]
 	str x0, [sp, #8]
-	adrp x0, _str_654@PAGE
-	add x0, x0, _str_654@PAGEOFF
+	adrp x0, _str_659@PAGE
+	add x0, x0, _str_659@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28824,8 +28973,8 @@ compile_if:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_655@PAGE
-	add x2, x2, _str_655@PAGEOFF
+	adrp x2, _str_660@PAGE
+	add x2, x2, _str_660@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28849,14 +28998,14 @@ compile_if:
 	str x0, [sp]
 	bl compile_if_block
 	add sp, sp, #48
-	b .L503_end
+	b .L522_end
 	add sp, sp, #32
-.L503_end:
+.L522_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #48]
 	str x0, [sp, #8]
-	adrp x0, _str_656@PAGE
-	add x0, x0, _str_656@PAGEOFF
+	adrp x0, _str_661@PAGE
+	add x0, x0, _str_661@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -28882,8 +29031,8 @@ compile_if:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_657@PAGE
-	add x2, x2, _str_657@PAGEOFF
+	adrp x2, _str_662@PAGE
+	add x2, x2, _str_662@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -28914,17 +29063,17 @@ compile_return:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L510_end
+	beq .L529_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_658@PAGE
-	add x0, x0, _str_658@PAGEOFF
+	adrp x0, _str_663@PAGE
+	add x0, x0, _str_663@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L510_end
+	b .L529_end
 	add sp, sp, #16
-.L510_end:
+.L529_end:
 	ldr x0, [x29, #-8]
 	ldr x0, [x0]
 	sub sp, sp, #16
@@ -28937,7 +29086,7 @@ compile_return:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L511_end
+	beq .L530_end
 	sub sp, sp, #16
 	sub sp, sp, #32
 	ldr x0, [x29, #40]
@@ -28974,9 +29123,9 @@ compile_return:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L511_end
+	b .L530_end
 	add sp, sp, #16
-.L511_end:
+.L530_end:
 	ldr x0, [x29, #16]
 	ldr w0, [x0, #16]
 	str w0, [x29, #-12]
@@ -28988,8 +29137,8 @@ compile_return:
 	str x0, [sp, #13]
 	ldr x0, [x29, #24]
 	str x0, [sp, #5]
-	adrp x0, _char_659@PAGE
-	add x0, x0, _char_659@PAGEOFF
+	adrp x0, _char_664@PAGE
+	add x0, x0, _char_664@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -29018,155 +29167,15 @@ compile_return:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L512_end
+	beq .L531_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_660@PAGE
-	add x0, x0, _str_660@PAGEOFF
+	adrp x0, _str_665@PAGE
+	add x0, x0, _str_665@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #16]
 	ldr x2, [x0]
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_661@PAGE
-	add x2, x2, _str_661@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr w0, [x29, #-12]
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_662@PAGE
-	add x2, x2, _str_662@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr w0, [x29, #-16]
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_663@PAGE
-	add x2, x2, _str_663@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_664@PAGE
-	add x0, x0, _str_664@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr w0, [x29, #-12]
-	str w0, [sp]
-	bl get_underlying_type
-	mov w0, w0
-	add sp, sp, #16
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_665@PAGE
-	add x2, x2, _str_665@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr w0, [x29, #-16]
-	str w0, [sp]
-	bl get_underlying_type
-	mov w0, w0
-	add sp, sp, #16
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
 	ldr x0, [sp]
 	add sp, sp, #16
 	sub sp, sp, #16
@@ -29190,12 +29199,152 @@ compile_return:
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
+	sub sp, sp, #16
 	str x0, [sp]
-	bl print
+	sub sp, sp, #16
+	ldr w0, [x29, #-12]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
 	add sp, sp, #16
-	b .L512_end
+	ldr x0, [sp]
 	add sp, sp, #16
-.L512_end:
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_667@PAGE
+	add x2, x2, _str_667@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr w0, [x29, #-16]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_668@PAGE
+	add x2, x2, _str_668@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_669@PAGE
+	add x0, x0, _str_669@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr w0, [x29, #-12]
+	str w0, [sp]
+	bl get_underlying_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_670@PAGE
+	add x2, x2, _str_670@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr w0, [x29, #-16]
+	str w0, [sp]
+	bl get_underlying_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_671@PAGE
+	add x2, x2, _str_671@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L531_end
+	add sp, sp, #16
+.L531_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #40]
 	str x0, [sp, #8]
@@ -29262,14 +29411,14 @@ compile_function:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L528_end
+	beq .L547_end
 	sub sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L528_end
+	b .L547_end
 	add sp, sp, #16
-.L528_end:
+.L547_end:
 	sub sp, sp, #16
 	mov w0, #0
 	sxtw x0, w0
@@ -29290,8 +29439,8 @@ compile_function:
 	ldr x0, [x0]
 	str x0, [x29, #-40]
 	ldr x0, [x29, #-40]
-	adrp x2, _str_667@PAGE
-	add x2, x2, _str_667@PAGEOFF
+	adrp x2, _str_672@PAGE
+	add x2, x2, _str_672@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -29300,7 +29449,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L529_end
+	beq .L548_end
 	sub sp, sp, #48
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -29310,25 +29459,25 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L530_end
+	beq .L549_end
 	sub sp, sp, #48
 	add x0, x29, #-40
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_668@PAGE
-	add x0, x0, _str_668@PAGEOFF
+	adrp x0, _str_673@PAGE
+	add x0, x0, _str_673@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L530_end
+	b .L549_end
 	add sp, sp, #48
-.L530_end:
+.L549_end:
 	sub sp, sp, #32
 	ldr x0, [x29, #-16]
 	str x0, [sp, #16]
-	adrp x0, _str_669@PAGE
-	add x0, x0, _str_669@PAGEOFF
+	adrp x0, _str_674@PAGE
+	add x0, x0, _str_674@PAGEOFF
 	str x0, [sp, #8]
 	mov w0, #1
 	str w0, [sp, #4]
@@ -29340,8 +29489,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-16]
 	str x0, [sp, #16]
-	adrp x0, _str_670@PAGE
-	add x0, x0, _str_670@PAGEOFF
+	adrp x0, _str_675@PAGE
+	add x0, x0, _str_675@PAGEOFF
 	str x0, [sp, #8]
 	sub sp, sp, #16
 	sub sp, sp, #16
@@ -29360,13 +29509,13 @@ cset w0, eq
 	bl add_variable
 	mov x0, x0
 	add sp, sp, #32
-	b .L529_end
+	b .L548_end
 	add sp, sp, #48
-.L529_end:
+.L548_end:
 	sub sp, sp, #64
 	mov w0, #0
 	str w0, [x29, #-44]
-.L531_for_start:
+.L550_for_start:
 	ldr w0, [x29, #-44]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -29379,7 +29528,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L531_for_end
+	beq .L550_for_end
 	ldr x0, [x29, #-32]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -29406,7 +29555,7 @@ cset w0, eq
 	bl add_variable
 	mov x0, x0
 	add sp, sp, #32
-.L531_for_inc:
+.L550_for_inc:
 	add x0, x29, #-44
 
 	sub sp, sp, #16
@@ -29417,13 +29566,13 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L531_for_start
-.L531_for_end:
+	b .L550_for_start
+.L550_for_end:
 	add sp, sp, #64
 	sub sp, sp, #48
 	mov w0, #0
 	str w0, [x29, #-44]
-.L532_for_start:
+.L551_for_start:
 	ldr w0, [x29, #-44]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -29437,7 +29586,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L532_for_end
+	beq .L551_for_end
 	ldr x0, [x29, #-8]
 	ldr x0, [x0, #8]
 	ldr x0, [x0]
@@ -29455,7 +29604,7 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L533_else
+	beq .L552_else
 	sub sp, sp, #48
 	sub sp, sp, #32
 	ldr x0, [x29, #-24]
@@ -29501,157 +29650,15 @@ cset w0, eq
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L534_end
+	beq .L553_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_671@PAGE
-	add x0, x0, _str_671@PAGEOFF
+	adrp x0, _str_676@PAGE
+	add x0, x0, _str_676@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #-8]
 	ldr x2, [x0]
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_672@PAGE
-	add x2, x2, _str_672@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #-32]
-	ldr w0, [x0, #16]
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_673@PAGE
-	add x2, x2, _str_673@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr w0, [x29, #-48]
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_674@PAGE
-	add x2, x2, _str_674@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_675@PAGE
-	add x0, x0, _str_675@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr x0, [x29, #-32]
-	ldr w0, [x0, #16]
-	str w0, [sp]
-	bl get_underlying_type
-	mov w0, w0
-	add sp, sp, #16
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_676@PAGE
-	add x2, x2, _str_676@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	sub sp, sp, #16
-	ldr w0, [x29, #-48]
-	str w0, [sp]
-	bl get_underlying_type
-	mov w0, w0
-	add sp, sp, #16
-	str w0, [sp]
-	bl debug_variable_type_name
-	mov x2, x0
-	add sp, sp, #16
 	ldr x0, [sp]
 	add sp, sp, #16
 	sub sp, sp, #16
@@ -29675,15 +29682,157 @@ cset w0, eq
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
+	sub sp, sp, #16
 	str x0, [sp]
-	bl print
+	sub sp, sp, #16
+	ldr x0, [x29, #-32]
+	ldr w0, [x0, #16]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
 	add sp, sp, #16
-	b .L534_end
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_678@PAGE
+	add x2, x2, _str_678@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr w0, [x29, #-48]
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_679@PAGE
+	add x2, x2, _str_679@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_680@PAGE
+	add x0, x0, _str_680@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr x0, [x29, #-32]
+	ldr w0, [x0, #16]
+	str w0, [sp]
+	bl get_underlying_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_681@PAGE
+	add x2, x2, _str_681@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	sub sp, sp, #16
+	ldr w0, [x29, #-48]
+	str w0, [sp]
+	bl get_underlying_type
+	mov w0, w0
+	add sp, sp, #16
+	str w0, [sp]
+	bl debug_variable_type_name
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_682@PAGE
+	add x2, x2, _str_682@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L553_end
 	add sp, sp, #48
-.L534_end:
-	b .L533_end
+.L553_end:
+	b .L552_end
 	add sp, sp, #48
-.L533_else:
+.L552_else:
 	sub sp, sp, #48
 	sub sp, sp, #48
 	ldr x0, [x29, #-24]
@@ -29709,10 +29858,10 @@ cset w0, eq
 	str x0, [sp]
 	bl compile_statement
 	add sp, sp, #48
-	b .L533_end
+	b .L552_end
 	add sp, sp, #48
-.L533_end:
-.L532_for_inc:
+.L552_end:
+.L551_for_inc:
 	add x0, x29, #-44
 
 	sub sp, sp, #16
@@ -29723,12 +29872,12 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L532_for_start
-.L532_for_end:
+	b .L551_for_start
+.L551_for_end:
 	add sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_678@PAGE
-	add x0, x0, _str_678@PAGEOFF
+	adrp x0, _str_683@PAGE
+	add x0, x0, _str_683@PAGEOFF
 	ldr x2, [x29, #-40]
 	sub sp, sp, #16
 	str x2, [sp]
@@ -29745,8 +29894,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_679@PAGE
-	add x2, x2, _str_679@PAGEOFF
+	adrp x2, _str_684@PAGE
+	add x2, x2, _str_684@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -29756,8 +29905,8 @@ cset w0, eq
 	add sp, sp, #16
 	sub sp, sp, #16
 	ldr x0, [x29, #-40]
-	adrp x2, _str_680@PAGE
-	add x2, x2, _str_680@PAGEOFF
+	adrp x2, _str_685@PAGE
+	add x2, x2, _str_685@PAGEOFF
 	sub sp, sp, #16
 	str x2, [sp]
 	str x0, [sp, #8]
@@ -29784,23 +29933,23 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L555_elseif_0
+	beq .L574_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_681@PAGE
-	add x0, x0, _str_681@PAGEOFF
+	adrp x0, _str_686@PAGE
+	add x0, x0, _str_686@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_682@PAGE
-	add x0, x0, _str_682@PAGEOFF
+	adrp x0, _str_687@PAGE
+	add x0, x0, _str_687@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L555_end
+	b .L574_end
 	add sp, sp, #48
-.L555_elseif_0:
+.L574_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -29809,23 +29958,23 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L555_end
+	beq .L574_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_683@PAGE
-	add x0, x0, _str_683@PAGEOFF
+	adrp x0, _str_688@PAGE
+	add x0, x0, _str_688@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_684@PAGE
-	add x0, x0, _str_684@PAGEOFF
+	adrp x0, _str_689@PAGE
+	add x0, x0, _str_689@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L555_end
+	b .L574_end
 	add sp, sp, #48
-.L555_end:
+.L574_end:
 	adrp x0, _rsp_offset@PAGE
 	add x0, x0, _rsp_offset@PAGEOFF
 	sub sp, sp, #16
@@ -29843,8 +29992,8 @@ cset w0, eq
 	bl allocate_stack_space
 	add sp, sp, #16
 	ldr x0, [x29, #-40]
-	adrp x2, _str_685@PAGE
-	add x2, x2, _str_685@PAGEOFF
+	adrp x2, _str_690@PAGE
+	add x2, x2, _str_690@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -29853,7 +30002,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L556_end
+	beq .L575_end
 	sub sp, sp, #48
 	adrp x0, _rsp_offset@PAGE
 	add x0, x0, _rsp_offset@PAGEOFF
@@ -29865,23 +30014,23 @@ cset w0, eq
 	add sp, sp, #16
 	str w0, [x19]
 	sub sp, sp, #16
-	adrp x0, _str_686@PAGE
-	add x0, x0, _str_686@PAGEOFF
+	adrp x0, _str_691@PAGE
+	add x0, x0, _str_691@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_687@PAGE
-	add x0, x0, _str_687@PAGEOFF
+	adrp x0, _str_692@PAGE
+	add x0, x0, _str_692@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L556_end
+	b .L575_end
 	add sp, sp, #48
-.L556_end:
+.L575_end:
 	ldr x0, [x29, #-40]
-	adrp x2, _str_688@PAGE
-	add x2, x2, _str_688@PAGEOFF
+	adrp x2, _str_693@PAGE
+	add x2, x2, _str_693@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -29890,7 +30039,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L557_end
+	beq .L576_end
 	sub sp, sp, #48
 	adrp x0, _rsp_offset@PAGE
 	add x0, x0, _rsp_offset@PAGEOFF
@@ -29902,20 +30051,20 @@ cset w0, eq
 	add sp, sp, #16
 	str w0, [x19]
 	sub sp, sp, #16
-	adrp x0, _str_689@PAGE
-	add x0, x0, _str_689@PAGEOFF
+	adrp x0, _str_694@PAGE
+	add x0, x0, _str_694@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_690@PAGE
-	add x0, x0, _str_690@PAGEOFF
+	adrp x0, _str_695@PAGE
+	add x0, x0, _str_695@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L557_end
+	b .L576_end
 	add sp, sp, #48
-.L557_end:
+.L576_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp]
@@ -29945,17 +30094,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L558_elseif_0
+	beq .L577_elseif_0
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_691@PAGE
-	add x0, x0, _str_691@PAGEOFF
+	adrp x0, _str_696@PAGE
+	add x0, x0, _str_696@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L558_end
+	b .L577_end
 	add sp, sp, #48
-.L558_elseif_0:
+.L577_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -29964,29 +30113,29 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L558_end
+	beq .L577_end
 	sub sp, sp, #48
 	sub sp, sp, #16
-	adrp x0, _str_692@PAGE
-	add x0, x0, _str_692@PAGEOFF
+	adrp x0, _str_697@PAGE
+	add x0, x0, _str_697@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_693@PAGE
-	add x0, x0, _str_693@PAGEOFF
+	adrp x0, _str_698@PAGE
+	add x0, x0, _str_698@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_694@PAGE
-	add x0, x0, _str_694@PAGEOFF
+	adrp x0, _str_699@PAGE
+	add x0, x0, _str_699@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L558_end
+	b .L577_end
 	add sp, sp, #48
-.L558_end:
+.L577_end:
 	add sp, sp, #48
 	mov sp, x29
 	ldp x29, x30, [sp], #16
@@ -30006,15 +30155,15 @@ compile_break:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L559_end
+	beq .L578_end
 	sub sp, sp, #16
-	adrp x0, _str_695@PAGE
-	add x0, x0, _str_695@PAGEOFF
+	adrp x0, _str_700@PAGE
+	add x0, x0, _str_700@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L559_end
-.L559_end:
+	b .L578_end
+.L578_end:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #24
@@ -30022,13 +30171,13 @@ compile_break:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L560_elseif_0
+	beq .L579_elseif_0
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_696@PAGE
-	add x0, x0, _str_696@PAGEOFF
+	adrp x0, _str_701@PAGE
+	add x0, x0, _str_701@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30055,8 +30204,8 @@ compile_break:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_697@PAGE
-	add x2, x2, _str_697@PAGEOFF
+	adrp x2, _str_702@PAGE
+	add x2, x2, _str_702@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30075,8 +30224,8 @@ compile_break:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L560_end
-.L560_elseif_0:
+	b .L579_end
+.L579_elseif_0:
 	ldr x0, [x29, #16]
 	ldr w0, [x0]
 	mov w2, #23
@@ -30084,136 +30233,7 @@ compile_break:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L560_else
-	sub sp, sp, #32
-	ldr x0, [x29, #32]
-	str x0, [sp, #24]
-	sub sp, sp, #16
-	adrp x0, _str_698@PAGE
-	add x0, x0, _str_698@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #16]
-	ldr w0, [x0, #4]
-	str w0, [sp]
-	bl int_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_699@PAGE
-	add x2, x2, _str_699@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl make_label
-	mov x0, x0
-	add sp, sp, #16
-	str x0, [sp, #16]
-	mov w0, #0
-	sxtw x0, w0
-	str x0, [sp, #8]
-	mov w0, #30
-	str w0, [sp, #4]
-	mov w0, #9
-	str w0, [sp]
-	bl add_instruction
-	add sp, sp, #32
-	b .L560_end
-.L560_else:
-	sub sp, sp, #16
-	adrp x0, _str_700@PAGE
-	add x0, x0, _str_700@PAGEOFF
-	sub sp, sp, #16
-	str x0, [sp]
-	sub sp, sp, #16
-	ldr x0, [x29, #16]
-	ldr w0, [x0]
-	str w0, [sp]
-	bl int_to_str
-	mov x2, x0
-	add sp, sp, #16
-	ldr x0, [sp]
-	add sp, sp, #16
-	sub sp, sp, #16
-	str x2, [sp]
-	str x0, [sp, #8]
-	mov x0, #64
-	bl _malloc
-	mov x22, x0
-	mov x21, #0
-	mov x20, #64
-	ldr x23, [sp, #8]
-	bl __append_string_to_builder
-	ldr x23, [sp]
-	bl __append_string_to_builder
-	mov x0, x22
-	add sp, sp, #16
-	mov x0, x0
-	adrp x2, _str_701@PAGE
-	add x2, x2, _str_701@PAGEOFF
-	mov x23, x2
-	bl __append_string_to_builder
-	mov x0, x22
-	mov x0, x0
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	b .L560_end
-.L560_end:
-	mov sp, x29
-	ldp x29, x30, [sp], #16
-	ret
-.globl compile_continue
-compile_continue:
-	stp x29, x30, [sp, #-16]!
-	mov x29, sp
-	ldr x0, [x29, #16]
-	sub sp, sp, #16
-	str x0, [sp]
-	mov w2, #0
-	sxtw x2, w2
-	ldr x0, [sp]
-	add sp, sp, #16
-	cmp x0, x2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L570_end
-	sub sp, sp, #16
-	adrp x0, _str_702@PAGE
-	add x0, x0, _str_702@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	b .L570_end
-.L570_end:
-	ldr x0, [x29, #16]
-	ldr w0, [x0]
-	mov w2, #24
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L571_elseif_0
+	beq .L579_else
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #24]
@@ -30266,19 +30286,8 @@ compile_continue:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L571_end
-.L571_elseif_0:
-	ldr x0, [x29, #16]
-	ldr w0, [x0]
-	mov w2, #23
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L571_else
-	sub sp, sp, #32
-	ldr x0, [x29, #32]
-	str x0, [sp, #24]
+	b .L579_end
+.L579_else:
 	sub sp, sp, #16
 	adrp x0, _str_705@PAGE
 	add x0, x0, _str_705@PAGEOFF
@@ -30286,7 +30295,7 @@ compile_continue:
 	str x0, [sp]
 	sub sp, sp, #16
 	ldr x0, [x29, #16]
-	ldr w0, [x0, #4]
+	ldr w0, [x0]
 	str w0, [sp]
 	bl int_to_str
 	mov x2, x0
@@ -30315,6 +30324,84 @@ compile_continue:
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L579_end
+.L579_end:
+	mov sp, x29
+	ldp x29, x30, [sp], #16
+	ret
+.globl compile_continue
+compile_continue:
+	stp x29, x30, [sp, #-16]!
+	mov x29, sp
+	ldr x0, [x29, #16]
+	sub sp, sp, #16
+	str x0, [sp]
+	mov w2, #0
+	sxtw x2, w2
+	ldr x0, [sp]
+	add sp, sp, #16
+	cmp x0, x2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L589_end
+	sub sp, sp, #16
+	adrp x0, _str_707@PAGE
+	add x0, x0, _str_707@PAGEOFF
+	str x0, [sp]
+	bl error
+	add sp, sp, #16
+	b .L589_end
+.L589_end:
+	ldr x0, [x29, #16]
+	ldr w0, [x0]
+	mov w2, #24
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L590_elseif_0
+	sub sp, sp, #32
+	ldr x0, [x29, #32]
+	str x0, [sp, #24]
+	sub sp, sp, #16
+	adrp x0, _str_708@PAGE
+	add x0, x0, _str_708@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr x0, [x29, #16]
+	ldr w0, [x0, #4]
+	str w0, [sp]
+	bl int_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_709@PAGE
+	add x2, x2, _str_709@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
 	bl make_label
 	mov x0, x0
 	add sp, sp, #16
@@ -30328,11 +30415,73 @@ compile_continue:
 	str w0, [sp]
 	bl add_instruction
 	add sp, sp, #32
-	b .L571_end
-.L571_else:
+	b .L590_end
+.L590_elseif_0:
+	ldr x0, [x29, #16]
+	ldr w0, [x0]
+	mov w2, #23
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L590_else
+	sub sp, sp, #32
+	ldr x0, [x29, #32]
+	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_707@PAGE
-	add x0, x0, _str_707@PAGEOFF
+	adrp x0, _str_710@PAGE
+	add x0, x0, _str_710@PAGEOFF
+	sub sp, sp, #16
+	str x0, [sp]
+	sub sp, sp, #16
+	ldr x0, [x29, #16]
+	ldr w0, [x0, #4]
+	str w0, [sp]
+	bl int_to_str
+	mov x2, x0
+	add sp, sp, #16
+	ldr x0, [sp]
+	add sp, sp, #16
+	sub sp, sp, #16
+	str x2, [sp]
+	str x0, [sp, #8]
+	mov x0, #64
+	bl _malloc
+	mov x22, x0
+	mov x21, #0
+	mov x20, #64
+	ldr x23, [sp, #8]
+	bl __append_string_to_builder
+	ldr x23, [sp]
+	bl __append_string_to_builder
+	mov x0, x22
+	add sp, sp, #16
+	mov x0, x0
+	adrp x2, _str_711@PAGE
+	add x2, x2, _str_711@PAGEOFF
+	mov x23, x2
+	bl __append_string_to_builder
+	mov x0, x22
+	mov x0, x0
+	str x0, [sp]
+	bl make_label
+	mov x0, x0
+	add sp, sp, #16
+	str x0, [sp, #16]
+	mov w0, #0
+	sxtw x0, w0
+	str x0, [sp, #8]
+	mov w0, #30
+	str w0, [sp, #4]
+	mov w0, #9
+	str w0, [sp]
+	bl add_instruction
+	add sp, sp, #32
+	b .L590_end
+.L590_else:
+	sub sp, sp, #16
+	adrp x0, _str_712@PAGE
+	add x0, x0, _str_712@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30359,17 +30508,17 @@ compile_continue:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_708@PAGE
-	add x2, x2, _str_708@PAGEOFF
+	adrp x2, _str_713@PAGE
+	add x2, x2, _str_713@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L571_end
-.L571_end:
+	b .L590_end
+.L590_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -30428,8 +30577,8 @@ compile_while:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp, #8]
-	adrp x0, _str_709@PAGE
-	add x0, x0, _str_709@PAGEOFF
+	adrp x0, _str_714@PAGE
+	add x0, x0, _str_714@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30455,8 +30604,8 @@ compile_while:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_710@PAGE
-	add x2, x2, _str_710@PAGEOFF
+	adrp x2, _str_715@PAGE
+	add x2, x2, _str_715@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30472,8 +30621,8 @@ compile_while:
 	str x0, [sp, #13]
 	ldr x0, [x29, #-16]
 	str x0, [sp, #5]
-	adrp x0, _char_711@PAGE
-	add x0, x0, _char_711@PAGEOFF
+	adrp x0, _char_716@PAGE
+	add x0, x0, _char_716@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -30511,8 +30660,8 @@ compile_while:
 	ldr x0, [x29, #-24]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_712@PAGE
-	add x0, x0, _str_712@PAGEOFF
+	adrp x0, _str_717@PAGE
+	add x0, x0, _str_717@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30538,8 +30687,8 @@ compile_while:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_713@PAGE
-	add x2, x2, _str_713@PAGEOFF
+	adrp x2, _str_718@PAGE
+	add x2, x2, _str_718@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30576,8 +30725,8 @@ compile_while:
 	ldr x0, [x29, #-24]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_714@PAGE
-	add x0, x0, _str_714@PAGEOFF
+	adrp x0, _str_719@PAGE
+	add x0, x0, _str_719@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30603,8 +30752,8 @@ compile_while:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_715@PAGE
-	add x2, x2, _str_715@PAGEOFF
+	adrp x2, _str_720@PAGE
+	add x2, x2, _str_720@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30626,8 +30775,8 @@ compile_while:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp, #8]
-	adrp x0, _str_716@PAGE
-	add x0, x0, _str_716@PAGEOFF
+	adrp x0, _str_721@PAGE
+	add x0, x0, _str_721@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30653,8 +30802,8 @@ compile_while:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_717@PAGE
-	add x2, x2, _str_717@PAGEOFF
+	adrp x2, _str_722@PAGE
+	add x2, x2, _str_722@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30776,8 +30925,8 @@ compile_for:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp, #8]
-	adrp x0, _str_718@PAGE
-	add x0, x0, _str_718@PAGEOFF
+	adrp x0, _str_723@PAGE
+	add x0, x0, _str_723@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30803,8 +30952,8 @@ compile_for:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_719@PAGE
-	add x2, x2, _str_719@PAGEOFF
+	adrp x2, _str_724@PAGE
+	add x2, x2, _str_724@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30819,8 +30968,8 @@ compile_for:
 	str x0, [sp, #13]
 	ldr x0, [x29, #-16]
 	str x0, [sp, #5]
-	adrp x0, _char_720@PAGE
-	add x0, x0, _char_720@PAGEOFF
+	adrp x0, _char_725@PAGE
+	add x0, x0, _char_725@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -30858,8 +31007,8 @@ compile_for:
 	ldr x0, [x29, #-24]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_721@PAGE
-	add x0, x0, _str_721@PAGEOFF
+	adrp x0, _str_726@PAGE
+	add x0, x0, _str_726@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30885,8 +31034,8 @@ compile_for:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_722@PAGE
-	add x2, x2, _str_722@PAGEOFF
+	adrp x2, _str_727@PAGE
+	add x2, x2, _str_727@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30921,8 +31070,8 @@ compile_for:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp, #8]
-	adrp x0, _str_723@PAGE
-	add x0, x0, _str_723@PAGEOFF
+	adrp x0, _str_728@PAGE
+	add x0, x0, _str_728@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -30948,8 +31097,8 @@ compile_for:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_724@PAGE
-	add x2, x2, _str_724@PAGEOFF
+	adrp x2, _str_729@PAGE
+	add x2, x2, _str_729@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -30974,8 +31123,8 @@ compile_for:
 	ldr x0, [x29, #-24]
 	str x0, [sp, #24]
 	sub sp, sp, #16
-	adrp x0, _str_725@PAGE
-	add x0, x0, _str_725@PAGEOFF
+	adrp x0, _str_730@PAGE
+	add x0, x0, _str_730@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -31001,8 +31150,8 @@ compile_for:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_726@PAGE
-	add x2, x2, _str_726@PAGEOFF
+	adrp x2, _str_731@PAGE
+	add x2, x2, _str_731@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -31024,8 +31173,8 @@ compile_for:
 	sub sp, sp, #16
 	ldr x0, [x29, #-24]
 	str x0, [sp, #8]
-	adrp x0, _str_727@PAGE
-	add x0, x0, _str_727@PAGEOFF
+	adrp x0, _str_732@PAGE
+	add x0, x0, _str_732@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -31051,8 +31200,8 @@ compile_for:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_728@PAGE
-	add x2, x2, _str_728@PAGEOFF
+	adrp x2, _str_733@PAGE
+	add x2, x2, _str_733@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -31104,7 +31253,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_0
+	beq .L627_elseif_0
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #20]
@@ -31117,8 +31266,8 @@ compile_statement:
 	str w0, [sp]
 	bl compile_assign
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_0:
+	b .L627_end
+.L627_elseif_0:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #25
@@ -31126,7 +31275,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_1
+	beq .L627_elseif_1
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #20]
@@ -31139,8 +31288,8 @@ compile_statement:
 	str w0, [sp]
 	bl compile_assign
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_1:
+	b .L627_end
+.L627_elseif_1:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #22
@@ -31148,7 +31297,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_2
+	beq .L627_elseif_2
 	sub sp, sp, #48
 	ldr x0, [x29, #48]
 	str x0, [sp, #32]
@@ -31162,8 +31311,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_if
 	add sp, sp, #48
-	b .L608_end
-.L608_elseif_2:
+	b .L627_end
+.L627_elseif_2:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #21
@@ -31171,7 +31320,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_3
+	beq .L627_elseif_3
 	ldr x0, [x29, #48]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -31183,15 +31332,15 @@ compile_statement:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L609_end
+	beq .L628_end
 	sub sp, sp, #16
-	adrp x0, _str_729@PAGE
-	add x0, x0, _str_729@PAGEOFF
+	adrp x0, _str_734@PAGE
+	add x0, x0, _str_734@PAGEOFF
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L609_end
-.L609_end:
+	b .L628_end
+.L628_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	str x0, [sp, #8]
@@ -31199,8 +31348,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_function
 	add sp, sp, #16
-	b .L608_end
-.L608_elseif_3:
+	b .L627_end
+.L627_elseif_3:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #26
@@ -31208,7 +31357,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_4
+	beq .L627_elseif_4
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #24]
@@ -31221,8 +31370,8 @@ compile_statement:
 	bl compile_return
 	mov w0, w0
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_4:
+	b .L627_end
+.L627_elseif_4:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #27
@@ -31230,7 +31379,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_5
+	beq .L627_elseif_5
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #16]
@@ -31240,8 +31389,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_break
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_5:
+	b .L627_end
+.L627_elseif_5:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #28
@@ -31249,7 +31398,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_6
+	beq .L627_elseif_6
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #16]
@@ -31259,8 +31408,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_continue
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_6:
+	b .L627_end
+.L627_elseif_6:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #4
@@ -31268,7 +31417,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_7
+	beq .L627_elseif_7
 	sub sp, sp, #32
 	ldr x0, [x29, #32]
 	str x0, [sp, #21]
@@ -31276,8 +31425,8 @@ compile_statement:
 	str x0, [sp, #13]
 	ldr x0, [x29, #40]
 	str x0, [sp, #5]
-	adrp x0, _char_730@PAGE
-	add x0, x0, _char_730@PAGEOFF
+	adrp x0, _char_735@PAGE
+	add x0, x0, _char_735@PAGEOFF
 	ldrb w0, [x0]
 	strb w0, [sp, #4]
 	mov w0, #1
@@ -31285,8 +31434,8 @@ compile_statement:
 	bl compile_function_call
 	mov w0, w0
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_7:
+	b .L627_end
+.L627_elseif_7:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #23
@@ -31294,7 +31443,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_8
+	beq .L627_elseif_8
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #24]
@@ -31306,8 +31455,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_while
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_8:
+	b .L627_end
+.L627_elseif_8:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #24
@@ -31315,7 +31464,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_9
+	beq .L627_elseif_9
 	sub sp, sp, #32
 	ldr x0, [x29, #48]
 	str x0, [sp, #24]
@@ -31327,8 +31476,8 @@ compile_statement:
 	str x0, [sp]
 	bl compile_for
 	add sp, sp, #32
-	b .L608_end
-.L608_elseif_9:
+	b .L627_end
+.L627_elseif_9:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #29
@@ -31348,9 +31497,9 @@ compile_statement:
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_elseif_10
-	b .L608_end
-.L608_elseif_10:
+	beq .L627_elseif_10
+	b .L627_end
+.L627_elseif_10:
 	ldr x0, [x29, #32]
 	ldr w0, [x0]
 	mov w2, #30
@@ -31358,7 +31507,7 @@ compile_statement:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L608_else
+	beq .L627_else
 	sub sp, sp, #16
 	ldr x0, [x29, #32]
 	ldr x0, [x0, #4]
@@ -31369,12 +31518,12 @@ compile_statement:
 	str x0, [sp]
 	bl compile_file
 	add sp, sp, #16
-	b .L608_end
+	b .L627_end
 	add sp, sp, #16
-.L608_else:
+.L627_else:
 	sub sp, sp, #16
-	adrp x0, _str_731@PAGE
-	add x0, x0, _str_731@PAGEOFF
+	adrp x0, _str_736@PAGE
+	add x0, x0, _str_736@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -31401,17 +31550,17 @@ compile_statement:
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_732@PAGE
-	add x2, x2, _str_732@PAGEOFF
+	adrp x2, _str_737@PAGE
+	add x2, x2, _str_737@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
 	mov x0, x0
 	str x0, [sp]
-	bl print
+	bl error
 	add sp, sp, #16
-	b .L608_end
-.L608_end:
+	b .L627_end
+.L627_end:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
@@ -31428,14 +31577,14 @@ get_index_of_last_slash:
 	sub w0, w0, w2
 	str w0, [x29, #-4]
 	sub sp, sp, #16
-.L613_while_start:
+.L632_while_start:
 	ldr w0, [x29, #-4]
 	mov w2, #0
 	cmp w0, w2
 	cset w0, ge
 	mov w0, w0
 	cmp wzr, w0
-	beq .L613_while_end
+	beq .L632_while_end
 	ldr x0, [x29, #16]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -31444,23 +31593,23 @@ get_index_of_last_slash:
 	add sp, sp, #16
 	add x0, x0, x2, lsl #0
 	ldrb w0, [x0]
-	adrp x2, _char_759@PAGE
-	add x2, x2, _char_759@PAGEOFF
+	adrp x2, _char_764@PAGE
+	add x2, x2, _char_764@PAGEOFF
 	ldrb w2, [x2]
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L614_end
+	beq .L633_end
 	sub sp, sp, #16
 	ldr w0, [x29, #-4]
 	add sp, sp, #16
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L614_end
+	b .L633_end
 	add sp, sp, #16
-.L614_end:
+.L633_end:
 	add x0, x29, #-4
 
 	sub sp, sp, #16
@@ -31471,8 +31620,8 @@ get_index_of_last_slash:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L613_while_start
-.L613_while_end:
+	b .L632_while_start
+.L632_while_end:
 	add sp, sp, #16
 	mov w0, #1
 	neg w0, w0
@@ -31618,7 +31767,7 @@ compile_file:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L617_else
+	beq .L636_else
 	sub sp, sp, #48
 	adrp x0, _relative_directory@PAGE
 	add x0, x0, _relative_directory@PAGEOFF
@@ -31650,24 +31799,24 @@ compile_file:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L617_end
+	b .L636_end
 	add sp, sp, #48
-.L617_else:
+.L636_else:
 	sub sp, sp, #48
 	adrp x0, _relative_directory@PAGE
 	add x0, x0, _relative_directory@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_760@PAGE
-	add x0, x0, _str_760@PAGEOFF
+	adrp x0, _str_765@PAGE
+	add x0, x0, _str_765@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
-	b .L617_end
+	b .L636_end
 	add sp, sp, #48
-.L617_end:
+.L636_end:
 	sub sp, sp, #48
-.L618_while_start:
+.L637_while_start:
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -31682,7 +31831,7 @@ compile_file:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L618_while_end
+	beq .L637_while_end
 	sub sp, sp, #0
 	bl peek_next_token
 	mov x0, x0
@@ -31693,12 +31842,12 @@ compile_file:
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L619_end
+	beq .L638_end
 	sub sp, sp, #48
-	b .L618_while_end
-	b .L619_end
+	b .L637_while_end
+	b .L638_end
 	add sp, sp, #48
-.L619_end:
+.L638_end:
 	sub sp, sp, #0
 	bl get_statement
 	mov x0, x0
@@ -31721,8 +31870,8 @@ compile_file:
 	str x0, [sp]
 	bl compile_statement
 	add sp, sp, #48
-	b .L618_while_start
-.L618_while_end:
+	b .L637_while_start
+.L637_while_end:
 	add sp, sp, #48
 	adrp x0, _input_text@PAGE
 	add x0, x0, _input_text@PAGEOFF
@@ -31757,7 +31906,7 @@ compile_file:
 	add x0, x0, _tokens@PAGEOFF
 	ldr x0, [x0]
 	cmp xzr, x0
-	beq .L620_end
+	beq .L639_end
 	sub sp, sp, #48
 	adrp x0, _token_count@PAGE
 	add x0, x0, _token_count@PAGEOFF
@@ -31770,9 +31919,9 @@ compile_file:
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L620_end
+	b .L639_end
 	add sp, sp, #48
-.L620_end:
+.L639_end:
 	adrp x0, _token_index@PAGE
 	add x0, x0, _token_index@PAGEOFF
 	sub sp, sp, #16
@@ -31814,11 +31963,11 @@ _main:
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L621_end
+	beq .L640_end
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_761@PAGE
-	add x0, x0, _str_761@PAGEOFF
+	adrp x0, _str_766@PAGE
+	add x0, x0, _str_766@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
@@ -31827,9 +31976,9 @@ _main:
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L621_end
+	b .L640_end
 	add sp, sp, #16
-.L621_end:
+.L640_end:
 	ldr x0, [x29, #-12]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -31838,8 +31987,8 @@ _main:
 	add sp, sp, #16
 	add x0, x0, x2, lsl #3
 	ldr x0, [x0]
-	adrp x2, _str_762@PAGE
-	add x2, x2, _str_762@PAGEOFF
+	adrp x2, _str_767@PAGE
+	add x2, x2, _str_767@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -31848,7 +31997,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L622_elseif_0
+	beq .L641_elseif_0
 	sub sp, sp, #16
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -31858,9 +32007,9 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L622_end
+	b .L641_end
 	add sp, sp, #16
-.L622_elseif_0:
+.L641_elseif_0:
 	ldr x0, [x29, #-12]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -31869,8 +32018,8 @@ cset w0, eq
 	add sp, sp, #16
 	add x0, x0, x2, lsl #3
 	ldr x0, [x0]
-	adrp x2, _str_763@PAGE
-	add x2, x2, _str_763@PAGEOFF
+	adrp x2, _str_768@PAGE
+	add x2, x2, _str_768@PAGEOFF
 	mov x0, x0
 	mov x1, x2
 	bl _strcmp
@@ -31879,7 +32028,7 @@ cset w0, eq
 
 	mov w0, w0
 	cmp wzr, w0
-	beq .L622_else
+	beq .L641_else
 	sub sp, sp, #16
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -31889,13 +32038,13 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L622_end
+	b .L641_end
 	add sp, sp, #16
-.L622_else:
+.L641_else:
 	sub sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_764@PAGE
-	add x0, x0, _str_764@PAGEOFF
+	adrp x0, _str_769@PAGE
+	add x0, x0, _str_769@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	ldr x0, [x29, #-12]
@@ -31923,8 +32072,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_765@PAGE
-	add x2, x2, _str_765@PAGEOFF
+	adrp x2, _str_770@PAGE
+	add x2, x2, _str_770@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -31937,9 +32086,9 @@ cset w0, eq
 	mov sp, x29
 	ldp x29, x30, [sp], #16
 	ret
-	b .L622_end
+	b .L641_end
 	add sp, sp, #16
-.L622_end:
+.L641_end:
 	adrp x0, _global_scope@PAGE
 	add x0, x0, _global_scope@PAGEOFF
 	sub sp, sp, #16
@@ -32125,78 +32274,8 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L626_elseif_0
+	beq .L645_elseif_0
 	sub sp, sp, #16
-	adrp x0, _register_names_byte@PAGE
-	add x0, x0, _register_names_byte@PAGEOFF
-	ldr x0, [x0]
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x19, _str_766@PAGE
-	add x19, x19, _str_766@PAGEOFF
-	ldr x0, [sp]
-	add sp, sp, #16
-	bl __append_quad
-	ldr x0, [x0]
-	ldr x12, [x23, #8]
-	add x12, x12, #1
-	str x12, [x23, #8]
-	adrp x0, _register_names_byte@PAGE
-	add x0, x0, _register_names_byte@PAGEOFF
-	ldr x0, [x0]
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x19, _str_767@PAGE
-	add x19, x19, _str_767@PAGEOFF
-	ldr x0, [sp]
-	add sp, sp, #16
-	bl __append_quad
-	ldr x0, [x0]
-	ldr x12, [x23, #8]
-	add x12, x12, #1
-	str x12, [x23, #8]
-	adrp x0, _register_names_byte@PAGE
-	add x0, x0, _register_names_byte@PAGEOFF
-	ldr x0, [x0]
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x19, _str_768@PAGE
-	add x19, x19, _str_768@PAGEOFF
-	ldr x0, [sp]
-	add sp, sp, #16
-	bl __append_quad
-	ldr x0, [x0]
-	ldr x12, [x23, #8]
-	add x12, x12, #1
-	str x12, [x23, #8]
-	adrp x0, _register_names_byte@PAGE
-	add x0, x0, _register_names_byte@PAGEOFF
-	ldr x0, [x0]
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x19, _str_769@PAGE
-	add x19, x19, _str_769@PAGEOFF
-	ldr x0, [sp]
-	add sp, sp, #16
-	bl __append_quad
-	ldr x0, [x0]
-	ldr x12, [x23, #8]
-	add x12, x12, #1
-	str x12, [x23, #8]
-	adrp x0, _register_names_byte@PAGE
-	add x0, x0, _register_names_byte@PAGEOFF
-	ldr x0, [x0]
-	sub sp, sp, #16
-	str x0, [sp]
-	adrp x19, _str_770@PAGE
-	add x19, x19, _str_770@PAGEOFF
-	ldr x0, [sp]
-	add sp, sp, #16
-	bl __append_quad
-	ldr x0, [x0]
-	ldr x12, [x23, #8]
-	add x12, x12, #1
-	str x12, [x23, #8]
 	adrp x0, _register_names_byte@PAGE
 	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
@@ -32351,8 +32430,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_byte@PAGE
+	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32365,8 +32444,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_byte@PAGE
+	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32379,8 +32458,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_byte@PAGE
+	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32393,8 +32472,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_byte@PAGE
+	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32407,8 +32486,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_byte@PAGE
+	add x0, x0, _register_names_byte@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32575,8 +32654,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32589,8 +32668,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32603,8 +32682,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32617,8 +32696,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32631,8 +32710,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32799,21 +32878,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	b .L626_end
-	add sp, sp, #16
-.L626_elseif_0:
-	adrp x0, _current_target@PAGE
-	add x0, x0, _current_target@PAGEOFF
-	ldr w0, [x0]
-	mov w2, #1
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L626_end
-	sub sp, sp, #16
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32826,8 +32892,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32840,8 +32906,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32854,8 +32920,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32868,8 +32934,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_dword@PAGE
-	add x0, x0, _register_names_dword@PAGEOFF
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -32882,6 +32948,19 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
+	b .L645_end
+	add sp, sp, #16
+.L645_elseif_0:
+	adrp x0, _current_target@PAGE
+	add x0, x0, _current_target@PAGEOFF
+	ldr w0, [x0]
+	mov w2, #1
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L645_end
+	sub sp, sp, #16
 	adrp x0, _register_names_dword@PAGE
 	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
@@ -33036,8 +33115,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33050,8 +33129,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33064,8 +33143,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33078,8 +33157,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33092,8 +33171,8 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	adrp x0, _register_names_qword@PAGE
-	add x0, x0, _register_names_qword@PAGEOFF
+	adrp x0, _register_names_dword@PAGE
+	add x0, x0, _register_names_dword@PAGEOFF
 	ldr x0, [x0]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33260,9 +33339,79 @@ cset w0, eq
 	ldr x12, [x23, #8]
 	add x12, x12, #1
 	str x12, [x23, #8]
-	b .L626_end
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
+	ldr x0, [x0]
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x19, _str_846@PAGE
+	add x19, x19, _str_846@PAGEOFF
+	ldr x0, [sp]
 	add sp, sp, #16
-.L626_end:
+	bl __append_quad
+	ldr x0, [x0]
+	ldr x12, [x23, #8]
+	add x12, x12, #1
+	str x12, [x23, #8]
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
+	ldr x0, [x0]
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x19, _str_847@PAGE
+	add x19, x19, _str_847@PAGEOFF
+	ldr x0, [sp]
+	add sp, sp, #16
+	bl __append_quad
+	ldr x0, [x0]
+	ldr x12, [x23, #8]
+	add x12, x12, #1
+	str x12, [x23, #8]
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
+	ldr x0, [x0]
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x19, _str_848@PAGE
+	add x19, x19, _str_848@PAGEOFF
+	ldr x0, [sp]
+	add sp, sp, #16
+	bl __append_quad
+	ldr x0, [x0]
+	ldr x12, [x23, #8]
+	add x12, x12, #1
+	str x12, [x23, #8]
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
+	ldr x0, [x0]
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x19, _str_849@PAGE
+	add x19, x19, _str_849@PAGEOFF
+	ldr x0, [sp]
+	add sp, sp, #16
+	bl __append_quad
+	ldr x0, [x0]
+	ldr x12, [x23, #8]
+	add x12, x12, #1
+	str x12, [x23, #8]
+	adrp x0, _register_names_qword@PAGE
+	add x0, x0, _register_names_qword@PAGEOFF
+	ldr x0, [x0]
+	sub sp, sp, #16
+	str x0, [sp]
+	adrp x19, _str_850@PAGE
+	add x19, x19, _str_850@PAGEOFF
+	ldr x0, [sp]
+	add sp, sp, #16
+	bl __append_quad
+	ldr x0, [x0]
+	ldr x12, [x23, #8]
+	add x12, x12, #1
+	str x12, [x23, #8]
+	b .L645_end
+	add sp, sp, #16
+.L645_end:
 	sub sp, sp, #16
 	adrp x0, _function_registry@PAGE
 	add x0, x0, _function_registry@PAGEOFF
@@ -33277,8 +33426,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_846@PAGE
-	add x0, x0, _str_846@PAGEOFF
+	adrp x0, _str_851@PAGE
+	add x0, x0, _str_851@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33294,8 +33443,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-20]
 	str x0, [sp, #12]
-	adrp x0, _str_847@PAGE
-	add x0, x0, _str_847@PAGEOFF
+	adrp x0, _str_852@PAGE
+	add x0, x0, _str_852@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #5
 	str w0, [sp]
@@ -33315,8 +33464,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_848@PAGE
-	add x0, x0, _str_848@PAGEOFF
+	adrp x0, _str_853@PAGE
+	add x0, x0, _str_853@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33332,8 +33481,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-28]
 	str x0, [sp, #12]
-	adrp x0, _str_849@PAGE
-	add x0, x0, _str_849@PAGEOFF
+	adrp x0, _str_854@PAGE
+	add x0, x0, _str_854@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #5
 	str w0, [sp]
@@ -33353,8 +33502,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_850@PAGE
-	add x0, x0, _str_850@PAGEOFF
+	adrp x0, _str_855@PAGE
+	add x0, x0, _str_855@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33370,8 +33519,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-36]
 	str x0, [sp, #12]
-	adrp x0, _str_851@PAGE
-	add x0, x0, _str_851@PAGEOFF
+	adrp x0, _str_856@PAGE
+	add x0, x0, _str_856@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #5
 	str w0, [sp]
@@ -33391,8 +33540,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_852@PAGE
-	add x0, x0, _str_852@PAGEOFF
+	adrp x0, _str_857@PAGE
+	add x0, x0, _str_857@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33408,8 +33557,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-44]
 	str x0, [sp, #12]
-	adrp x0, _str_853@PAGE
-	add x0, x0, _str_853@PAGEOFF
+	adrp x0, _str_858@PAGE
+	add x0, x0, _str_858@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #5
 	str w0, [sp]
@@ -33429,8 +33578,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_854@PAGE
-	add x0, x0, _str_854@PAGEOFF
+	adrp x0, _str_859@PAGE
+	add x0, x0, _str_859@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33446,8 +33595,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-52]
 	str x0, [sp, #12]
-	adrp x0, _str_855@PAGE
-	add x0, x0, _str_855@PAGEOFF
+	adrp x0, _str_860@PAGE
+	add x0, x0, _str_860@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #1
 	str w0, [sp]
@@ -33467,8 +33616,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_856@PAGE
-	add x0, x0, _str_856@PAGEOFF
+	adrp x0, _str_861@PAGE
+	add x0, x0, _str_861@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33484,8 +33633,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-60]
 	str x0, [sp, #12]
-	adrp x0, _str_857@PAGE
-	add x0, x0, _str_857@PAGEOFF
+	adrp x0, _str_862@PAGE
+	add x0, x0, _str_862@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #2
 	str w0, [sp]
@@ -33505,8 +33654,8 @@ cset w0, eq
 
 	sub sp, sp, #16
 	str x0, [sp]
-	adrp x0, _str_858@PAGE
-	add x0, x0, _str_858@PAGEOFF
+	adrp x0, _str_863@PAGE
+	add x0, x0, _str_863@PAGEOFF
 	ldr x19, [sp]
 	add sp, sp, #16
 	str x0, [x19]
@@ -33522,8 +33671,8 @@ cset w0, eq
 	sub sp, sp, #32
 	ldr x0, [x29, #-68]
 	str x0, [sp, #12]
-	adrp x0, _str_859@PAGE
-	add x0, x0, _str_859@PAGEOFF
+	adrp x0, _str_864@PAGE
+	add x0, x0, _str_864@PAGEOFF
 	str x0, [sp, #4]
 	mov w0, #3
 	str w0, [sp]
@@ -33537,38 +33686,8 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L707_elseif_0
+	beq .L726_elseif_0
 	sub sp, sp, #80
-	sub sp, sp, #16
-	adrp x0, _str_860@PAGE
-	add x0, x0, _str_860@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_861@PAGE
-	add x0, x0, _str_861@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_862@PAGE
-	add x0, x0, _str_862@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_863@PAGE
-	add x0, x0, _str_863@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_864@PAGE
-	add x0, x0, _str_864@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _str_865@PAGE
 	add x0, x0, _str_865@PAGEOFF
@@ -33587,9 +33706,39 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L707_end
+	sub sp, sp, #16
+	adrp x0, _str_868@PAGE
+	add x0, x0, _str_868@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_869@PAGE
+	add x0, x0, _str_869@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_870@PAGE
+	add x0, x0, _str_870@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_871@PAGE
+	add x0, x0, _str_871@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_872@PAGE
+	add x0, x0, _str_872@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	b .L726_end
 	add sp, sp, #80
-.L707_elseif_0:
+.L726_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -33598,17 +33747,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L707_end
+	beq .L726_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_868@PAGE
-	add x0, x0, _str_868@PAGEOFF
+	adrp x0, _str_873@PAGE
+	add x0, x0, _str_873@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L707_end
+	b .L726_end
 	add sp, sp, #80
-.L707_end:
+.L726_end:
 	sub sp, sp, #16
 	ldr x0, [x29, #-12]
 	sub sp, sp, #16
@@ -33629,7 +33778,7 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L708_elseif_0
+	beq .L727_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
 	adrp x0, _print_asm_code_x86@PAGE
@@ -33722,9 +33871,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L708_end
+	b .L727_end
 	add sp, sp, #80
-.L708_elseif_0:
+.L727_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -33733,7 +33882,7 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L708_end
+	beq .L727_end
 	sub sp, sp, #80
 	sub sp, sp, #16
 	adrp x0, _print_asm_code_aarch64@PAGE
@@ -33826,9 +33975,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L708_end
+	b .L727_end
 	add sp, sp, #80
-.L708_end:
+.L727_end:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -33837,17 +33986,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L709_elseif_0
+	beq .L728_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_869@PAGE
-	add x0, x0, _str_869@PAGEOFF
+	adrp x0, _str_874@PAGE
+	add x0, x0, _str_874@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L709_end
+	b .L728_end
 	add sp, sp, #80
-.L709_elseif_0:
+.L728_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -33856,27 +34005,27 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L709_end
+	beq .L728_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_870@PAGE
-	add x0, x0, _str_870@PAGEOFF
+	adrp x0, _str_875@PAGE
+	add x0, x0, _str_875@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_871@PAGE
-	add x0, x0, _str_871@PAGEOFF
+	adrp x0, _str_876@PAGE
+	add x0, x0, _str_876@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L709_end
+	b .L728_end
 	add sp, sp, #80
-.L709_end:
+.L728_end:
 	sub sp, sp, #80
 	mov w0, #0
 	str w0, [x29, #-72]
-.L710_for_start:
+.L729_for_start:
 	ldr w0, [x29, #-72]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -33891,7 +34040,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L710_for_end
+	beq .L729_for_end
 	adrp x0, _global_scope@PAGE
 	add x0, x0, _global_scope@PAGEOFF
 	ldr x0, [x0]
@@ -33913,12 +34062,12 @@ cset w0, eq
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L711_end
+	beq .L730_end
 	sub sp, sp, #80
-	b .L710_for_inc
-	b .L711_end
+	b .L729_for_inc
+	b .L730_end
 	add sp, sp, #80
-.L711_end:
+.L730_end:
 	ldr w0, [x29, #-76]
 	mov w2, #7
 	cmp w0, w2
@@ -33936,12 +34085,12 @@ cset w0, eq
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L712_end
+	beq .L731_end
 	sub sp, sp, #80
-	b .L710_for_inc
-	b .L712_end
+	b .L729_for_inc
+	b .L731_end
 	add sp, sp, #80
-.L712_end:
+.L731_end:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -33950,11 +34099,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L713_elseif_0
+	beq .L732_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_872@PAGE
-	add x0, x0, _str_872@PAGEOFF
+	adrp x0, _str_877@PAGE
+	add x0, x0, _str_877@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -33987,8 +34136,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_873@PAGE
-	add x2, x2, _str_873@PAGEOFF
+	adrp x2, _str_878@PAGE
+	add x2, x2, _str_878@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -33996,9 +34145,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L713_end
+	b .L732_end
 	add sp, sp, #80
-.L713_elseif_0:
+.L732_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34007,11 +34156,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L713_end
+	beq .L732_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_874@PAGE
-	add x0, x0, _str_874@PAGEOFF
+	adrp x0, _str_879@PAGE
+	add x0, x0, _str_879@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34044,8 +34193,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_875@PAGE
-	add x2, x2, _str_875@PAGEOFF
+	adrp x2, _str_880@PAGE
+	add x2, x2, _str_880@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34053,9 +34202,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L713_end
+	b .L732_end
 	add sp, sp, #80
-.L713_end:
+.L732_end:
 	sub sp, sp, #16
 	ldr w0, [x29, #-76]
 	str w0, [sp]
@@ -34075,11 +34224,11 @@ cset w0, eq
 	orr w0, w0, w2
 	mov w0, w0
 	cmp wzr, w0
-	beq .L720_elseif_0
+	beq .L739_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_876@PAGE
-	add x0, x0, _str_876@PAGEOFF
+	adrp x0, _str_881@PAGE
+	add x0, x0, _str_881@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -34119,8 +34268,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_877@PAGE
-	add x2, x2, _str_877@PAGEOFF
+	adrp x2, _str_882@PAGE
+	add x2, x2, _str_882@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34128,16 +34277,16 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L720_end
+	b .L739_end
 	add sp, sp, #80
-.L720_elseif_0:
+.L739_elseif_0:
 	ldr w0, [x29, #-76]
 	mov w2, #5
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L720_elseif_1
+	beq .L739_elseif_1
 	sub sp, sp, #80
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -34147,11 +34296,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L724_elseif_0
+	beq .L743_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_878@PAGE
-	add x0, x0, _str_878@PAGEOFF
+	adrp x0, _str_883@PAGE
+	add x0, x0, _str_883@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34184,8 +34333,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_879@PAGE
-	add x2, x2, _str_879@PAGEOFF
+	adrp x2, _str_884@PAGE
+	add x2, x2, _str_884@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34193,9 +34342,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L724_end
+	b .L743_end
 	add sp, sp, #80
-.L724_elseif_0:
+.L743_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34204,11 +34353,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L724_end
+	beq .L743_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_880@PAGE
-	add x0, x0, _str_880@PAGEOFF
+	adrp x0, _str_885@PAGE
+	add x0, x0, _str_885@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34241,8 +34390,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_881@PAGE
-	add x2, x2, _str_881@PAGEOFF
+	adrp x2, _str_886@PAGE
+	add x2, x2, _str_886@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34250,23 +34399,23 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L724_end
+	b .L743_end
 	add sp, sp, #80
-.L724_end:
-	b .L720_end
+.L743_end:
+	b .L739_end
 	add sp, sp, #80
-.L720_elseif_1:
+.L739_elseif_1:
 	ldr w0, [x29, #-76]
 	mov w2, #1
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L720_elseif_2
+	beq .L739_elseif_2
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_882@PAGE
-	add x0, x0, _str_882@PAGEOFF
+	adrp x0, _str_887@PAGE
+	add x0, x0, _str_887@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -34306,8 +34455,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_883@PAGE
-	add x2, x2, _str_883@PAGEOFF
+	adrp x2, _str_888@PAGE
+	add x2, x2, _str_888@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34315,20 +34464,20 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L720_end
+	b .L739_end
 	add sp, sp, #80
-.L720_elseif_2:
+.L739_elseif_2:
 	ldr w0, [x29, #-76]
 	mov w2, #2
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L720_end
+	beq .L739_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_884@PAGE
-	add x0, x0, _str_884@PAGEOFF
+	adrp x0, _str_889@PAGE
+	add x0, x0, _str_889@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -34368,8 +34517,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_885@PAGE
-	add x2, x2, _str_885@PAGEOFF
+	adrp x2, _str_890@PAGE
+	add x2, x2, _str_890@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34377,10 +34526,10 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L720_end
+	b .L739_end
 	add sp, sp, #80
-.L720_end:
-.L710_for_inc:
+.L739_end:
+.L729_for_inc:
 	add x0, x29, #-72
 
 	sub sp, sp, #16
@@ -34391,13 +34540,13 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L710_for_start
-.L710_for_end:
+	b .L729_for_start
+.L729_for_end:
 	add sp, sp, #80
 	sub sp, sp, #80
 	mov w0, #0
 	str w0, [x29, #-72]
-.L737_for_start:
+.L756_for_start:
 	ldr w0, [x29, #-72]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -34412,7 +34561,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L737_for_end
+	beq .L756_for_end
 	adrp x0, _global_scope@PAGE
 	add x0, x0, _global_scope@PAGEOFF
 	ldr x0, [x0]
@@ -34434,24 +34583,24 @@ cset w0, eq
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L738_end
+	beq .L757_end
 	sub sp, sp, #80
-	b .L737_for_inc
-	b .L738_end
+	b .L756_for_inc
+	b .L757_end
 	add sp, sp, #80
-.L738_end:
+.L757_end:
 	ldr w0, [x29, #-76]
 	mov w2, #3
 	cmp w0, w2
 	cset w0, ne
 	mov w0, w0
 	cmp wzr, w0
-	beq .L739_end
+	beq .L758_end
 	sub sp, sp, #80
-	b .L737_for_inc
-	b .L739_end
+	b .L756_for_inc
+	b .L758_end
 	add sp, sp, #80
-.L739_end:
+.L758_end:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34460,11 +34609,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L740_elseif_0
+	beq .L759_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_886@PAGE
-	add x0, x0, _str_886@PAGEOFF
+	adrp x0, _str_891@PAGE
+	add x0, x0, _str_891@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34497,8 +34646,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_887@PAGE
-	add x2, x2, _str_887@PAGEOFF
+	adrp x2, _str_892@PAGE
+	add x2, x2, _str_892@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34506,9 +34655,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L740_end
+	b .L759_end
 	add sp, sp, #80
-.L740_elseif_0:
+.L759_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34517,11 +34666,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L740_end
+	beq .L759_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_888@PAGE
-	add x0, x0, _str_888@PAGEOFF
+	adrp x0, _str_893@PAGE
+	add x0, x0, _str_893@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34554,8 +34703,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_889@PAGE
-	add x2, x2, _str_889@PAGEOFF
+	adrp x2, _str_894@PAGE
+	add x2, x2, _str_894@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34563,20 +34712,20 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L740_end
+	b .L759_end
 	add sp, sp, #80
-.L740_end:
+.L759_end:
 	ldr w0, [x29, #-76]
 	mov w2, #3
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L747_end
+	beq .L766_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_890@PAGE
-	add x0, x0, _str_890@PAGEOFF
+	adrp x0, _str_895@PAGE
+	add x0, x0, _str_895@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	sub sp, sp, #16
@@ -34617,8 +34766,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_891@PAGE
-	add x2, x2, _str_891@PAGEOFF
+	adrp x2, _str_896@PAGE
+	add x2, x2, _str_896@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34626,10 +34775,10 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L747_end
+	b .L766_end
 	add sp, sp, #80
-.L747_end:
-.L737_for_inc:
+.L766_end:
+.L756_for_inc:
 	add x0, x29, #-72
 
 	sub sp, sp, #16
@@ -34640,8 +34789,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L737_for_start
-.L737_for_end:
+	b .L756_for_start
+.L756_for_end:
 	add sp, sp, #80
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -34651,17 +34800,17 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L751_elseif_0
+	beq .L770_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_892@PAGE
-	add x0, x0, _str_892@PAGEOFF
+	adrp x0, _str_897@PAGE
+	add x0, x0, _str_897@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L751_end
+	b .L770_end
 	add sp, sp, #80
-.L751_elseif_0:
+.L770_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34670,27 +34819,27 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L751_end
+	beq .L770_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_893@PAGE
-	add x0, x0, _str_893@PAGEOFF
+	adrp x0, _str_898@PAGE
+	add x0, x0, _str_898@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
 	sub sp, sp, #16
-	adrp x0, _str_894@PAGE
-	add x0, x0, _str_894@PAGEOFF
+	adrp x0, _str_899@PAGE
+	add x0, x0, _str_899@PAGEOFF
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L751_end
+	b .L770_end
 	add sp, sp, #80
-.L751_end:
+.L770_end:
 	sub sp, sp, #80
 	mov w0, #0
 	str w0, [x29, #-72]
-.L752_for_start:
+.L771_for_start:
 	ldr w0, [x29, #-72]
 	sub sp, sp, #16
 	str x0, [sp]
@@ -34705,7 +34854,7 @@ cset w0, eq
 	cset w0, lt
 	mov w0, w0
 	cmp wzr, w0
-	beq .L752_for_end
+	beq .L771_for_end
 	adrp x0, _global_scope@PAGE
 	add x0, x0, _global_scope@PAGEOFF
 	ldr x0, [x0]
@@ -34727,19 +34876,19 @@ cset w0, eq
 	mov w0, w0
 	add sp, sp, #16
 	cmp wzr, w0
-	beq .L753_end
+	beq .L772_end
 	sub sp, sp, #80
-	b .L752_for_inc
-	b .L753_end
+	b .L771_for_inc
+	b .L772_end
 	add sp, sp, #80
-.L753_end:
+.L772_end:
 	ldr w0, [x29, #-76]
 	mov w2, #7
 	cmp w0, w2
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L754_end
+	beq .L773_end
 	sub sp, sp, #80
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -34749,11 +34898,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L755_elseif_0
+	beq .L774_elseif_0
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_895@PAGE
-	add x0, x0, _str_895@PAGEOFF
+	adrp x0, _str_900@PAGE
+	add x0, x0, _str_900@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34786,8 +34935,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_896@PAGE
-	add x2, x2, _str_896@PAGEOFF
+	adrp x2, _str_901@PAGE
+	add x2, x2, _str_901@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34795,9 +34944,9 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L755_end
+	b .L774_end
 	add sp, sp, #80
-.L755_elseif_0:
+.L774_elseif_0:
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
 	ldr w0, [x0]
@@ -34806,11 +34955,11 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L755_end
+	beq .L774_end
 	sub sp, sp, #80
 	sub sp, sp, #16
-	adrp x0, _str_897@PAGE
-	add x0, x0, _str_897@PAGEOFF
+	adrp x0, _str_902@PAGE
+	add x0, x0, _str_902@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34843,8 +34992,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_898@PAGE
-	add x2, x2, _str_898@PAGEOFF
+	adrp x2, _str_903@PAGE
+	add x2, x2, _str_903@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34852,12 +35001,12 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L755_end
+	b .L774_end
 	add sp, sp, #80
-.L755_end:
+.L774_end:
 	sub sp, sp, #16
-	adrp x0, _str_899@PAGE
-	add x0, x0, _str_899@PAGEOFF
+	adrp x0, _str_904@PAGE
+	add x0, x0, _str_904@PAGEOFF
 	sub sp, sp, #16
 	str x0, [sp]
 	adrp x0, _global_scope@PAGE
@@ -34890,8 +35039,8 @@ cset w0, eq
 	mov x0, x22
 	add sp, sp, #16
 	mov x0, x0
-	adrp x2, _str_900@PAGE
-	add x2, x2, _str_900@PAGEOFF
+	adrp x2, _str_905@PAGE
+	add x2, x2, _str_905@PAGEOFF
 	mov x23, x2
 	bl __append_string_to_builder
 	mov x0, x22
@@ -34899,10 +35048,10 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L754_end
+	b .L773_end
 	add sp, sp, #80
-.L754_end:
-.L752_for_inc:
+.L773_end:
+.L771_for_inc:
 	add x0, x29, #-72
 
 	sub sp, sp, #16
@@ -34913,8 +35062,8 @@ cset w0, eq
 	ldr x19, [sp]
 	add sp, sp, #16
 	str w0, [x19]
-	b .L752_for_start
-.L752_for_end:
+	b .L771_for_start
+.L771_for_end:
 	add sp, sp, #80
 	adrp x0, _current_target@PAGE
 	add x0, x0, _current_target@PAGEOFF
@@ -34924,51 +35073,8 @@ cset w0, eq
 	cset w0, eq
 	mov w0, w0
 	cmp wzr, w0
-	beq .L765_elseif_0
+	beq .L784_elseif_0
 	sub sp, sp, #80
-	sub sp, sp, #16
-	adrp x0, _str_901@PAGE
-	add x0, x0, _str_901@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_902@PAGE
-	add x0, x0, _str_902@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_903@PAGE
-	add x0, x0, _str_903@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	sub sp, sp, #16
-	adrp x0, _str_904@PAGE
-	add x0, x0, _str_904@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
-	b .L765_end
-	add sp, sp, #80
-.L765_elseif_0:
-	adrp x0, _current_target@PAGE
-	add x0, x0, _current_target@PAGEOFF
-	ldr w0, [x0]
-	mov w2, #1
-	cmp w0, w2
-	cset w0, eq
-	mov w0, w0
-	cmp wzr, w0
-	beq .L765_end
-	sub sp, sp, #80
-	sub sp, sp, #16
-	adrp x0, _str_905@PAGE
-	add x0, x0, _str_905@PAGEOFF
-	str x0, [sp]
-	bl print
-	add sp, sp, #16
 	sub sp, sp, #16
 	adrp x0, _str_906@PAGE
 	add x0, x0, _str_906@PAGEOFF
@@ -34987,9 +35093,52 @@ cset w0, eq
 	str x0, [sp]
 	bl print
 	add sp, sp, #16
-	b .L765_end
+	sub sp, sp, #16
+	adrp x0, _str_909@PAGE
+	add x0, x0, _str_909@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	b .L784_end
 	add sp, sp, #80
-.L765_end:
+.L784_elseif_0:
+	adrp x0, _current_target@PAGE
+	add x0, x0, _current_target@PAGEOFF
+	ldr w0, [x0]
+	mov w2, #1
+	cmp w0, w2
+	cset w0, eq
+	mov w0, w0
+	cmp wzr, w0
+	beq .L784_end
+	sub sp, sp, #80
+	sub sp, sp, #16
+	adrp x0, _str_910@PAGE
+	add x0, x0, _str_910@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_911@PAGE
+	add x0, x0, _str_911@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_912@PAGE
+	add x0, x0, _str_912@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	sub sp, sp, #16
+	adrp x0, _str_913@PAGE
+	add x0, x0, _str_913@PAGEOFF
+	str x0, [sp]
+	bl print
+	add sp, sp, #16
+	b .L784_end
+	add sp, sp, #80
+.L784_end:
 	mov w0, #0
 	add sp, sp, #80
 	mov sp, x29
@@ -35030,7 +35179,7 @@ warn:
 	ldp x29, x30, [sp], #16
 	ret
 .globl error
-erorr:
+error:
 	stp x29, x30, [sp, #-16]!
 	mov x29, sp
 
@@ -35300,32 +35449,32 @@ __append_char_to_builder:
 	_label_index:	.quad 0
 	_element_type:	.quad 0
 	_expression_type:	.quad 0
-	_print_asm_code_x86:	.quad _str_733
-	_warn_asm_code_x86:	.quad _str_734
-	_error_asm_code_x86:	.quad _str_735
-	_strlen_internal_asm_code_x86:	.quad _str_736
-	_long_to_str_asm_code_x86:	.quad _str_737
-	_int_to_str_asm_code_x86:	.quad _str_738
-	_char_to_str_asm_code_x86:	.quad _str_739
-	_read_file_asm_code_x86:	.quad _str_740
-	_append_char_asm_code_x86:	.quad _str_741
-	_append_long_asm_code_x86:	.quad _str_742
-	_append_quad_asm_code_x86:	.quad _str_743
-	_append_string_to_builder_asm_code_x86:	.quad _str_744
-	_append_char_to_builder_asm_code_x86:	.quad _str_745
-	_print_asm_code_aarch64:	.quad _str_746
-	_warn_asm_code_aarch64:	.quad _str_747
-	_error_asm_code_aarch64:	.quad _str_748
-	_strlen_internal_asm_code_aarch64:	.quad _str_749
-	_int_to_str_asm_code_aarch64:	.quad _str_750
-	_long_to_str_asm_code_aarch64:	.quad _str_751
-	_char_to_str_asm_code_aarch64:	.quad _str_752
-	_read_file_asm_code_aarch64:	.quad _str_753
-	_append_long_asm_code_aarch64:	.quad _str_754
-	_append_quad_asm_code_aarch64:	.quad _str_755
-	_append_char_asm_code_aarch64:	.quad _str_756
-	_append_string_to_builder_asm_code_aarch64:	.quad _str_757
-	_append_char_to_builder_asm_code_aarch64:	.quad _str_758
+	_print_asm_code_x86:	.quad _str_738
+	_warn_asm_code_x86:	.quad _str_739
+	_error_asm_code_x86:	.quad _str_740
+	_strlen_internal_asm_code_x86:	.quad _str_741
+	_long_to_str_asm_code_x86:	.quad _str_742
+	_int_to_str_asm_code_x86:	.quad _str_743
+	_char_to_str_asm_code_x86:	.quad _str_744
+	_read_file_asm_code_x86:	.quad _str_745
+	_append_char_asm_code_x86:	.quad _str_746
+	_append_long_asm_code_x86:	.quad _str_747
+	_append_quad_asm_code_x86:	.quad _str_748
+	_append_string_to_builder_asm_code_x86:	.quad _str_749
+	_append_char_to_builder_asm_code_x86:	.quad _str_750
+	_print_asm_code_aarch64:	.quad _str_751
+	_warn_asm_code_aarch64:	.quad _str_752
+	_error_asm_code_aarch64:	.quad _str_753
+	_strlen_internal_asm_code_aarch64:	.quad _str_754
+	_int_to_str_asm_code_aarch64:	.quad _str_755
+	_long_to_str_asm_code_aarch64:	.quad _str_756
+	_char_to_str_asm_code_aarch64:	.quad _str_757
+	_read_file_asm_code_aarch64:	.quad _str_758
+	_append_long_asm_code_aarch64:	.quad _str_759
+	_append_quad_asm_code_aarch64:	.quad _str_760
+	_append_char_asm_code_aarch64:	.quad _str_761
+	_append_string_to_builder_asm_code_aarch64:	.quad _str_762
+	_append_char_to_builder_asm_code_aarch64:	.quad _str_763
 	_char_88:	.byte 0
 	_char_89:	.byte 0
 	_char_90:	.byte 32
@@ -35407,36 +35556,36 @@ __append_char_to_builder:
 	_char_219:	.byte 98
 	_char_220:	.byte 108
 	_char_221:	.byte 113
-	_char_238:	.byte 0
-	_char_524:	.byte 97
+	_char_240:	.byte 0
+	_char_526:	.byte 97
 	_char_534:	.byte 97
 	_char_535:	.byte 100
-	_char_547:	.byte 97
-	_char_548:	.byte 100
-	_char_554:	.byte 97
-	_char_560:	.byte 97
-	_char_565:	.byte 97
-	_char_566:	.byte 98
-	_char_574:	.byte 97
-	_char_578:	.byte 97
-	_char_579:	.byte 98
-	_char_580:	.byte 100
-	_char_603:	.byte 97
+	_char_549:	.byte 97
+	_char_550:	.byte 100
+	_char_556:	.byte 97
+	_char_562:	.byte 97
+	_char_567:	.byte 97
+	_char_568:	.byte 98
+	_char_577:	.byte 97
+	_char_583:	.byte 97
+	_char_584:	.byte 98
+	_char_585:	.byte 100
 	_char_608:	.byte 97
-	_char_611:	.byte 100
-	_char_615:	.byte 97
-	_char_618:	.byte 97
-	_char_628:	.byte 97
-	_char_629:	.byte 97
-	_char_631:	.byte 97
-	_char_640:	.byte 0
-	_char_649:	.byte 97
-	_char_653:	.byte 97
-	_char_659:	.byte 97
-	_char_711:	.byte 97
-	_char_720:	.byte 97
-	_char_730:	.byte 97
-	_char_759:	.byte 47
+	_char_613:	.byte 97
+	_char_616:	.byte 100
+	_char_620:	.byte 97
+	_char_623:	.byte 97
+	_char_633:	.byte 97
+	_char_634:	.byte 97
+	_char_636:	.byte 97
+	_char_645:	.byte 0
+	_char_654:	.byte 97
+	_char_658:	.byte 97
+	_char_664:	.byte 97
+	_char_716:	.byte 97
+	_char_725:	.byte 97
+	_char_735:	.byte 97
+	_char_764:	.byte 47
 .const
 .align 8
 	_str_1:	.string "IDENT"
@@ -35521,7 +35670,7 @@ __append_char_to_builder:
 	_str_80:	.string "range expression"
 	_str_81:	.string "true"
 	_str_82:	.string "false"
-	_str_83:	.string "Unknown expression type as ast node name "
+	_str_83:	.string "Tried to convert unknown ast node type to string "
 	_str_84:	.string "\n"
 	_str_85:	.string "UNKNOWN"
 	_str_86:	.string ""
@@ -35552,339 +35701,339 @@ __append_char_to_builder:
 	_str_150:	.string "true"
 	_str_151:	.string "false"
 	_str_152:	.string "import"
-	_str_192:	.string "Unknown character! "
-	_str_193:	.string "Expected token "
-	_str_194:	.string ", got "
-	_str_195:	.string "\n"
-	_str_196:	.string "Variable type from token: Unknown type: "
-	_str_197:	.string "\n"
-	_str_198:	.string "Struct index "
-	_str_199:	.string " out of bounds\n"
-	_str_200:	.string "int"
-	_str_201:	.string "long"
-	_str_202:	.string "char"
-	_str_203:	.string "string"
-	_str_204:	.string "string literal"
-	_str_205:	.string "string builder"
-	_str_206:	.string "bool"
-	_str_207:	.string "void"
-	_str_208:	.string "ptr"
-	_str_209:	.string "Unknown type "
-	_str_210:	.string "\n"
-	_str_211:	.string "UNKNOWN"
-	_str_212:	.string " const"
-	_str_213:	.string "*"
-	_str_214:	.string "[]"
-	_str_215:	.string "Get size: Unknown type "
-	_str_216:	.string "\n"
-	_str_217:	.string "Get size: Unknown type "
-	_str_218:	.string "\n"
+	_str_192:	.string "Unknown character ("
+	_str_193:	.string ")\n"
+	_str_194:	.string "Expected token "
+	_str_195:	.string ", got "
+	_str_196:	.string "\n"
+	_str_197:	.string "Tried to convert unknown token type to variable type: "
+	_str_198:	.string "\n"
+	_str_199:	.string "Struct index "
+	_str_200:	.string " out of bounds\n"
+	_str_201:	.string "int"
+	_str_202:	.string "long"
+	_str_203:	.string "char"
+	_str_204:	.string "string"
+	_str_205:	.string "string literal"
+	_str_206:	.string "string builder"
+	_str_207:	.string "bool"
+	_str_208:	.string "void"
+	_str_209:	.string "ptr"
+	_str_210:	.string "Tried to convert unknown variable type to string "
+	_str_211:	.string "\n"
+	_str_212:	.string "UNKNOWN"
+	_str_213:	.string " const"
+	_str_214:	.string "*"
+	_str_215:	.string "[]"
+	_str_216:	.string "Get size: Unknown type "
+	_str_217:	.string " ("
+	_str_218:	.string ")\n"
 	_str_222:	.string "Unknown size for word "
 	_str_223:	.string "\n"
-	_str_224:	.string "Struct member "
-	_str_225:	.string " not found\n"
-	_str_226:	.string "Struct "
-	_str_227:	.string " not found\n"
-	_str_228:	.string "Too many levels of pointers\n"
-	_str_229:	.string "Too many levels of arrays\n"
-	_str_230:	.string "Function "
-	_str_231:	.string " not found\n"
-	_str_232:	.string "str_"
-	_str_233:	.string "char_"
-	_str_234:	.string "Expected identifier after arrow/double colon.\n"
-	_str_235:	.string ""
-	_str_236:	.string "Unknown statement. Found lvalue with type: "
-	_str_237:	.string "\n"
-	_str_239:	.string "Unknown size for operand "
-	_str_240:	.string "\n"
-	_str_241:	.string "("
-	_str_242:	.string ")"
+	_str_224:	.string "Struct member named "
+	_str_225:	.string " in struct "
+	_str_226:	.string " not found\n"
+	_str_227:	.string "Struct named "
+	_str_228:	.string " not found\n"
+	_str_229:	.string "Too many levels of pointers\n"
+	_str_230:	.string "Too many levels of arrays\n"
+	_str_231:	.string "Function "
+	_str_232:	.string " not found\n"
+	_str_233:	.string "str_"
+	_str_234:	.string "char_"
+	_str_235:	.string "Expected identifier after arrow/double colon.\n"
+	_str_236:	.string ""
+	_str_237:	.string "Unknown statement. There is no statement that starts with "
+	_str_238:	.string "("
+	_str_239:	.string ")\n"
+	_str_241:	.string "Unknown size for operand "
+	_str_242:	.string "\n"
 	_str_243:	.string "("
-	_str_244:	.string ", "
-	_str_245:	.string ", "
-	_str_246:	.string ")"
-	_str_247:	.string "Unknown mode "
-	_str_248:	.string "\n"
-	_str_249:	.string "$"
-	_str_250:	.string "."
-	_str_251:	.string "(%rip)"
-	_str_252:	.string "Unknown operand type "
-	_str_253:	.string "\n"
-	_str_254:	.string "b"
-	_str_255:	.string "l"
-	_str_256:	.string "q"
-	_str_257:	.string "\tmov"
-	_str_258:	.string "\tlea"
-	_str_259:	.string "\tsub"
-	_str_260:	.string "\tadd"
-	_str_261:	.string "\tcmp"
-	_str_262:	.string "\timul"
-	_str_263:	.string "\tand"
-	_str_264:	.string "\tor"
-	_str_265:	.string "\txor"
-	_str_266:	.string "Unknown opcode "
-	_str_267:	.string "\n"
-	_str_268:	.string " "
-	_str_269:	.string ", "
-	_str_270:	.string "\n"
-	_str_271:	.string "\tcmp"
-	_str_272:	.string " "
-	_str_273:	.string ", "
-	_str_274:	.string "\n\tset"
-	_str_275:	.string "l"
-	_str_276:	.string "le"
-	_str_277:	.string "g"
-	_str_278:	.string "ge"
-	_str_279:	.string "e"
-	_str_280:	.string "ne"
-	_str_281:	.string " "
-	_str_282:	.string "%al"
-	_str_283:	.string "\n"
-	_str_284:	.string "\tjmp"
-	_str_285:	.string "\tjz"
-	_str_286:	.string "Unknown opcode "
-	_str_287:	.string "\n"
-	_str_288:	.string " ."
+	_str_244:	.string ")"
+	_str_245:	.string "("
+	_str_246:	.string ", "
+	_str_247:	.string ", "
+	_str_248:	.string ")"
+	_str_249:	.string "Unknown mode of mem operand"
+	_str_250:	.string "\n"
+	_str_251:	.string "$"
+	_str_252:	.string "."
+	_str_253:	.string "(%rip)"
+	_str_254:	.string "Unknown operand type "
+	_str_255:	.string "\n"
+	_str_256:	.string "b"
+	_str_257:	.string "l"
+	_str_258:	.string "q"
+	_str_259:	.string "\tmov"
+	_str_260:	.string "\tlea"
+	_str_261:	.string "\tsub"
+	_str_262:	.string "\tadd"
+	_str_263:	.string "\tcmp"
+	_str_264:	.string "\timul"
+	_str_265:	.string "\tand"
+	_str_266:	.string "\tor"
+	_str_267:	.string "\txor"
+	_str_268:	.string "Unknown opcode "
+	_str_269:	.string "\n"
+	_str_270:	.string " "
+	_str_271:	.string ", "
+	_str_272:	.string "\n"
+	_str_273:	.string "\tcmp"
+	_str_274:	.string " "
+	_str_275:	.string ", "
+	_str_276:	.string "\n\tset"
+	_str_277:	.string "l"
+	_str_278:	.string "le"
+	_str_279:	.string "g"
+	_str_280:	.string "ge"
+	_str_281:	.string "e"
+	_str_282:	.string "ne"
+	_str_283:	.string " "
+	_str_284:	.string "%al"
+	_str_285:	.string "\n"
+	_str_286:	.string "\tjmp"
+	_str_287:	.string "\tjz"
+	_str_288:	.string "Unknown opcode "
 	_str_289:	.string "\n"
-	_str_290:	.string "\tneg"
-	_str_291:	.string " "
-	_str_292:	.string "\n"
-	_str_293:	.string "\tnot"
-	_str_294:	.string " "
-	_str_295:	.string "\n"
-	_str_296:	.string "\ttest"
-	_str_297:	.string " "
-	_str_298:	.string ", "
-	_str_299:	.string "\n\tsetz "
-	_str_300:	.string "\n"
-	_str_301:	.string "\tcall "
+	_str_290:	.string " ."
+	_str_291:	.string "\n"
+	_str_292:	.string "\tneg"
+	_str_293:	.string " "
+	_str_294:	.string "\n"
+	_str_295:	.string "\tnot"
+	_str_296:	.string " "
+	_str_297:	.string "\n"
+	_str_298:	.string "\ttest"
+	_str_299:	.string " "
+	_str_300:	.string ", "
+	_str_301:	.string "\n\tsetz "
 	_str_302:	.string "\n"
-	_str_303:	.string "\tsete "
+	_str_303:	.string "\tcall "
 	_str_304:	.string "\n"
-	_str_305:	.string "\tsetne "
+	_str_305:	.string "\tsete "
 	_str_306:	.string "\n"
-	_str_307:	.string "\tpush"
-	_str_308:	.string " "
-	_str_309:	.string "\n"
-	_str_310:	.string "\tpop"
-	_str_311:	.string " "
-	_str_312:	.string "\n"
-	_str_313:	.string "\tmovb "
-	_str_314:	.string ", %cl\n"
-	_str_315:	.string "\tsal"
-	_str_316:	.string " "
-	_str_317:	.string "%cl, "
-	_str_318:	.string "\n"
-	_str_319:	.string "\tmovb "
-	_str_320:	.string ", %cl\n"
-	_str_321:	.string "\tsar"
-	_str_322:	.string " "
-	_str_323:	.string "%cl, "
-	_str_324:	.string "\n"
-	_str_325:	.string "\tleave\n"
-	_str_326:	.string "\tret\n"
-	_str_327:	.string "\tmovl "
-	_str_328:	.string ", %ebx\n"
-	_str_329:	.string "\tcdq\n"
-	_str_330:	.string "\tidivl %ebx\n"
-	_str_331:	.string "\tmovq "
-	_str_332:	.string ", %rbx\n"
-	_str_333:	.string "\tcqo\n"
-	_str_334:	.string "\tidivq %rbx\n"
-	_str_335:	.string "Unknown size for division"
-	_str_336:	.string "\n"
-	_str_337:	.string "\tmovl "
-	_str_338:	.string ", %ebx\n"
-	_str_339:	.string "\tcdq\n"
-	_str_340:	.string "\tidivl %ebx\n"
-	_str_341:	.string "\tmovl %edx, "
-	_str_342:	.string "\n"
-	_str_343:	.string "\tmovq "
-	_str_344:	.string ", %rbx\n"
-	_str_345:	.string "\tcqo\n"
-	_str_346:	.string "\tidivq %rbx\n"
-	_str_347:	.string "\tmovq %rdx, "
-	_str_348:	.string "\n"
-	_str_349:	.string "Unknown size for modulo"
+	_str_307:	.string "\tsetne "
+	_str_308:	.string "\n"
+	_str_309:	.string "\tpush"
+	_str_310:	.string " "
+	_str_311:	.string "\n"
+	_str_312:	.string "\tpop"
+	_str_313:	.string " "
+	_str_314:	.string "\n"
+	_str_315:	.string "\tmovb "
+	_str_316:	.string ", %cl\n"
+	_str_317:	.string "\tsal"
+	_str_318:	.string " "
+	_str_319:	.string "%cl, "
+	_str_320:	.string "\n"
+	_str_321:	.string "\tmovb "
+	_str_322:	.string ", %cl\n"
+	_str_323:	.string "\tsar"
+	_str_324:	.string " "
+	_str_325:	.string "%cl, "
+	_str_326:	.string "\n"
+	_str_327:	.string "\tleave\n"
+	_str_328:	.string "\tret\n"
+	_str_329:	.string "\tmovl "
+	_str_330:	.string ", %ebx\n"
+	_str_331:	.string "\tcdq\n"
+	_str_332:	.string "\tidivl %ebx\n"
+	_str_333:	.string "\tmovq "
+	_str_334:	.string ", %rbx\n"
+	_str_335:	.string "\tcqo\n"
+	_str_336:	.string "\tidivq %rbx\n"
+	_str_337:	.string "Unknown size for division"
+	_str_338:	.string "\n"
+	_str_339:	.string "\tmovl "
+	_str_340:	.string ", %ebx\n"
+	_str_341:	.string "\tcdq\n"
+	_str_342:	.string "\tidivl %ebx\n"
+	_str_343:	.string "\tmovl %edx, "
+	_str_344:	.string "\n"
+	_str_345:	.string "\tmovq "
+	_str_346:	.string ", %rbx\n"
+	_str_347:	.string "\tcqo\n"
+	_str_348:	.string "\tidivq %rbx\n"
+	_str_349:	.string "\tmovq %rdx, "
 	_str_350:	.string "\n"
-	_str_351:	.string "\tmovs"
-	_str_352:	.string " "
-	_str_353:	.string ", "
-	_str_354:	.string "\n"
-	_str_355:	.string "Unknown instruction opcode "
+	_str_351:	.string "Unknown size for modulo"
+	_str_352:	.string "\n"
+	_str_353:	.string "\tmovs"
+	_str_354:	.string " "
+	_str_355:	.string ", "
 	_str_356:	.string "\n"
-	_str_357:	.string ", "
-	_str_358:	.string ", lsl #"
+	_str_357:	.string "Unknown instruction opcode "
+	_str_358:	.string "\n"
 	_str_359:	.string ", "
-	_str_360:	.string "\n"
-	_str_361:	.string "wzr"
-	_str_362:	.string "xzr"
-	_str_363:	.string "Unknown regiser, has no name and no size\n"
-	_str_364:	.string "Unknown size for operand "
-	_str_365:	.string "\n"
-	_str_366:	.string "["
-	_str_367:	.string ", #"
-	_str_368:	.string "]"
-	_str_369:	.string "["
+	_str_360:	.string ", lsl #"
+	_str_361:	.string ", "
+	_str_362:	.string "\n"
+	_str_363:	.string "wzr"
+	_str_364:	.string "xzr"
+	_str_365:	.string "Unknown regiser, has no name and no size\n"
+	_str_366:	.string "Unknown size for operand "
+	_str_367:	.string "\n"
+	_str_368:	.string "["
+	_str_369:	.string ", #"
 	_str_370:	.string "]"
-	_str_371:	.string "Immediate value is too large for AArch64: "
-	_str_372:	.string "\n"
-	_str_373:	.string "#"
-	_str_374:	.string "_"
-	_str_375:	.string "_"
-	_str_376:	.string "Unknown operand type "
-	_str_377:	.string "\n"
-	_str_378:	.string "Only 0 can be used as immediate value for cmp\n"
-	_str_379:	.string "\tldr x12, "
-	_str_380:	.string "\n"
-	_str_381:	.string "\tadd x12, x12, "
+	_str_371:	.string "["
+	_str_372:	.string "]"
+	_str_373:	.string "Immediate value is too large for aarch64: "
+	_str_374:	.string "\n"
+	_str_375:	.string "#"
+	_str_376:	.string "_"
+	_str_377:	.string "_"
+	_str_378:	.string "Unknown operand type "
+	_str_379:	.string "\n"
+	_str_380:	.string "Only 0 can be used as immediate value for cmp\n"
+	_str_381:	.string "\tldr x12, "
 	_str_382:	.string "\n"
-	_str_383:	.string "\tstr x12, "
+	_str_383:	.string "\tadd x12, x12, "
 	_str_384:	.string "\n"
-	_str_385:	.string "\tadd"
-	_str_386:	.string "\tsub"
-	_str_387:	.string "\tmul"
-	_str_388:	.string "\tand"
-	_str_389:	.string "\torr"
-	_str_390:	.string "\teor"
-	_str_391:	.string "\tlsl"
-	_str_392:	.string "\tasr"
-	_str_393:	.string "Unknown opcode "
-	_str_394:	.string "\n"
-	_str_395:	.string " "
-	_str_396:	.string ", "
-	_str_397:	.string ", "
-	_str_398:	.string "\n"
-	_str_399:	.string "\tcmp"
-	_str_400:	.string " "
-	_str_401:	.string ", "
-	_str_402:	.string "\n\tcset w0, "
-	_str_403:	.string "lt"
-	_str_404:	.string "le"
-	_str_405:	.string "gt"
-	_str_406:	.string "ge"
-	_str_407:	.string "eq"
-	_str_408:	.string "ne"
-	_str_409:	.string "\n"
-	_str_410:	.string "\tb"
-	_str_411:	.string "\tbeq"
-	_str_412:	.string "Unknown opcode "
-	_str_413:	.string "\n"
-	_str_414:	.string " ."
+	_str_385:	.string "\tstr x12, "
+	_str_386:	.string "\n"
+	_str_387:	.string "\tadd"
+	_str_388:	.string "\tsub"
+	_str_389:	.string "\tmul"
+	_str_390:	.string "\tand"
+	_str_391:	.string "\torr"
+	_str_392:	.string "\teor"
+	_str_393:	.string "\tlsl"
+	_str_394:	.string "\tasr"
+	_str_395:	.string "Unknown opcode "
+	_str_396:	.string "\n"
+	_str_397:	.string " "
+	_str_398:	.string ", "
+	_str_399:	.string ", "
+	_str_400:	.string "\n"
+	_str_401:	.string "\tcmp"
+	_str_402:	.string " "
+	_str_403:	.string ", "
+	_str_404:	.string "\n\tcset w0, "
+	_str_405:	.string "lt"
+	_str_406:	.string "le"
+	_str_407:	.string "gt"
+	_str_408:	.string "ge"
+	_str_409:	.string "eq"
+	_str_410:	.string "ne"
+	_str_411:	.string "\n"
+	_str_412:	.string "\tb"
+	_str_413:	.string "\tbeq"
+	_str_414:	.string "Unknown opcode "
 	_str_415:	.string "\n"
-	_str_416:	.string "\tldr"
-	_str_417:	.string "b"
-	_str_418:	.string " "
-	_str_419:	.string ", "
-	_str_420:	.string "\n"
-	_str_421:	.string "\tmov w9, "
+	_str_416:	.string " ."
+	_str_417:	.string "\n"
+	_str_418:	.string "\tldr"
+	_str_419:	.string "b"
+	_str_420:	.string " "
+	_str_421:	.string ", "
 	_str_422:	.string "\n"
-	_str_423:	.string "\tstr w9, "
-	_str_424:	.string "\tmov x9, "
-	_str_425:	.string "\n"
-	_str_426:	.string "\tstr x9, "
-	_str_427:	.string "\tstr"
-	_str_428:	.string "b"
-	_str_429:	.string " "
-	_str_430:	.string ", "
-	_str_431:	.string "\n"
-	_str_432:	.string "\tmov"
-	_str_433:	.string " "
-	_str_434:	.string ", "
-	_str_435:	.string "\n"
-	_str_436:	.string "LEA instruction must have a memory source\n"
-	_str_437:	.string "LEA instruction must have a register destination\n"
-	_str_438:	.string "\tadd "
-	_str_439:	.string ", "
-	_str_440:	.string "\n"
-	_str_441:	.string "\tadrp "
-	_str_442:	.string ", "
-	_str_443:	.string "@PAGE\n"
-	_str_444:	.string "\tadd "
-	_str_445:	.string ", "
-	_str_446:	.string ", "
-	_str_447:	.string "@PAGEOFF\n"
-	_str_448:	.string "\tldr"
-	_str_449:	.string "b"
-	_str_450:	.string " "
-	_str_451:	.string ", ["
-	_str_452:	.string "]\n"
-	_str_453:	.string "\tadrp "
-	_str_454:	.string ", "
-	_str_455:	.string "@PAGE\n"
-	_str_456:	.string "\tadd "
-	_str_457:	.string ", "
-	_str_458:	.string ", "
-	_str_459:	.string "@PAGEOFF\n"
-	_str_460:	.string "\tneg"
-	_str_461:	.string " "
-	_str_462:	.string ", "
-	_str_463:	.string "\n"
-	_str_464:	.string "\tmvn"
-	_str_465:	.string " "
-	_str_466:	.string ", "
-	_str_467:	.string "\n"
-	_str_468:	.string "\tcmp"
-	_str_469:	.string " "
-	_str_470:	.string ", "
-	_str_471:	.string "\n"
-	_str_472:	.string "\ttst"
-	_str_473:	.string " "
-	_str_474:	.string ", "
-	_str_475:	.string "\n\tcset "
-	_str_476:	.string ", eq"
-	_str_477:	.string "\n"
-	_str_478:	.string "\tbl "
+	_str_423:	.string "\tmov w9, "
+	_str_424:	.string "\n"
+	_str_425:	.string "\tstr w9, "
+	_str_426:	.string "\tmov x9, "
+	_str_427:	.string "\n"
+	_str_428:	.string "\tstr x9, "
+	_str_429:	.string "\tstr"
+	_str_430:	.string "b"
+	_str_431:	.string " "
+	_str_432:	.string ", "
+	_str_433:	.string "\n"
+	_str_434:	.string "\tmov"
+	_str_435:	.string " "
+	_str_436:	.string ", "
+	_str_437:	.string "\n"
+	_str_438:	.string "LEA instruction must have a memory source\n"
+	_str_439:	.string "LEA instruction must have a register destination\n"
+	_str_440:	.string "\tadd "
+	_str_441:	.string ", "
+	_str_442:	.string "\n"
+	_str_443:	.string "\tadrp "
+	_str_444:	.string ", "
+	_str_445:	.string "@PAGE\n"
+	_str_446:	.string "\tadd "
+	_str_447:	.string ", "
+	_str_448:	.string ", "
+	_str_449:	.string "@PAGEOFF\n"
+	_str_450:	.string "\tldr"
+	_str_451:	.string "b"
+	_str_452:	.string " "
+	_str_453:	.string ", ["
+	_str_454:	.string "]\n"
+	_str_455:	.string "\tadrp "
+	_str_456:	.string ", "
+	_str_457:	.string "@PAGE\n"
+	_str_458:	.string "\tadd "
+	_str_459:	.string ", "
+	_str_460:	.string ", "
+	_str_461:	.string "@PAGEOFF\n"
+	_str_462:	.string "\tneg"
+	_str_463:	.string " "
+	_str_464:	.string ", "
+	_str_465:	.string "\n"
+	_str_466:	.string "\tmvn"
+	_str_467:	.string " "
+	_str_468:	.string ", "
+	_str_469:	.string "\n"
+	_str_470:	.string "\tcmp"
+	_str_471:	.string " "
+	_str_472:	.string ", "
+	_str_473:	.string "\n"
+	_str_474:	.string "\ttst"
+	_str_475:	.string " "
+	_str_476:	.string ", "
+	_str_477:	.string "\n\tcset "
+	_str_478:	.string ", eq"
 	_str_479:	.string "\n"
-	_str_480:	.string "cset "
-	_str_481:	.string ", eq\n"
-	_str_482:	.string "\n"
-	_str_483:	.string "cset "
-	_str_484:	.string ", ne\n"
-	_str_485:	.string "\n"
-	_str_486:	.string "\tsub sp, sp, #"
+	_str_480:	.string "\tbl "
+	_str_481:	.string "\n"
+	_str_482:	.string "cset "
+	_str_483:	.string ", eq\n"
+	_str_484:	.string "\n"
+	_str_485:	.string "cset "
+	_str_486:	.string ", ne\n"
 	_str_487:	.string "\n"
-	_str_488:	.string "\tstr"
-	_str_489:	.string "b"
-	_str_490:	.string " "
-	_str_491:	.string ", [sp]\n"
-	_str_492:	.string "\tldr"
-	_str_493:	.string "b"
-	_str_494:	.string " "
-	_str_495:	.string ", [sp]\n"
-	_str_496:	.string "\tadd sp, sp, #"
-	_str_497:	.string "\n"
-	_str_498:	.string "\tmov sp, x29\n"
-	_str_499:	.string "\tldp x29, x30, [sp], #16\n"
-	_str_500:	.string "\tret\n"
-	_str_501:	.string "\tsdiv "
-	_str_502:	.string ", "
-	_str_503:	.string ", "
-	_str_504:	.string "\n"
-	_str_505:	.string "\tsdiv "
-	_str_506:	.string ", "
-	_str_507:	.string ", "
-	_str_508:	.string "\n"
-	_str_509:	.string "\tmsub "
-	_str_510:	.string ", "
-	_str_511:	.string ", "
+	_str_488:	.string "\tsub sp, sp, #"
+	_str_489:	.string "\n"
+	_str_490:	.string "\tstr"
+	_str_491:	.string "b"
+	_str_492:	.string " "
+	_str_493:	.string ", [sp]\n"
+	_str_494:	.string "\tldr"
+	_str_495:	.string "b"
+	_str_496:	.string " "
+	_str_497:	.string ", [sp]\n"
+	_str_498:	.string "\tadd sp, sp, #"
+	_str_499:	.string "\n"
+	_str_500:	.string "\tmov sp, x29\n"
+	_str_501:	.string "\tldp x29, x30, [sp], #16\n"
+	_str_502:	.string "\tret\n"
+	_str_503:	.string "\tsdiv "
+	_str_504:	.string ", "
+	_str_505:	.string ", "
+	_str_506:	.string "\n"
+	_str_507:	.string "\tsdiv "
+	_str_508:	.string ", "
+	_str_509:	.string ", "
+	_str_510:	.string "\n"
+	_str_511:	.string "\tmsub "
 	_str_512:	.string ", "
-	_str_513:	.string "\n"
-	_str_514:	.string "\tsxtw"
-	_str_515:	.string " "
-	_str_516:	.string ", "
-	_str_517:	.string "\n"
-	_str_518:	.string "\tmov"
-	_str_519:	.string " "
-	_str_520:	.string ", "
-	_str_521:	.string "\n"
-	_str_522:	.string "Unknown target "
+	_str_513:	.string ", "
+	_str_514:	.string ", "
+	_str_515:	.string "\n"
+	_str_516:	.string "\tsxtw"
+	_str_517:	.string " "
+	_str_518:	.string ", "
+	_str_519:	.string "\n"
+	_str_520:	.string "\tmov"
+	_str_521:	.string " "
+	_str_522:	.string ", "
 	_str_523:	.string "\n"
-	_str_525:	.string "Unary * must have a pointer or an array as a type\n"
-	_str_526:	.string "Unary minus is not allowed as lvalue\n"
-	_str_527:	.string "Unary plus is not allowed as lvalue\n"
-	_str_528:	.string "Unknown unary expression type "
-	_str_529:	.string "\n"
+	_str_524:	.string "Unknown target "
+	_str_525:	.string "\n"
+	_str_527:	.string "Unary * must have a pointer or an array as a type\n"
+	_str_528:	.string "Unary minus is not allowed as lvalue\n"
+	_str_529:	.string "Unary plus is not allowed as lvalue\n"
 	_str_530:	.string "Unknown unary expression type "
 	_str_531:	.string "\n"
 	_str_532:	.string "__append_char_to_builder"
@@ -35893,349 +36042,354 @@ __append_char_to_builder:
 	_str_537:	.string "strcmp"
 	_str_538:	.string "Unknown operator to compare 2 strings "
 	_str_539:	.string "\n"
-	_str_540:	.string "Implicit conversion of non numeric types not implemented\n"
-	_str_541:	.string "Division not implemented for non-int types\n"
-	_str_542:	.string "Modulo not implemented for non-int types\n"
-	_str_543:	.string "Unknown binary expression type "
-	_str_544:	.string "\n"
+	_str_540:	.string "Implicit conversion of non numeric types not implemented, types are: "
+	_str_541:	.string " and "
+	_str_542:	.string "\n"
+	_str_543:	.string "Division not implemented for non-int types\n"
+	_str_544:	.string "Modulo not implemented for non-int types\n"
 	_str_545:	.string "Unknown binary expression type "
 	_str_546:	.string "\n"
-	_str_549:	.string "Unknown register for function call "
-	_str_550:	.string "\n"
-	_str_551:	.string "len"
-	_str_552:	.string "len function is not allowed as lvalue\n"
-	_str_553:	.string "len function takes exactly one argument\n"
-	_str_555:	.string "strlen"
-	_str_556:	.string "Len function can only be used on strings and arrays\n"
-	_str_557:	.string "capacity"
-	_str_558:	.string "capacity function is not allowed as lvalue\n"
-	_str_559:	.string "capacity function takes exactly one argument\n"
-	_str_561:	.string "Capacity function can only be used on arrays\n"
-	_str_562:	.string "append"
-	_str_563:	.string "append function takes exactly two arguments, got "
-	_str_564:	.string "\n"
-	_str_567:	.string "__append_char"
-	_str_568:	.string "__append_long"
-	_str_569:	.string "__append_quad"
-	_str_570:	.string "User defined function call is not allowed as lvalue\n"
-	_str_571:	.string "Mismatch in number of arguments. Expected "
-	_str_572:	.string ", got "
-	_str_573:	.string "\n"
-	_str_575:	.string "Mismatch in argument size. Expected "
-	_str_576:	.string ", got "
-	_str_577:	.string "\n"
-	_str_581:	.string "Unknown register for expression into register "
+	_str_547:	.string "Unknown binary expression type "
+	_str_548:	.string "\n"
+	_str_551:	.string "Unknown register for function call "
+	_str_552:	.string "\n"
+	_str_553:	.string "len"
+	_str_554:	.string "len function is not allowed as lvalue\n"
+	_str_555:	.string "len function takes exactly one argument\n"
+	_str_557:	.string "strlen"
+	_str_558:	.string "Len function can only be used on strings and arrays\n"
+	_str_559:	.string "capacity"
+	_str_560:	.string "capacity function is not allowed as lvalue\n"
+	_str_561:	.string "capacity function takes exactly one argument\n"
+	_str_563:	.string "Capacity function can only be used on arrays\n"
+	_str_564:	.string "append"
+	_str_565:	.string "append function takes exactly two arguments, got "
+	_str_566:	.string "\n"
+	_str_569:	.string "__append_char"
+	_str_570:	.string "__append_long"
+	_str_571:	.string "__append_quad"
+	_str_572:	.string "User defined function call is not allowed as lvalue\n"
+	_str_573:	.string "Mismatch in number of arguments when calling function "
+	_str_574:	.string ". Expected "
+	_str_575:	.string ", got "
+	_str_576:	.string "\n"
+	_str_578:	.string "Mismatch in argument size for the argument with index "
+	_str_579:	.string " of function "
+	_str_580:	.string ". Expected "
+	_str_581:	.string ", got "
 	_str_582:	.string "\n"
-	_str_583:	.string "Int expression is not allowed as lvalue\n"
-	_str_584:	.string "Long expression is not allowed as lvalue\n"
-	_str_585:	.string "True expression is not allowed as lvalue\n"
-	_str_586:	.string "False expression is not allowed as lvalue\n"
-	_str_587:	.string "Unknown const variable type "
-	_str_588:	.string "\n"
-	_str_589:	.string "Const variables cannot be lvalues\n"
-	_str_590:	.string "Global variable "
-	_str_591:	.string " not found\n"
-	_str_592:	.string "Binary expression is not allowed as lvalue\n"
-	_str_593:	.string "String literal is not allowed as lvalue\n"
-	_str_594:	.string "Char is not allowed as lvalue\n"
-	_str_595:	.string "Can't assign to void\n"
-	_str_596:	.string "New is not allowed as lvalue\n"
-	_str_597:	.string "malloc"
-	_str_598:	.string "memset"
-	_str_599:	.string "malloc"
-	_str_600:	.string "malloc"
-	_str_601:	.string "memset"
-	_str_602:	.string "New keyword can only be used to create pointers and arrays\n"
-	_str_604:	.string "Expected pointer type, got "
-	_str_605:	.string "\n"
-	_str_606:	.string "Expected struct type, got "
-	_str_607:	.string "\n"
-	_str_609:	.string "Expected string, array or pointer type, got "
+	_str_586:	.string "Unknown register for expression into register "
+	_str_587:	.string "\n"
+	_str_588:	.string "Int expression is not allowed as lvalue\n"
+	_str_589:	.string "Long expression is not allowed as lvalue\n"
+	_str_590:	.string "True expression is not allowed as lvalue\n"
+	_str_591:	.string "False expression is not allowed as lvalue\n"
+	_str_592:	.string "Unknown const variable type "
+	_str_593:	.string "\n"
+	_str_594:	.string "Const variables cannot be lvalues\n"
+	_str_595:	.string "Global variable "
+	_str_596:	.string " not found\n"
+	_str_597:	.string "Binary expression is not allowed as lvalue\n"
+	_str_598:	.string "String literal is not allowed as lvalue\n"
+	_str_599:	.string "Char is not allowed as lvalue\n"
+	_str_600:	.string "Can't assign to void\n"
+	_str_601:	.string "New is not allowed as lvalue\n"
+	_str_602:	.string "malloc"
+	_str_603:	.string "memset"
+	_str_604:	.string "malloc"
+	_str_605:	.string "malloc"
+	_str_606:	.string "memset"
+	_str_607:	.string "New keyword can only be used to create pointers and arrays\n"
+	_str_609:	.string "Expected pointer type, got "
 	_str_610:	.string "\n"
-	_str_612:	.string "Expected int type, got "
-	_str_613:	.string "\n"
-	_str_614:	.string "NOT CURRENTLY SUPPORTED\n"
-	_str_616:	.string "Expected int type, got "
-	_str_617:	.string "\n"
-	_str_619:	.string "Expected int type, got "
-	_str_620:	.string "\n"
-	_str_621:	.string "malloc"
-	_str_622:	.string "memcpy"
-	_str_623:	.string "# Narrowing conversion from "
-	_str_624:	.string " to "
+	_str_611:	.string "Expected struct type, got "
+	_str_612:	.string "\n"
+	_str_614:	.string "Expected string, array or pointer type, got "
+	_str_615:	.string "\n"
+	_str_617:	.string "Expected int type, got "
+	_str_618:	.string "\n"
+	_str_619:	.string "EXPRESSION RANGE NOT CURRENTLY SUPPORTED FOR ARRAYS AND POINTERS\n"
+	_str_621:	.string "Expected int type, got "
+	_str_622:	.string "\n"
+	_str_624:	.string "Expected int type, got "
 	_str_625:	.string "\n"
-	_str_626:	.string "Unknown expression type to put in register "
-	_str_627:	.string "\n"
-	_str_630:	.string "Can't assign to void\n"
-	_str_632:	.string "Unknown expression type to assign"
-	_str_633:	.string "\n"
-	_str_634:	.string "Implicit conversion not possible. Trying to assign type "
-	_str_635:	.string " to variable type "
-	_str_636:	.string "\n"
-	_str_637:	.string "Variable named: "
-	_str_638:	.string " already declared\n"
-	_str_639:	.string "Cannot create/assign to a variable because neither the value nor the type was provided\n"
-	_str_641:	.string "L"
-	_str_642:	.string "_elseif_"
-	_str_643:	.string "L"
-	_str_644:	.string "_else"
-	_str_645:	.string "L"
-	_str_646:	.string "_end"
-	_str_647:	.string "L"
-	_str_648:	.string "_end"
-	_str_650:	.string ".L"
-	_str_651:	.string "_elseif_"
-	_str_652:	.string ":\n"
-	_str_654:	.string ".L"
-	_str_655:	.string "_else:\n"
-	_str_656:	.string ".L"
-	_str_657:	.string "_end:\n"
-	_str_658:	.string "Return called from outside of a function\n"
-	_str_660:	.string "Type in return statement doesnt match the return type of function "
-	_str_661:	.string ". Expected "
-	_str_662:	.string ", got "
-	_str_663:	.string "\n"
-	_str_664:	.string "Underlying types are: "
-	_str_665:	.string " and "
-	_str_666:	.string "\n"
-	_str_667:	.string "main"
-	_str_668:	.string "_main"
-	_str_669:	.string "argc"
-	_str_670:	.string "argv"
-	_str_671:	.string "Return type mismatch in function "
-	_str_672:	.string ". Expected "
-	_str_673:	.string ", got "
-	_str_674:	.string "\n"
-	_str_675:	.string "Underlying types are: "
-	_str_676:	.string " and "
-	_str_677:	.string "\n"
-	_str_678:	.string ".globl "
+	_str_626:	.string "malloc"
+	_str_627:	.string "memcpy"
+	_str_628:	.string "Narrowing conversion from "
+	_str_629:	.string " to "
+	_str_630:	.string "\n"
+	_str_631:	.string "Unknown expression type to put in register "
+	_str_632:	.string "\n"
+	_str_635:	.string "Can't assign to void\n"
+	_str_637:	.string "Unknown expression type to assign"
+	_str_638:	.string "\n"
+	_str_639:	.string "Implicit conversion not possible. Trying to assign type "
+	_str_640:	.string " to variable type "
+	_str_641:	.string "\n"
+	_str_642:	.string "Variable named: "
+	_str_643:	.string " already declared\n"
+	_str_644:	.string "Cannot create/assign to a variable because neither the value nor the type was provided\n"
+	_str_646:	.string "L"
+	_str_647:	.string "_elseif_"
+	_str_648:	.string "L"
+	_str_649:	.string "_else"
+	_str_650:	.string "L"
+	_str_651:	.string "_end"
+	_str_652:	.string "L"
+	_str_653:	.string "_end"
+	_str_655:	.string ".L"
+	_str_656:	.string "_elseif_"
+	_str_657:	.string ":\n"
+	_str_659:	.string ".L"
+	_str_660:	.string "_else:\n"
+	_str_661:	.string ".L"
+	_str_662:	.string "_end:\n"
+	_str_663:	.string "Return called from outside of a function\n"
+	_str_665:	.string "Type in return statement doesnt match the return type of function "
+	_str_666:	.string ". Expected "
+	_str_667:	.string ", got "
+	_str_668:	.string "\n"
+	_str_669:	.string "Underlying types are: "
+	_str_670:	.string " and "
+	_str_671:	.string "\n"
+	_str_672:	.string "main"
+	_str_673:	.string "_main"
+	_str_674:	.string "argc"
+	_str_675:	.string "argv"
+	_str_676:	.string "Return type mismatch in function "
+	_str_677:	.string ". Expected "
+	_str_678:	.string ", got "
 	_str_679:	.string "\n"
-	_str_680:	.string ":\n"
-	_str_681:	.string "\tpushq %rbp\n"
-	_str_682:	.string "\tmovq %rsp, %rbp\n"
-	_str_683:	.string "\tstp x29, x30, [sp, #-16]!\n"
-	_str_684:	.string "\tmov x29, sp\n"
-	_str_685:	.string "main"
-	_str_686:	.string "\tmovl %edi, -4(%rbp)\n"
-	_str_687:	.string "\tmovq %rsi, -12(%rbp)\n"
-	_str_688:	.string "_main"
-	_str_689:	.string "\tstr w0, [x29, #-4]\n"
-	_str_690:	.string "\tstr x1, [x29, #-12]\n"
-	_str_691:	.string "\tleave\n\tret\n"
-	_str_692:	.string "\tmov sp, x29\n"
-	_str_693:	.string "\tldp x29, x30, [sp], #16\n"
-	_str_694:	.string "\tret\n"
-	_str_695:	.string "Break called from outside of a loop\n"
-	_str_696:	.string "L"
-	_str_697:	.string "_for_end"
-	_str_698:	.string "L"
-	_str_699:	.string "_while_end"
-	_str_700:	.string "Unknown loop type "
-	_str_701:	.string "\n"
-	_str_702:	.string "Continue called from outside of a loop\n"
+	_str_680:	.string "Underlying types are: "
+	_str_681:	.string " and "
+	_str_682:	.string "\n"
+	_str_683:	.string ".globl "
+	_str_684:	.string "\n"
+	_str_685:	.string ":\n"
+	_str_686:	.string "\tpushq %rbp\n"
+	_str_687:	.string "\tmovq %rsp, %rbp\n"
+	_str_688:	.string "\tstp x29, x30, [sp, #-16]!\n"
+	_str_689:	.string "\tmov x29, sp\n"
+	_str_690:	.string "main"
+	_str_691:	.string "\tmovl %edi, -4(%rbp)\n"
+	_str_692:	.string "\tmovq %rsi, -12(%rbp)\n"
+	_str_693:	.string "_main"
+	_str_694:	.string "\tstr w0, [x29, #-4]\n"
+	_str_695:	.string "\tstr x1, [x29, #-12]\n"
+	_str_696:	.string "\tleave\n\tret\n"
+	_str_697:	.string "\tmov sp, x29\n"
+	_str_698:	.string "\tldp x29, x30, [sp], #16\n"
+	_str_699:	.string "\tret\n"
+	_str_700:	.string "Break called from outside of a loop\n"
+	_str_701:	.string "L"
+	_str_702:	.string "_for_end"
 	_str_703:	.string "L"
-	_str_704:	.string "_for_inc"
-	_str_705:	.string "L"
-	_str_706:	.string "_for_inc"
-	_str_707:	.string "Unknown loop type "
-	_str_708:	.string "\n"
-	_str_709:	.string ".L"
-	_str_710:	.string "_while_start:\n"
-	_str_712:	.string "L"
-	_str_713:	.string "_while_end"
-	_str_714:	.string "L"
-	_str_715:	.string "_while_start"
-	_str_716:	.string ".L"
-	_str_717:	.string "_while_end:\n"
-	_str_718:	.string ".L"
-	_str_719:	.string "_for_start:\n"
-	_str_721:	.string "L"
-	_str_722:	.string "_for_end"
+	_str_704:	.string "_while_end"
+	_str_705:	.string "Unknown loop type "
+	_str_706:	.string "\n"
+	_str_707:	.string "Continue called from outside of a loop\n"
+	_str_708:	.string "L"
+	_str_709:	.string "_for_inc"
+	_str_710:	.string "L"
+	_str_711:	.string "_for_inc"
+	_str_712:	.string "Unknown loop type "
+	_str_713:	.string "\n"
+	_str_714:	.string ".L"
+	_str_715:	.string "_while_start:\n"
+	_str_717:	.string "L"
+	_str_718:	.string "_while_end"
+	_str_719:	.string "L"
+	_str_720:	.string "_while_start"
+	_str_721:	.string ".L"
+	_str_722:	.string "_while_end:\n"
 	_str_723:	.string ".L"
-	_str_724:	.string "_for_inc:\n"
-	_str_725:	.string "L"
-	_str_726:	.string "_for_start"
-	_str_727:	.string ".L"
-	_str_728:	.string "_for_end:\n"
-	_str_729:	.string "Nested functions are not supported\n"
-	_str_731:	.string "Unknown statement type "
-	_str_732:	.string "\n"
-	_str_733:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
-	_str_734:	.string ".globl warn\nwarn:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $2, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
-	_str_735:	.string ".globl error\nerror:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $2, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\n\tmovq $60, %rax\n\tmov $1, %rdi\n\tsyscall\n\n\tleave\n\tret\n"
-	_str_736:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
-	_str_737:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	_str_738:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
-	_str_739:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
-	_str_740:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
-	_str_741:	.string ".globl __append_char\n__append_char:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_char\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $1, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_char:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 1), %rax\n\tmovb %bl, (%rax)\n\tleave\n\tret\n"
-	_str_742:	.string ".globl __append_long\n__append_long:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_long\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $4, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_long:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 4), %rax\n\tmovl %ebx, (%rax)\n\tleave\n\tret\n"
-	_str_743:	.string ".globl __append_quad\n__append_quad:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_quad\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $8, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_quad:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 8), %rax\n\tmovq %rbx, (%rax)\n\tleave\n\tret\n"
-	_str_744:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %r12, %rdi\n\tcall strlen\n\tmovq %rax, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_string\n.L_grow_builder_string:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_string\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_string:\n\tleaq (%r15,%r14), %rdi\n\tmovq %r12, %rsi\n\tmovq %rbx, %rdx\n\taddq %rbx, %r14\n\tcall memcpy\n\tmovb $0, (%r15,%r14)\n\tleave\n\tret\n"
-	_str_745:	.string ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n"
-	_str_746:	.string ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_747:	.string ".globl warn\nwarn:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #2\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_748:	.string ".globl error\nerorr:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #2\n\tmov x1, x1\n\tbl _write\n\n\tmov x16, #1\n\tmov x0, #69\n\tsvc 0x80\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_749:	.string ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\tb .loop\n.done:\n\tmov x0, x2\n\tret\n"
-	_str_750:	.string ".globl int_to_str\nint_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _int_fmt@PAGE\n\tadd x2, x2, _int_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_751:	.string ".globl long_to_str\nlong_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, x0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _long_fmt@PAGE\n\tadd x2, x2, _long_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_752:	.string ".globl char_to_str\nchar_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tstrb w19, [x0]\n\tstrb wzr, [x0, #1]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_753:	.string ".globl read_file\nread_file:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tmov w1, #0\n\tbl  _open\n\tmov x19, x0\n\n\tadrp x20, file_statbuf@PAGE\n\tadd x20, x20, file_statbuf@PAGEOFF \n\tmov x1, x20\n\tbl  _fstat\n\n\tldr x0, [x20, #0x60]\n\tmov x20, x0\n\n\tmov x0, x20\n\tadd x0, x0, #1\n\tbl  _malloc\n\tmov x21, x0\n\n\tmov x0, x19\n\tmov x1, x21\n\tmov x2, x20\n\tbl  _read\n\n\tadd x1, x21, x0\n\tstrb wzr, [x1]\n\n\tmov x0, x19\n\tbl  _close\n\n\tmov x0, x21\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_754:	.string ".globl __append_long\n__append_long:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_long\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tlsl x1, x1, #2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_long:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #2\n\tstr w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_755:	.string ".globl __append_quad\n__append_quad:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_quad\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tlsl x1, x1, #3\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_quad:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #3\n\tstr x19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_756:	.string ".globl __append_char\n__append_char:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_char\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_char:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2\n\tstrb w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_757:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x0, x23\n\tbl _strlen\n\tmov x19, x0\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_string\n\n\t.L_grow_builder_string:\n\tadd x20, x20, x20\n\tcmp x20, x0\n\tblt .L_grow_builder_string\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_string:\n\tadd x0, x22, x21\n\tmov x1, x23\n\tmov x2, x19\n\tadd x21, x21, x2\n\tbl _memcpy\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_758:	.string ".globl __append_string_to_builder\n__append_char_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, #1\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_char\n\n\t.L_grow_builder_char:\n\tadd x20, x20, x20\n\tcmp x20, x0\n\tblt .L_grow_builder_char\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_char:\n\tadd x0, x22, x21\n\tstrb w23, [x22, x21]\n\tadd x21, x21, #1\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
-	_str_760:	.string ""
-	_str_761:	.string "Usage: ./compiler [target] input_file\n"
-	_str_762:	.string "x86_64"
-	_str_763:	.string "aarch64"
-	_str_764:	.string "Unknown target "
-	_str_765:	.string "\n"
-	_str_766:	.string "%al"
-	_str_767:	.string "%bl"
-	_str_768:	.string "%cl"
-	_str_769:	.string "%dl"
-	_str_770:	.string "%sil"
-	_str_771:	.string "%dil"
-	_str_772:	.string "%bpl"
-	_str_773:	.string "%spl"
-	_str_774:	.string "%r8b"
-	_str_775:	.string "%r9b"
-	_str_776:	.string "%r10b"
-	_str_777:	.string "%r11b"
-	_str_778:	.string "%r12b"
-	_str_779:	.string "%r13b"
-	_str_780:	.string "%r14b"
-	_str_781:	.string "%r15b"
-	_str_782:	.string "%eax"
-	_str_783:	.string "%ebx"
-	_str_784:	.string "%ecx"
-	_str_785:	.string "%edx"
-	_str_786:	.string "%esi"
-	_str_787:	.string "%edi"
-	_str_788:	.string "%ebp"
-	_str_789:	.string "%esp"
-	_str_790:	.string "%r8d"
-	_str_791:	.string "%r9d"
-	_str_792:	.string "%r10d"
-	_str_793:	.string "%r11d"
-	_str_794:	.string "%r12d"
-	_str_795:	.string "%r13d"
-	_str_796:	.string "%r14d"
-	_str_797:	.string "%r15d"
-	_str_798:	.string "%rax"
-	_str_799:	.string "%rbx"
-	_str_800:	.string "%rcx"
-	_str_801:	.string "%rdx"
-	_str_802:	.string "%rsi"
-	_str_803:	.string "%rdi"
-	_str_804:	.string "%rbp"
-	_str_805:	.string "%rsp"
-	_str_806:	.string "%r8"
-	_str_807:	.string "%r9"
-	_str_808:	.string "%r10"
-	_str_809:	.string "%r11"
-	_str_810:	.string "%r12"
-	_str_811:	.string "%r13"
-	_str_812:	.string "%r14"
-	_str_813:	.string "%r15"
-	_str_814:	.string "w0"
-	_str_815:	.string "w19"
-	_str_816:	.string "w3"
-	_str_817:	.string "w2"
-	_str_818:	.string "w0"
-	_str_819:	.string "w1"
-	_str_820:	.string "w29"
-	_str_821:	.string "wsp"
-	_str_822:	.string "w4"
-	_str_823:	.string "w5"
-	_str_824:	.string "w6"
-	_str_825:	.string "w7"
-	_str_826:	.string "w23"
-	_str_827:	.string "w20"
-	_str_828:	.string "w21"
-	_str_829:	.string "w22"
-	_str_830:	.string "x0"
-	_str_831:	.string "x19"
-	_str_832:	.string "x3"
-	_str_833:	.string "x2"
-	_str_834:	.string "x1"
+	_str_724:	.string "_for_start:\n"
+	_str_726:	.string "L"
+	_str_727:	.string "_for_end"
+	_str_728:	.string ".L"
+	_str_729:	.string "_for_inc:\n"
+	_str_730:	.string "L"
+	_str_731:	.string "_for_start"
+	_str_732:	.string ".L"
+	_str_733:	.string "_for_end:\n"
+	_str_734:	.string "Nested functions are not supported\n"
+	_str_736:	.string "Unknown statement type "
+	_str_737:	.string "\n"
+	_str_738:	.string ".globl print\nprint:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $1, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
+	_str_739:	.string ".globl warn\nwarn:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $2, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\tleave\n\tret\n"
+	_str_740:	.string ".globl error\nerror:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tmovq 16(%rbp), %rdi\n\tcall strlen_internal\n\n\tmovq %rax, %rdx\n\tmovq $1, %rax\n\tmovq $2, %rdi\n\tmovq 16(%rbp), %rsi\n\tsyscall\n\n\tmovq $60, %rax\n\tmov $1, %rdi\n\tsyscall\n\n\tleave\n\tret\n"
+	_str_741:	.string ".globl strlen_internal\nstrlen_internal:\n\txor %rcx, %rcx\n.loop:\n\tmovb (%rdi,%rcx,1), %al\n\ttest %al, %al\n\tje .done\n\tinc %rcx\n\tjmp .loop\n.done:\n\tmovq %rcx, %rax\n\tret\n"
+	_str_742:	.string ".globl long_to_str\nlong_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rbx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovq %rbx, %rcx\n\tmovq $16, %rsi\n\tleaq .long_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	_str_743:	.string ".globl int_to_str\nint_to_str:\n\tpush %rbp\n\tmovq %rsp, %rbp\n\tmovl %eax, %ebx\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovslq %ebx, %rcx\n\tmovq $16, %rsi\n\tleaq .int_fmt(%rip), %rdx\n\txor %al, %al\n\tmovq %rdi, %rbx\n\tcall snprintf\n\tmovq %rbx, %rax\n\tleave\n\tret\n"
+	_str_744:	.string ".globl char_to_str\nchar_to_str:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovb %al, %bl\n\tmovq $16, %rdi\n\tcall malloc\n\tmovq %rax, %rdi\n\tmovb %bl, (%rdi)\n\tmovb $0, 1(%rdi)\n\tmovq %rdi, %rax\n\tleave\n\tret\n"
+	_str_745:	.string ".globl read_file\nread_file:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %rdi\n\tmovq $2, %rax\n\tmovq $0, %rsi\n\tmovq $0, %rdx\n\tsyscall\n\tmovq %rax, %r12\n\tmovq $5, %rax\n\tmovq %r12, %rdi\n\tleaq file_statbuf(%rip), %rsi\n\tsyscall\n\tmovq 48+file_statbuf(%rip), %r15\n\tmovq %r15, %rdi\n\taddq $1, %rdi\n\tcall malloc\n\tmovq %rax, %r13\n\n\tmovq $0, %rax\n\tmovq %r12, %rdi\n\tmovq %r13, %rsi\n\tmovq %r15, %rdx\n\tsyscall\n\tmovq %rax, %r14\n\taddq %r13, %r14\n\tmovb $0, (%r14)\n\tmovq $3, %rax\n\tmovq %r12, %rdi\n\tsyscall\n\tmovq %r13, %rax\n\tleave\n\tret\n"
+	_str_746:	.string ".globl __append_char\n__append_char:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_char\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $1, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_char:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 1), %rax\n\tmovb %bl, (%rax)\n\tleave\n\tret\n"
+	_str_747:	.string ".globl __append_long\n__append_long:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_long\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $4, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_long:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 4), %rax\n\tmovl %ebx, (%rax)\n\tleave\n\tret\n"
+	_str_748:	.string ".globl __append_quad\n__append_quad:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %rax, %r12\n\tmovl 12(%r12), %edx\n\tmovl 8(%r12), %ecx\n\taddl $1, %ecx\n\tcmpl %ecx, %edx\n\tjge .L_after_grow_quad\n\taddl %edx, %edx\n\tmovl %edx, 12(%r12)\n\tmovslq %edx, %rsi\n\timulq $8, %rsi\n\tmovq (%r12), %rdi\n\tcall realloc\n\tmovq %rax, (%r12)\n\tmovq %r12, %rax\n.L_after_grow_quad:\n\tmovslq 8(%rax), %rdx\n\tmovq (%rax), %rax\n\tleaq (%rax, %rdx, 8), %rax\n\tmovq %rbx, (%rax)\n\tleave\n\tret\n"
+	_str_749:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tmovq %r12, %rdi\n\tcall strlen\n\tmovq %rax, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_string\n.L_grow_builder_string:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_string\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_string:\n\tleaq (%r15,%r14), %rdi\n\tmovq %r12, %rsi\n\tmovq %rbx, %rdx\n\taddq %rbx, %r14\n\tcall memcpy\n\tmovb $0, (%r15,%r14)\n\tleave\n\tret\n"
+	_str_750:	.string ".globl __append_char_to_builder\n__append_char_to_builder:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\t\tmovq $1, %rbx\n\tmovq %r14, %rax\n\taddq %rbx, %rax\n\tincq %rax\n\tcmpq %r13, %rax\n\tjbe .L_after_grow_builder_char\n.L_grow_builder_char:\n\taddq %r13, %r13\n\tcmpq %rax, %r13\n\tjb .L_grow_builder_char\n\tmovq %r13, %rsi\n\tmovq %r15, %rdi\n\tcall realloc\n\tmovq %rax, %r15\n.L_after_grow_builder_char:\n\tleaq (%r15,%r14), %rdi\n\tmovb %r12b, (%r15,%r14)\n\taddq %rbx, %r14\n\tmovb $0, (%r15,%r14)\nleave\n\tret\n"
+	_str_751:	.string ".globl print\nprint:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #1\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_752:	.string ".globl warn\nwarn:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #2\n\tmov x1, x1\n\tbl _write\n\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_753:	.string ".globl error\nerror:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tldr x1, [x29, #16]\n\tbl strlen_internal\n\n\tmov x2, x0\n\tmov x0, #2\n\tmov x1, x1\n\tbl _write\n\n\tmov x16, #1\n\tmov x0, #69\n\tsvc 0x80\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_754:	.string ".globl strlen_internal\nstrlen_internal:\n\tmov x2, #0\n\n.loop:\n\tldrb w0, [x1, x2]\n\tcbz w0, .done\n\tadd x2, x2, #1\n\tb .loop\n.done:\n\tmov x0, x2\n\tret\n"
+	_str_755:	.string ".globl int_to_str\nint_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _int_fmt@PAGE\n\tadd x2, x2, _int_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_756:	.string ".globl long_to_str\nlong_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, x0\n\tmov x0, #16\n\tbl _malloc\n\tsub sp, sp, #16\n\tstr x19, [sp]\n\tmov x1, #16\n\tadrp x2, _long_fmt@PAGE\n\tadd x2, x2, _long_fmt@PAGEOFF\n\tmov x19, x0\n\tbl _snprintf\n\tmov x0, x19\n\tadd sp, sp, #16\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_757:	.string ".globl char_to_str\nchar_to_str:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov w19, w0\n\tmov x0, #16\n\tbl _malloc\n\tstrb w19, [x0]\n\tstrb wzr, [x0, #1]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_758:	.string ".globl read_file\nread_file:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\n\tmov w1, #0\n\tbl  _open\n\tmov x19, x0\n\n\tadrp x20, file_statbuf@PAGE\n\tadd x20, x20, file_statbuf@PAGEOFF \n\tmov x1, x20\n\tbl  _fstat\n\n\tldr x0, [x20, #0x60]\n\tmov x20, x0\n\n\tmov x0, x20\n\tadd x0, x0, #1\n\tbl  _malloc\n\tmov x21, x0\n\n\tmov x0, x19\n\tmov x1, x21\n\tmov x2, x20\n\tbl  _read\n\n\tadd x1, x21, x0\n\tstrb wzr, [x1]\n\n\tmov x0, x19\n\tbl  _close\n\n\tmov x0, x21\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_759:	.string ".globl __append_long\n__append_long:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_long\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tlsl x1, x1, #2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_long:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #2\n\tstr w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_760:	.string ".globl __append_quad\n__append_quad:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_quad\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tlsl x1, x1, #3\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_quad:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2, lsl #3\n\tstr x19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_761:	.string ".globl __append_char\n__append_char:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x23, x0\n\tldr w2, [x23, #12]\n\tldr w3, [x23, #8]\n\tadd w3, w3, #1\n\tcmp w3, w2\n\tble .L_after_grow_char\n\tadd w2, w2, w2\n\tstr w2, [x23, #12]\n\tmov x1, x2\n\tldr x0, [x23]\n\tbl _realloc\n\tstr x0, [x23]\n\tmov x0, x23\n\n\t.L_after_grow_char:\n\tldr w2, [x0, #8]\n\tldr x0, [x0]\n\tadd x0, x0, x2\n\tstrb w19, [x0]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_762:	.string ".globl __append_string_to_builder\n__append_string_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x0, x23\n\tbl _strlen\n\tmov x19, x0\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_string\n\n\t.L_grow_builder_string:\n\tadd x20, x20, x20\n\tcmp x20, x0\n\tblt .L_grow_builder_string\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_string:\n\tadd x0, x22, x21\n\tmov x1, x23\n\tmov x2, x19\n\tadd x21, x21, x2\n\tbl _memcpy\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_763:	.string ".globl __append_string_to_builder\n__append_char_to_builder:\n\tstp x29, x30, [sp, #-16]!\n\tmov x29, sp\n\tmov x19, #1\n\tmov x0, x21\n\tadd x0, x19, x0\n\tadd x0, x0, #1\n\tcmp x0, x20\n\tble .L_after_grow_builder_char\n\n\t.L_grow_builder_char:\n\tadd x20, x20, x20\n\tcmp x20, x0\n\tblt .L_grow_builder_char\n\tmov x1, x20\n\tmov x0, x22\n\tbl _realloc\n\tmov x22, x0\n\n\t.L_after_grow_builder_char:\n\tadd x0, x22, x21\n\tstrb w23, [x22, x21]\n\tadd x21, x21, #1\n\tstrb wzr, [x22, x21]\n\tldp x29, x30, [sp], #16\n\tret\n"
+	_str_765:	.string ""
+	_str_766:	.string "Usage: ./compiler [target] input_file\n"
+	_str_767:	.string "x86_64"
+	_str_768:	.string "aarch64"
+	_str_769:	.string "Unknown target "
+	_str_770:	.string "\n"
+	_str_771:	.string "%al"
+	_str_772:	.string "%bl"
+	_str_773:	.string "%cl"
+	_str_774:	.string "%dl"
+	_str_775:	.string "%sil"
+	_str_776:	.string "%dil"
+	_str_777:	.string "%bpl"
+	_str_778:	.string "%spl"
+	_str_779:	.string "%r8b"
+	_str_780:	.string "%r9b"
+	_str_781:	.string "%r10b"
+	_str_782:	.string "%r11b"
+	_str_783:	.string "%r12b"
+	_str_784:	.string "%r13b"
+	_str_785:	.string "%r14b"
+	_str_786:	.string "%r15b"
+	_str_787:	.string "%eax"
+	_str_788:	.string "%ebx"
+	_str_789:	.string "%ecx"
+	_str_790:	.string "%edx"
+	_str_791:	.string "%esi"
+	_str_792:	.string "%edi"
+	_str_793:	.string "%ebp"
+	_str_794:	.string "%esp"
+	_str_795:	.string "%r8d"
+	_str_796:	.string "%r9d"
+	_str_797:	.string "%r10d"
+	_str_798:	.string "%r11d"
+	_str_799:	.string "%r12d"
+	_str_800:	.string "%r13d"
+	_str_801:	.string "%r14d"
+	_str_802:	.string "%r15d"
+	_str_803:	.string "%rax"
+	_str_804:	.string "%rbx"
+	_str_805:	.string "%rcx"
+	_str_806:	.string "%rdx"
+	_str_807:	.string "%rsi"
+	_str_808:	.string "%rdi"
+	_str_809:	.string "%rbp"
+	_str_810:	.string "%rsp"
+	_str_811:	.string "%r8"
+	_str_812:	.string "%r9"
+	_str_813:	.string "%r10"
+	_str_814:	.string "%r11"
+	_str_815:	.string "%r12"
+	_str_816:	.string "%r13"
+	_str_817:	.string "%r14"
+	_str_818:	.string "%r15"
+	_str_819:	.string "w0"
+	_str_820:	.string "w19"
+	_str_821:	.string "w3"
+	_str_822:	.string "w2"
+	_str_823:	.string "w0"
+	_str_824:	.string "w1"
+	_str_825:	.string "w29"
+	_str_826:	.string "wsp"
+	_str_827:	.string "w4"
+	_str_828:	.string "w5"
+	_str_829:	.string "w6"
+	_str_830:	.string "w7"
+	_str_831:	.string "w23"
+	_str_832:	.string "w20"
+	_str_833:	.string "w21"
+	_str_834:	.string "w22"
 	_str_835:	.string "x0"
-	_str_836:	.string "x29"
-	_str_837:	.string "sp"
-	_str_838:	.string "x4"
-	_str_839:	.string "x5"
-	_str_840:	.string "x6"
-	_str_841:	.string "x7"
-	_str_842:	.string "x23"
-	_str_843:	.string "x20"
-	_str_844:	.string "x21"
-	_str_845:	.string "x22"
-	_str_846:	.string "print"
-	_str_847:	.string "str_var"
-	_str_848:	.string "warn"
-	_str_849:	.string "str_var"
-	_str_850:	.string "error"
-	_str_851:	.string "str_var"
-	_str_852:	.string "read_file"
-	_str_853:	.string "str"
-	_str_854:	.string "int_to_str"
-	_str_855:	.string "int_var"
-	_str_856:	.string "long_to_str"
-	_str_857:	.string "long_var"
-	_str_858:	.string "char_to_str"
-	_str_859:	.string "char_var"
-	_str_860:	.string ".section .text\n"
-	_str_861:	.string ".extern memcpy\n"
-	_str_862:	.string ".extern memset\n"
-	_str_863:	.string ".extern malloc\n"
-	_str_864:	.string ".extern realloc\n"
-	_str_865:	.string ".extern strcmp\n"
-	_str_866:	.string ".extern strlen\n"
-	_str_867:	.string ".extern snprintf\n"
-	_str_868:	.string ".text\n"
-	_str_869:	.string ".section .data\n"
-	_str_870:	.string ".data\n"
-	_str_871:	.string ".align 8\n"
-	_str_872:	.string "\t."
-	_str_873:	.string ":\t"
-	_str_874:	.string "\t_"
-	_str_875:	.string ":\t"
-	_str_876:	.string ".quad "
-	_str_877:	.string "\n"
-	_str_878:	.string ".quad ."
-	_str_879:	.string "\n"
-	_str_880:	.string ".quad _"
-	_str_881:	.string "\n"
-	_str_882:	.string ".quad "
-	_str_883:	.string "\n"
-	_str_884:	.string ".quad "
-	_str_885:	.string "\n"
-	_str_886:	.string "\t."
-	_str_887:	.string ":\t"
-	_str_888:	.string "\t_"
-	_str_889:	.string ":\t"
-	_str_890:	.string ".byte "
-	_str_891:	.string "\n"
-	_str_892:	.string ".section .rodata\n"
-	_str_893:	.string ".const\n"
-	_str_894:	.string ".align 8\n"
-	_str_895:	.string "\t."
-	_str_896:	.string ":\t"
-	_str_897:	.string "\t_"
-	_str_898:	.string ":\t"
-	_str_899:	.string ".string \""
-	_str_900:	.string "\"\n"
-	_str_901:	.string "\t.long_fmt:\t.string \"%ld\"\n"
-	_str_902:	.string "\t.int_fmt:\t.string \"%d\"\n"
-	_str_903:	.string ".section .bss\n"
-	_str_904:	.string "\tfile_statbuf:\t.skip 144\n"
-	_str_905:	.string "\t_long_fmt:\t.asciz \"%ld\"\n"
-	_str_906:	.string "\t_int_fmt:\t.asciz \"%d\"\n"
-	_str_907:	.string ".bss\n"
-	_str_908:	.string "\tfile_statbuf:\t.skip 144\n"
+	_str_836:	.string "x19"
+	_str_837:	.string "x3"
+	_str_838:	.string "x2"
+	_str_839:	.string "x1"
+	_str_840:	.string "x0"
+	_str_841:	.string "x29"
+	_str_842:	.string "sp"
+	_str_843:	.string "x4"
+	_str_844:	.string "x5"
+	_str_845:	.string "x6"
+	_str_846:	.string "x7"
+	_str_847:	.string "x23"
+	_str_848:	.string "x20"
+	_str_849:	.string "x21"
+	_str_850:	.string "x22"
+	_str_851:	.string "print"
+	_str_852:	.string "str_var"
+	_str_853:	.string "warn"
+	_str_854:	.string "str_var"
+	_str_855:	.string "error"
+	_str_856:	.string "str_var"
+	_str_857:	.string "read_file"
+	_str_858:	.string "str"
+	_str_859:	.string "int_to_str"
+	_str_860:	.string "int_var"
+	_str_861:	.string "long_to_str"
+	_str_862:	.string "long_var"
+	_str_863:	.string "char_to_str"
+	_str_864:	.string "char_var"
+	_str_865:	.string ".section .text\n"
+	_str_866:	.string ".extern memcpy\n"
+	_str_867:	.string ".extern memset\n"
+	_str_868:	.string ".extern malloc\n"
+	_str_869:	.string ".extern realloc\n"
+	_str_870:	.string ".extern strcmp\n"
+	_str_871:	.string ".extern strlen\n"
+	_str_872:	.string ".extern snprintf\n"
+	_str_873:	.string ".text\n"
+	_str_874:	.string ".section .data\n"
+	_str_875:	.string ".data\n"
+	_str_876:	.string ".align 8\n"
+	_str_877:	.string "\t."
+	_str_878:	.string ":\t"
+	_str_879:	.string "\t_"
+	_str_880:	.string ":\t"
+	_str_881:	.string ".quad "
+	_str_882:	.string "\n"
+	_str_883:	.string ".quad ."
+	_str_884:	.string "\n"
+	_str_885:	.string ".quad _"
+	_str_886:	.string "\n"
+	_str_887:	.string ".quad "
+	_str_888:	.string "\n"
+	_str_889:	.string ".quad "
+	_str_890:	.string "\n"
+	_str_891:	.string "\t."
+	_str_892:	.string ":\t"
+	_str_893:	.string "\t_"
+	_str_894:	.string ":\t"
+	_str_895:	.string ".byte "
+	_str_896:	.string "\n"
+	_str_897:	.string ".section .rodata\n"
+	_str_898:	.string ".const\n"
+	_str_899:	.string ".align 8\n"
+	_str_900:	.string "\t."
+	_str_901:	.string ":\t"
+	_str_902:	.string "\t_"
+	_str_903:	.string ":\t"
+	_str_904:	.string ".string \""
+	_str_905:	.string "\"\n"
+	_str_906:	.string "\t.long_fmt:\t.string \"%ld\"\n"
+	_str_907:	.string "\t.int_fmt:\t.string \"%d\"\n"
+	_str_908:	.string ".section .bss\n"
+	_str_909:	.string "\tfile_statbuf:\t.skip 144\n"
+	_str_910:	.string "\t_long_fmt:\t.asciz \"%ld\"\n"
+	_str_911:	.string "\t_int_fmt:\t.asciz \"%d\"\n"
+	_str_912:	.string ".bss\n"
+	_str_913:	.string "\tfile_statbuf:\t.skip 144\n"
 	_long_fmt:	.asciz "%ld"
 	_int_fmt:	.asciz "%d"
 .bss

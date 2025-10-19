@@ -165,7 +165,7 @@ fn get_signature(function_registry: FunctionRegistry*, name: str): FunctionSigna
             return function_registry->signatures[i];
         }
     }
-    print("Function " + name + " not found\n");
+    error("Function " + name + " not found\n");
 }
 
 fn parse_base_type(): int {
@@ -374,7 +374,7 @@ fn get_expression(min_precedence: int): AstNode* {
             let member = new AstNode*;
             token = get_next_token();
             if (token->type != IDENT) {
-                print("Expected identifier after arrow/double colon.\n");
+                error("Expected identifier after arrow/double colon.\n");
             }
             member->type = EXPRESSION_STRUCT_MEMBER;
             let struct_member_node = new StructMemberNode*;
@@ -724,7 +724,7 @@ fn get_statement(): AstNode* {
                 return lvalue;
             }
             else {
-                print("Unknown statement. Found lvalue with type: " + int_to_str(lvalue->type) + "\n");
+                error("Unknown statement. There is no statement that starts with " + debug_ast_node_type_name(lvalue->type) + "("+ int_to_str(lvalue->type) + ")\n");
             }
         }
     }

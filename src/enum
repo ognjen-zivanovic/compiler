@@ -363,7 +363,7 @@ fn debug_ast_node_type_name(type: int): str {
         return "false";
     }
     else {
-        print("Unknown expression type as ast node name " + int_to_str(type) + "\n");
+        warn("Tried to convert unknown ast node type to string " + int_to_str(type) + "\n");
         return "UNKNOWN";
     }
 }

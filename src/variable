@@ -18,7 +18,7 @@ fn variable_type_from_token(token: Token*): int {
         return PTR_VARIABLE;
     }
     else {
-        print("Variable type from token: Unknown type: " + int_to_str(token->type) + "\n");
+        warn("Tried to convert unknown token type to variable type: " + int_to_str(token->type) + "\n");
         return UNDEFINED_VARIABLE;
     }
 }
@@ -104,7 +104,7 @@ fn dereference_type(type: int): int {
 
 fn get_struct_with_index(struct_registry: StructRegistry*, index: int): StructDefinition* {
     if (index >= struct_registry->definitions.len()) {
-        print("Struct index " + int_to_str(index) + " out of bounds\n");
+        error("Struct index " + int_to_str(index) + " out of bounds\n");
     }
     return struct_registry->definitions[index];
 }
@@ -142,7 +142,7 @@ fn debug_variable_non_pointer_type_name(type: int): str {
         return "ptr";
     }
     else {
-        print("Unknown type " + int_to_str(type) + "\n");
+        warn("Tried to convert unknown variable type to string " + int_to_str(type) + "\n");
         return "UNKNOWN";
     }
 }
@@ -210,8 +210,8 @@ fn get_size(type: int): int {
         return 8;
     }
     else {
-        print("Get size: Unknown type " + int_to_str(type) + "\n");
-        print("Get size: Unknown type " + debug_variable_type_name(type) + "\n");
+        warn("Get size: Unknown type " + debug_variable_type_name(type) + " (" + int_to_str(type) + ")\n");
+        return 0;
     }
 }
 
@@ -226,7 +226,7 @@ fn get_word_size(size: int): char {
         return 'q';
     }
     else {
-        print("Unknown size for word " + int_to_str(size) + "\n");
+        error("Unknown size for word " + int_to_str(size) + "\n");
     }
 }
 
@@ -245,7 +245,7 @@ fn get_struct_member(struct_definition: StructDefinition*, name: str): StructMem
             return struct_definition->members[i];
         }
     }
-    print("Struct member " + name + " not found\n");
+    error("Struct member named " + name + " in struct " + struct_definition->name + " not found\n");
 }
 
 fn add_struct(struct_registry: StructRegistry*): StructDefinition* {
@@ -263,7 +263,7 @@ fn get_struct(struct_registry: StructRegistry*, name: str): StructDefinition* {
             return struct_registry->definitions[i];
         }
     }
-    print("Struct " + name + " not found\n");
+    error("Struct named " + name + " not found\n");
 }
 
 
@@ -346,10 +346,10 @@ fn set_bits(type: int, pointer_bit: int, array_bit: int, const_bit: int): int {
     pointer_bits = pointer_bits << 1;
     array_bits = array_bits << 1;
     if (pointer_bits > 256) {
-        print("Too many levels of pointers\n");
+        error("Too many levels of pointers\n");
     }
     if (array_bits > 256) {
-        print("Too many levels of arrays\n");
+        error("Too many levels of arrays\n");
     }
     array_bits = array_bits | array_bit;
     pointer_bits = pointer_bits | pointer_bit;

@@ -95,7 +95,7 @@ fn read_char(): char* {
             *value = '\0';
         }
         else {
-            print("Unknown escape sequence \\" + next + "\n");
+            error("Unknown escape sequence \\" + next + "\n");
         }
     }
     else {
@@ -103,7 +103,7 @@ fn read_char(): char* {
     }
     lexer_position = lexer_position + 1;
     if (get_curr_character() != '\'') {
-        print("Too many characters in char literal\n");
+        error("Too many characters in char literal\n");
     }
     return value;
 }
@@ -386,8 +386,7 @@ fn lex_next_token(new_token: Token*) {
             new_token->type = END;
         }
         else {
-            print("Unknown character! ");
-            print(curr.char_to_str());
+            error("Unknown character (" + curr.char_to_str() + ")\n");
         }
 
         lexer_position = lexer_position + 1;
@@ -436,7 +435,7 @@ fn peek_next_token(): Token* {
 fn expect_token(type: int): Token* {
     let token = get_next_token();
     if (token->type != type) {
-        print("Expected token " + debug_token_value_to_str(type) + ", got " + debug_token_value_to_str(token->type) + "\n");
+        error("Expected token " + debug_token_value_to_str(type) + ", got " + debug_token_value_to_str(token->type) + "\n");
     }
     return token;
 }
