@@ -1,3 +1,4 @@
+import "file"
 import "enum"
 import "lexer"
 import "variable"
@@ -20,6 +21,8 @@ fn get_index_of_last_slash(filepath: str): int {
 
 fn compile_file(file_name: str) {
     file_name = relative_directory + file_name;
+    let old_curr_file = curr_file;
+    curr_file = file_name;
 
     let old_token_index = token_index;
     token_index = 0;
@@ -61,6 +64,7 @@ fn compile_file(file_name: str) {
     token_index = old_token_index;
     lexer_position = old_lexer_position;
     relative_directory = old_relative_directory;
+    curr_file = old_curr_file;
 }
 
 

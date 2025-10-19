@@ -1,0 +1,38 @@
+
+let input_text = "";
+let curr_file = "";
+let text_size = 0;
+
+fn print_location_of_error(loc: int) {
+    let index_of_last_newline_before_loc = -1;
+    let index_of_first_newline_after_loc = -1;
+    let line_number = 1;
+
+    for (let i = 0; i < input_text.len(); i = i + 1) {
+        if (input_text[i] == '\n') {
+            if (i < loc) {
+                index_of_last_newline_before_loc = i;
+                line_number = line_number + 1;
+            }
+            else {
+                index_of_first_newline_after_loc = i;
+                break;
+            }
+        }
+    }
+
+    let line_position = loc - index_of_last_newline_before_loc;
+    warn("\n");
+    warn(input_text[index_of_last_newline_before_loc + 1..index_of_first_newline_after_loc]);
+    warn("\n");
+    for (let i = 0; i < line_position - 1; i = i + 1) {
+        if (input_text[index_of_last_newline_before_loc + 1 + i] == '\t') {
+            warn("\t");
+        }
+        else {
+            warn(" ");
+        }
+    }
+    warn("^\n");
+    warn("Error in file " + curr_file + ", line " + int_to_str(line_number) + ", column " + int_to_str(line_position) + ":\n");
+}

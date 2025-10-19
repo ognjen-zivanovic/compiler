@@ -1,16 +1,16 @@
 struct Token {
-    type: int,
     value: ptr,
+    type: int,
+    loc: int,
 }
 
 let tokens: Token*[];
 let token_index = 0;
 let token_count = 0;
 
-let input_text = "";
 let lexer_position = 0;
-let text_size = 0;
 let relative_directory = "";
+
 
 fn get_curr_character(): char {
     if (lexer_position >= text_size) {
@@ -95,6 +95,7 @@ fn read_char(): char* {
             *value = '\0';
         }
         else {
+            print_location_of_error(lexer_position);
             error("Unknown escape sequence \\" + next + "\n");
         }
     }
@@ -103,6 +104,7 @@ fn read_char(): char* {
     }
     lexer_position = lexer_position + 1;
     if (get_curr_character() != '\'') {
+        print_location_of_error(lexer_position);
         error("Too many characters in char literal\n");
     }
     return value;
@@ -115,9 +117,11 @@ fn lex_next_token(new_token: Token*) {
         while (get_curr_character() != '\n') {
             lexer_position = lexer_position + 1;
         }
-        lexer_position = lexer_position + 1;
-        skip_whitespace();
+        lex_next_token(new_token);
+        return;
     }
+
+    new_token->loc = lexer_position;
 
     if (isCharacter()) {
         let token_text = new char[];
@@ -386,6 +390,7 @@ fn lex_next_token(new_token: Token*) {
             new_token->type = END;
         }
         else {
+            print_location_of_error(lexer_position);
             error("Unknown character (" + curr.char_to_str() + ")\n");
         }
 
@@ -435,6 +440,7 @@ fn peek_next_token(): Token* {
 fn expect_token(type: int): Token* {
     let token = get_next_token();
     if (token->type != type) {
+        print_location_of_error(token->loc);
         error("Expected token " + debug_token_value_to_str(type) + ", got " + debug_token_value_to_str(token->type) + "\n");
     }
     return token;

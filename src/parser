@@ -1,6 +1,7 @@
 struct AstNode {
-    type: int,
     node: ptr,
+    type: int,
+    loc: int,
 }
 
 struct AstBlock {
@@ -165,7 +166,9 @@ fn get_signature(function_registry: FunctionRegistry*, name: str): FunctionSigna
             return function_registry->signatures[i];
         }
     }
+    // TODO: add checking to see if get_signature returned correctly
     error("Function " + name + " not found\n");
+    return 0 as FunctionSignature*;
 }
 
 fn parse_base_type(): int {
@@ -206,8 +209,8 @@ fn parse_primary(): AstNode* {
     let token = get_next_token();
     
     if (token->type == INT) {
-
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_INT;
         let int_node = new IntNode*;
         int_node->value = *(token->value as int*);
@@ -216,6 +219,7 @@ fn parse_primary(): AstNode* {
     }
     elseif (token->type == LONG) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_LONG;
         let long_node = new LongNode*;
         long_node->value = *(token->value as long*);
@@ -224,17 +228,20 @@ fn parse_primary(): AstNode* {
     }
     elseif (token->type == TRUE) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_TRUE;
         return node;
     }
     elseif (token->type == FALSE) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_FALSE;
         return node;
     }
     elseif (token->type == IDENT) {
         if (peek_next_token()->type == LPAREN) {
             let node = new AstNode*;
+            node->loc = token->loc;
             node->type = EXPRESSION_FUNCTION_CALL;
             let function_call_node = new FunctionCallNode*;
             function_call_node->arguments = new AstNode*[];
@@ -257,6 +264,7 @@ fn parse_primary(): AstNode* {
         }
         else {
             let node = new AstNode*;
+            node->loc = token->loc;
             node->type = EXPRESSION_VARIABLE;
             let var_node = new VariableNode*;
             var_node->name = token->value as str;
@@ -270,6 +278,7 @@ fn parse_primary(): AstNode* {
         return expr;
     } elseif (token->type == STRING) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_STRING_LITERAL;
         let string_node = new StringLiteralNode*;
         string_node->name = "str_" + int_to_str(get_literal_index());
@@ -279,6 +288,7 @@ fn parse_primary(): AstNode* {
         return node;
     } elseif (token->type == CHAR) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_CHAR;
         let char_node = new CharNode*;
         char_node->name = "char_" + int_to_str(get_literal_index());
@@ -288,6 +298,7 @@ fn parse_primary(): AstNode* {
         return node;
     } elseif (token->type == NEW) {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_NEW;
         let new_node = new NewNode*;
 
@@ -299,6 +310,7 @@ fn parse_primary(): AstNode* {
         return node;
     } else {
         let node = new AstNode*;
+        node->loc = token->loc;
         node->type = EXPRESSION_UNARY;
         let unary_expression_node = new UnaryExpressionNode*;
         unary_expression_node->unary_expression_type = token->type;
@@ -364,6 +376,7 @@ fn get_expression(min_precedence: int): AstNode* {
 
         if (token->type == ARROW || token->type == DOUBLE_COLON) {
             let node = new AstNode*;
+            node->loc = left->loc;
             if (token->type == ARROW) {
                 node->type = EXPRESSION_ARROW;
             }
@@ -373,7 +386,9 @@ fn get_expression(min_precedence: int): AstNode* {
             consume_next_token();
             let member = new AstNode*;
             token = get_next_token();
+            member->loc = token->loc;
             if (token->type != IDENT) {
+                print_location_of_error(token->loc);
                 error("Expected identifier after arrow/double colon.\n");
             }
             member->type = EXPRESSION_STRUCT_MEMBER;
@@ -391,6 +406,7 @@ fn get_expression(min_precedence: int): AstNode* {
             consume_next_token();
 
             let node = new AstNode*;
+            node->loc = left->loc;
             node->type = EXPRESSION_INDEX;
             let index_node = new IndexNode*;
             index_node->left = left;
@@ -405,6 +421,7 @@ fn get_expression(min_precedence: int): AstNode* {
             consume_next_token();
 
             let node = new AstNode*;
+            node->loc = left->loc;
             node->type = EXPRESSION_FUNCTION_CALL;
             let function_call_node = new FunctionCallNode*;
 
@@ -433,6 +450,7 @@ fn get_expression(min_precedence: int): AstNode* {
             consume_next_token();
 
             let node = new AstNode*;
+            node->loc = left->loc;
             node->type = EXPRESSION_RANGE;
             let range_node = new RangeNode*;
             range_node->left = left;
@@ -451,6 +469,7 @@ fn get_expression(min_precedence: int): AstNode* {
             consume_next_token();
 
             let node = new AstNode*;
+            node->loc = left->loc;
             node->type = EXPRESSION_AS;
             let as_node = new AsNode*;
             as_node->value = left;
@@ -464,6 +483,7 @@ fn get_expression(min_precedence: int): AstNode* {
 
             let right = get_expression(precedence + 1);
             let node = new AstNode*;
+            node->loc = left->loc;
             node->type = EXPRESSION_BINARY;
             let binary_expression_node = new BinaryExpressionNode*;
             binary_expression_node->binary_expression_type = token->type;
@@ -482,6 +502,7 @@ fn get_statement(): AstNode* {
     let node = new AstNode*;
 
     let token = get_next_token();
+    node->loc = token->loc;
 
     if (token->type == LET || token->type == CONST) {
         if (token->type == CONST) {
@@ -521,6 +542,7 @@ fn get_statement(): AstNode* {
                         const_value = const_value + 1;
                     }
                     else {
+                        print_location_of_error(token->loc);
                         error("Unknown const type " + debug_variable_type_name(type) + "\n");
                     }
 
@@ -751,6 +773,7 @@ fn get_statement(): AstNode* {
                 return lvalue;
             }
             else {
+                print_location_of_error(lvalue->loc);
                 error("Unknown statement. There is no statement that starts with " + debug_ast_node_type_name(lvalue->type) + "("+ int_to_str(lvalue->type) + ")\n");
             }
         }

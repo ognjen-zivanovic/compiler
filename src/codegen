@@ -1085,6 +1085,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
             value_type = dereference_type(value_type);
         }
         else {
+            print_location_of_error(node->loc);
             error("Unary * must have a pointer or an array as a type\n");
         }
     }
@@ -1092,6 +1093,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
 
     if (unary_expression_node->unary_expression_type == MINUS) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Unary minus is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tneg " + register_name + "\n");
@@ -1099,6 +1101,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
     }
     elseif (unary_expression_node->unary_expression_type == PLUS) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Unary plus is not allowed as lvalue\n");
         }
     }
@@ -1126,6 +1129,7 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
         }
     }
     else {
+        print_location_of_error(node->loc);
         error("Unknown unary expression type " + debug_token_value_to_str(unary_expression_node->unary_expression_type) + "\n");
     }
     return value_type;
@@ -1231,9 +1235,12 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
 
     
-    if ((operator == EQ || operator == NEQ) && 
-        (get_underlying_type(left_type) == to_pointer(CHAR_VARIABLE)) &&
+    if ((get_underlying_type(left_type) == to_pointer(CHAR_VARIABLE)) &&
         (get_underlying_type(right_type) == to_pointer(CHAR_VARIABLE))) {
+        if (!(operator == EQ || operator == NEQ)) {
+            print_location_of_error(node->loc);
+            error("Unknown operator to compare 2 strings " + debug_token_value_to_str(operator) + "\n");
+        } 
         //add_to_text_buffer(text_buffer, "\tmovq %rax, %rdi\n");
         add_instruction(text_buffer, make_reg(RAX), make_reg(RDI), MOV, LONG_VARIABLE);
         //add_to_text_buffer(text_buffer, "\tmovq %rdx, %rsi\n");
@@ -1254,8 +1261,10 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             add_instruction(text_buffer, 0 as Operand*, make_reg(RAX), SETNE, BOOL_VARIABLE);
         }
         else {
+            print_location_of_error(node->loc);
             error("Unknown operator to compare 2 strings " + debug_token_value_to_str(operator) + "\n");
         }
+
         dealign_stack(text_buffer, alignment_offset);
         return BOOL_VARIABLE;
     }
@@ -1285,6 +1294,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
             right_type = PTR_VARIABLE;
         }
         else {
+            print_location_of_error(node->loc);
             error("Implicit conversion of non numeric types not implemented, types are: " + debug_variable_type_name(left_type) + " and " + debug_variable_type_name(right_type) + "\n");
         }
     }
@@ -1306,6 +1316,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
     elseif (operator == SLASH) {
         if (type != INT_VARIABLE && type != LONG_VARIABLE) {
+            print_location_of_error(node->loc);
             error("Division not implemented for non-int types\n");
         }
         if (get_size(type) == 4) {
@@ -1318,6 +1329,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
     elseif (operator == MODULO) {
         if (type != INT_VARIABLE && type != LONG_VARIABLE) {
+            print_location_of_error(node->loc);
             error("Modulo not implemented for non-int types\n");
         }
         if (get_size(type) == 4) {
@@ -1373,6 +1385,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
         add_instruction(text_buffer, make_reg(RDX), make_reg(RAX), SAR, type);
     }
     else {
+        print_location_of_error(node->loc);
         error("Unknown binary expression type " + int_to_str(operator) + "\n");
     }
 
@@ -1383,6 +1396,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
         return BOOL_VARIABLE;
     }
     else {
+        print_location_of_error(node->loc);
         error("Unknown binary expression type " + int_to_str(operator) + "\n");
     }
 }
@@ -1394,9 +1408,11 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
     if (name == "len") {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("len function is not allowed as lvalue\n");
         }
         if (function_call_node->arguments.len() != 1) {
+            print_location_of_error(node->loc);
             error("len function takes exactly one argument\n");
         }
         let argument = function_call_node->arguments[0];
@@ -1420,14 +1436,17 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             return INT_VARIABLE;
         }
         else {
+            print_location_of_error(node->loc);
             error("Len function can only be used on strings and arrays\n");
         }
     }
     elseif (name == "capacity") {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("capacity function is not allowed as lvalue\n");
         }
         if (function_call_node->arguments.len() != 1) {
+            print_location_of_error(node->loc);
             error("capacity function takes exactly one argument\n");
         }
         let argument = function_call_node->arguments[0];
@@ -1439,11 +1458,13 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             return INT_VARIABLE;
         }
         else {
+            print_location_of_error(node->loc);
             error("Capacity function can only be used on arrays\n");
         }
     }
     elseif (name == "append") {
         if (function_call_node->arguments.len() != 2) {
+            print_location_of_error(node->loc);
             error("append function takes exactly two arguments, got " + int_to_str(function_call_node->arguments.len()) + "\n");
         }
         let alignment_offset = align_stack(text_buffer, rsp_offset);
@@ -1497,6 +1518,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
     }
     else {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("User defined function call is not allowed as lvalue\n");
         }
 
@@ -1504,6 +1526,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
         let function_signature = get_signature(function_registry, name);
 
         if (function_signature->parameters.len() != function_call_node->arguments.len()) {
+            print_location_of_error(node->loc);
             error("Mismatch in number of arguments when calling function " + name + ". Expected " + int_to_str(function_signature->parameters.len()) + ", got " + int_to_str(function_call_node->arguments.len()) + "\n");
         }
 
@@ -1527,6 +1550,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
             let word_size = get_word_size(size);
 
             if (size != get_size(function_signature->parameters[i]->type)) {
+                print_location_of_error(function_call_node->arguments[i]->loc);
                 error("Mismatch in argument size for the argument with index " + int_to_str(i) + " of function " + name + ". Expected " + debug_variable_type_name(function_signature->parameters[i]->type) + ", got " + debug_variable_type_name(argument_type) + "\n");
             }
 
@@ -1562,6 +1586,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, reg: long, type: int): int {
     if (node->type == EXPRESSION_INT) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Int expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovl $" + int_to_str((node->node as IntNode*)->value) + ", " + register_name + "\n");
@@ -1570,6 +1595,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_LONG) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Long expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str((node->node as LongNode*)->value) + ", " + register_name + "\n");
@@ -1578,6 +1604,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_TRUE) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("True expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovb $1, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
@@ -1587,6 +1614,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_FALSE) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("False expression is not allowed as lvalue\n");
         }
         //add_to_text_buffer(text_buffer, "\tmovb $0, " + get_register_for_type(reg, BOOL_VARIABLE) + "\n");
@@ -1630,6 +1658,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                             //add_to_text_buffer(text_buffer, "\tmovq $" + long_to_str(*(global_variable->value as long*)) + ", " + register_name + "\n");
                         }
                         else {
+                            print_location_of_error(node->loc);
                             error("Unknown const variable type " + debug_variable_type_name(variable_type) + "\n");
                         }
                         add_instruction(text_buffer, make_imm(*(global_variable->value as int*) as long), make_reg(reg), MOV, variable_type);
@@ -1648,6 +1677,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
                 }
             }
             else {
+                print_location_of_error(node->loc);
                 error("Global variable " + name + " not found\n");
             }
             return variable_type;
@@ -1655,6 +1685,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_BINARY) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Binary expression is not allowed as lvalue\n");
         }
         let expression_type = compile_binary_expression(text_buffer, node, stack_frame);
@@ -1671,6 +1702,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_STRING_LITERAL) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("String literal is not allowed as lvalue\n");
         }
         let string_node = (node->node as StringLiteralNode*)->name;
@@ -1681,6 +1713,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     }
     elseif (node->type == EXPRESSION_CHAR) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("Char is not allowed as lvalue\n");
         }
         let char_node = (node->node as CharNode*)->name;
@@ -1692,12 +1725,14 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
     elseif (node->type == EXPRESSION_FUNCTION_CALL) {
         let return_type = compile_function_call(node, text_buffer, stack_frame, reg, type);
         if (return_type == VOID) {
+            print_location_of_error(node->loc);
             error("Can't assign to void\n");
         }
         return return_type;
     }
     elseif (node->type == EXPRESSION_NEW) {
         if (type == LVALUE) {
+            print_location_of_error(node->loc);
             error("New is not allowed as lvalue\n");
         }
         let new_node = (node->node as NewNode*);
@@ -1758,6 +1793,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             add_instruction(text_buffer, make_reg(RBX), make_reg(reg), MOV, LONG_VARIABLE);
         }
         else {
+            print_location_of_error(node->loc);
             error("New keyword can only be used to create pointers and arrays\n");
         }
         dealign_stack(text_buffer, alignment_offset);
@@ -1771,11 +1807,13 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         let left_type = compile_expression_into_register(text_buffer, access_node->left, stack_frame, RAX, lrtype);
         if (!is_pointer(left_type)) {
+            print_location_of_error(node->loc);
             error("Expected pointer type, got " + debug_variable_type_name(left_type) + "\n");
         }
 
         left_type = dereference_type(left_type);
         if (!(!is_pointer(left_type) && !is_array(left_type) && is_struct(left_type))) {
+            print_location_of_error(node->loc);
             error("Expected struct type, got " + debug_variable_type_name(left_type) + "\n");
         }
         let struct_definition = get_struct_with_index(struct_registry, left_type ^ (1 << 7));
@@ -1800,6 +1838,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         let index_node = (node->node as IndexNode*);
         let left_type = compile_expression_into_register(text_buffer, index_node->left, stack_frame, RAX, RVALUE);
         if (left_type != STRING_VARIABLE && !is_array(left_type) && !is_pointer(left_type)) {
+            print_location_of_error(node->loc);
             error("Expected string, array or pointer type, got " + debug_variable_type_name(left_type) + "\n");
         }
         if (is_array(left_type)) {
@@ -1825,6 +1864,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             let index_type = compile_expression_into_register(text_buffer, index_node->index, stack_frame, RDX, RVALUE);
 
             if (index_type != INT_VARIABLE && index_type != LONG_VARIABLE) {
+                print_location_of_error(node->loc);
                 error("Expected int type, got " + debug_variable_type_name(index_type) + "\n");
             }
             pop_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
@@ -1846,6 +1886,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         else {
             if (is_array(left_type) || is_pointer(left_type)) {
+                print_location_of_error(node->loc);
                 error("EXPRESSION RANGE NOT CURRENTLY SUPPORTED FOR ARRAYS AND POINTERS\n");
             }
 
@@ -1856,6 +1897,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
             let left_index_type = compile_expression_into_register(text_buffer, range_node->left, stack_frame, RAX, RVALUE);
 
             if (left_index_type != INT_VARIABLE && left_index_type != LONG_VARIABLE) {
+                print_location_of_error(node->loc);
                 error("Expected int type, got " + debug_variable_type_name(left_index_type) + "\n");
             }
             if (left_index_type == INT_VARIABLE) {
@@ -1869,6 +1911,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
 
             let right_index_type = compile_expression_into_register(text_buffer, range_node->right, stack_frame, RAX, RVALUE);
             if (right_index_type != INT_VARIABLE && right_index_type != LONG_VARIABLE) {
+                print_location_of_error(node->loc);
                 error("Expected int type, got " + debug_variable_type_name(right_index_type) + "\n");
             }
 
@@ -1932,6 +1975,7 @@ fn compile_expression_into_register(text_buffer: TextBuffer*, node: AstNode*, st
         }
         return cast_type;
     }
+    print_location_of_error(node->loc);
     error("Unknown expression type to put in register " + int_to_str(node->type) + "\n");
     return VOID;
 }
@@ -1990,6 +2034,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
         elseif (rvalue_type == EXPRESSION_FUNCTION_CALL) {
             let return_type = compile_function_call(assign_node->rvalue, text_buffer, stack_frame, RAX, RVALUE);
             if (return_type == VOID) {
+                print_location_of_error(node->loc);
                 error("Can't assign to void\n");
             }
             expression_type = return_type;
@@ -2030,6 +2075,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
             expression_type = compile_expression_into_register(text_buffer, assign_node->rvalue, stack_frame, RAX, RVALUE);
         }
         else {
+            print_location_of_error(node->loc);
             error("Unknown expression type to assign" + int_to_str(rvalue_type) + "\n");
         }
 
@@ -2039,6 +2085,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
             variable_type = dereference_type(variable_type);
             if (get_underlying_type(variable_type) != get_underlying_type(expression_type)) {
                 if (!(variable_type == PTR_VARIABLE && (is_pointer(expression_type) || is_array(expression_type)))) {
+                    print_location_of_error(node->loc);
                     error("Implicit conversion not possible. Trying to assign type " + debug_variable_type_name(expression_type) + " to variable type " + debug_variable_type_name(variable_type) + "\n");
                 }
             }
@@ -2052,6 +2099,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
         if (text_buffer != (0 as ptr) && type == STATEMENT_LET) {
             let variable_node = get_variable(stack_frame, name);
             if (variable_node) {
+                print_location_of_error(node->loc);
                 error("Variable named: " + name + " already declared\n");
             }
             variable_node = add_variable(stack_frame, name, expression_type, 0);
@@ -2062,6 +2110,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     }
     else {
         if (assign_node->type == UNDEFINED_VARIABLE) {
+            print_location_of_error(node->loc);
             error("Cannot create/assign to a variable because neither the value nor the type was provided\n");
         }
 
@@ -2154,6 +2203,7 @@ fn compile_return(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     let return_node = (node->node as ReturnNode*);
 
     if (curr_func == (0 as FunctionSignature*)) {
+        print_location_of_error(node->loc);
         error("Return called from outside of a function\n");
     }
 
@@ -2169,6 +2219,7 @@ fn compile_return(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     let return_expression_type = compile_expression_into_register(text_buffer, return_node->value, stack_frame, RAX, RVALUE);
 
     if (get_underlying_type(return_type) != get_underlying_type(return_expression_type)) {
+        print_location_of_error(node->loc);
         error("Type in return statement doesnt match the return type of function " + curr_func->name + ". Expected " + debug_variable_type_name(return_type) + ", got " + debug_variable_type_name(return_expression_type) + "\n");
         error("Underlying types are: " + debug_variable_type_name(get_underlying_type(return_type)) + " and " + debug_variable_type_name(get_underlying_type(return_expression_type)) + "\n");
     }
@@ -2207,6 +2258,7 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
         if (function_node->body->statements[i]->type == STATEMENT_RETURN) {
             let return_type = compile_return(function_text_buffer, function_node->body->statements[i], function_stack_frame, function_signature);
             if (get_underlying_type(return_type) != get_underlying_type(function_signature->return_type)) {
+                print_location_of_error(node->loc);
                 error("Return type mismatch in function " + function_node->name + ". Expected " + debug_variable_type_name(function_signature->return_type) + ", got " + debug_variable_type_name(return_type) + "\n");
                 error("Underlying types are: " + debug_variable_type_name(get_underlying_type(function_signature->return_type)) + " and " + debug_variable_type_name(get_underlying_type(return_type)) + "\n");
             }
@@ -2255,8 +2307,9 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
     } 
 }
 
-fn compile_break(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
+fn compile_break(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
     if (curr_loop == (0 as LoopSignature*)) {
+        print_location_of_error(node->loc);
         error("Break called from outside of a loop\n");
     }
 
@@ -2273,8 +2326,9 @@ fn compile_break(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: 
     }
 }
 
-fn compile_continue(text_buffer: TextBuffer*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
+fn compile_continue(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
     if (curr_loop == (0 as LoopSignature*)) {
+        print_location_of_error(node->loc);
         error("Continue called from outside of a loop\n");
     }
     
@@ -2381,6 +2435,7 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
     }
     elseif (statement->type == STATEMENT_FUNCTION) {
         if (text_buffer != (0 as ptr)) {
+            print_location_of_error(statement->loc);
             error("Nested functions are not supported\n");
         }
         compile_function(statement, stack_frame);
@@ -2389,10 +2444,10 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
         compile_return(text_buffer, statement, stack_frame, curr_func);
     }
     elseif (statement->type == STATEMENT_BREAK) {
-        compile_break(text_buffer, stack_frame, curr_loop);
+        compile_break(text_buffer, statement, stack_frame, curr_loop);
     }
     elseif (statement->type == STATEMENT_CONTINUE) {
-        compile_continue(text_buffer, stack_frame, curr_loop);
+        compile_continue(text_buffer, statement, stack_frame, curr_loop);
     }
     elseif (statement->type == EXPRESSION_FUNCTION_CALL) {
         compile_function_call(statement, text_buffer, stack_frame, RAX, RVALUE);
@@ -2411,6 +2466,7 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
         compile_file(import_node->filename);
     }
     else {
+        print_location_of_error(statement->loc);
         error("Unknown statement type " + int_to_str(statement->type) + "\n");
     }
 }
