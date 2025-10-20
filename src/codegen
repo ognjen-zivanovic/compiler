@@ -1226,6 +1226,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
     }
     elseif (operator == PLUS && is_left_char && is_right_char) {
         reserve_stack_space(text_buffer, 16);
+        let alignment_offset = align_stack(text_buffer, rsp_offset);
         push_register(text_buffer, make_reg(RDX), LONG_VARIABLE, 0, 16);
         push_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 8, 16);
 
@@ -1258,6 +1259,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
 
         //add_to_text_buffer(text_buffer, "\tmovq %r15, %rax\n");
         add_instruction(text_buffer, make_reg(R15), make_reg(RAX), MOV, LONG_VARIABLE);
+        dealign_stack(text_buffer, alignment_offset);
         free_stack_space(text_buffer, 16);
         return STRING_BUILDER_VARIABLE;
     }
