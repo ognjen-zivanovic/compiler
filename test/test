@@ -1,0 +1,6 @@
+
+
+fn main() {
+	let a = -56 % 16;
+	print(a.int_to_str());
+}

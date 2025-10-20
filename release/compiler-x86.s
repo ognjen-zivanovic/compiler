@@ -19260,7 +19260,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	subq $4, %rsp
-	movq $3, %rax
+	movq $2, %rax
 	pushq %rax
 	call make_reg
 	movq %rax, %rax
@@ -19365,7 +19365,7 @@ emit_instruction_aarch64:
 	movq 24(%rbp), %rax
 	pushq %rax
 	subq $4, %rsp
-	movq $3, %rax
+	movq $2, %rax
 	pushq %rax
 	call make_reg
 	movq %rax, %rax

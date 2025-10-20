@@ -20493,7 +20493,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	sub sp, sp, #16
-	mov x0, #3
+	mov x0, #2
 	str x0, [sp]
 	bl make_reg
 	mov x0, x0
@@ -20586,7 +20586,7 @@ emit_instruction_aarch64:
 	ldr x0, [x29, #24]
 	str x0, [sp, #12]
 	sub sp, sp, #16
-	mov x0, #3
+	mov x0, #2
 	str x0, [sp]
 	bl make_reg
 	mov x0, x0
@@ -21013,15 +21013,15 @@ align_stack:
 .loc 7 1005 9
 	ldr w0, [x29, #16]
 	mov w2, #16
-	sdiv w2, w0, w2
-	msub w0, w2, w2, w0
+	sdiv w3, w0, w2
+	msub w0, w3, w2, w0
 	mov w0, w0
 	mov w2, #16
 	add w0, w0, w2
 	mov w0, w0
 	mov w2, #16
-	sdiv w2, w0, w2
-	msub w0, w2, w2, w0
+	sdiv w3, w0, w2
+	msub w0, w3, w2, w0
 	str w0, [x29, #-4]
 .loc 7 1007 9
 	ldr w0, [x29, #-4]
