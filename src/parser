@@ -49,6 +49,11 @@ struct NewNode {
     type: int,
 }
 
+struct DeleteNode {
+    is_array: bool,
+    value: AstNode*,
+}
+
 struct BinaryExpressionNode {
     binary_expression_type: int,
     left: AstNode*,
@@ -88,7 +93,6 @@ struct IfStatementNode {
     else_if_blocks: AstBlock*[],
     else_if_count: int,
 }
-
 struct LoopSignature {
     type: int,
     index: int,
@@ -308,7 +312,8 @@ fn parse_primary(): AstNode* {
 
         node->node = new_node;
         return node;
-    } else {
+    }
+    else {
         let node = new AstNode*;
         node->loc = token->loc;
         node->type = EXPRESSION_UNARY;
@@ -748,6 +753,19 @@ fn get_statement(): AstNode* {
         import_node->filename = token->value as str;
         node->node = import_node;
     }
+    elseif (token->type == DELETE) {
+        node->type = STATEMENT_DELETE;
+        let delete_node = new DeleteNode*;
+        delete_node->is_array = false;
+        if (peek_next_token()->type == LBRACKET) {
+            consume_next_token();
+            delete_node->is_array = true;
+            expect_token(RBRACKET);
+        }
+        delete_node->value = get_expression(1);
+        expect_token(SEMICOLON);
+        node->node = delete_node;
+    }
     else {
         unconsume_token();
         let lvalue = get_expression(1);
@@ -757,7 +775,7 @@ fn get_statement(): AstNode* {
 
             let assign_node = new AssignNode*;
 
-            assign_node->name = "";
+            assign_node->name = 0 as char*;
             assign_node->type = UNDEFINED_VARIABLE;
             assign_node->lvalue = lvalue;
             assign_node->rvalue = get_expression(1);
@@ -790,4 +808,18 @@ fn get_block(): AstBlock* {
         add_statement(block, statement);
     }
     return block;
+}
+
+fn delete_ast_node(node: AstNode*)
+
+fn delete_ast_block(block: AstBlock*) {
+    for (let i = 0; i < block->statements.len(); i = i + 1) {
+        delete_ast_node(block->statements[i]);
+    }
+    delete[] block->statements;
+    delete block;
+}
+
+fn delete_ast_node(statement: AstNode*) {
+    
 }

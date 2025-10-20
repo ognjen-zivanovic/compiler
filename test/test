@@ -1,6 +1,0 @@
-
-fn main(): int {
-	fn test() {
-	}
-	return 0;
-}

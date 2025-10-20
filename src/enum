@@ -74,6 +74,7 @@ const {
     PTR_TYPE,
 
     NEW,
+    DELETE,
 
     END
 };
@@ -265,6 +266,9 @@ fn debug_token_value_to_str(token_val: int): str {
     elseif (token_val == NEW) {
         return "NEW";
     }
+    elseif (token_val == DELETE) {
+        return "DELETE";
+    }
     elseif (token_val == END) {
         return "END";
     }
@@ -302,6 +306,7 @@ const {
     STATEMENT_CONTINUE,
     STATEMENT_STRUCT,
     STATEMENT_IMPORT,
+    STATEMENT_DELETE,
 };
 
 fn debug_ast_node_type_name(type: int): str {

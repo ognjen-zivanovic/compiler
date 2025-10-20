@@ -15,6 +15,13 @@ fn new_text_buffer(): TextBuffer* {
     return text_buffer;
 }
 
+fn delete_text_buffer(text_buffer: TextBuffer*) {
+    if (text_buffer) {
+        delete[] text_buffer->buffer;
+        delete text_buffer;
+    }
+}
+
 fn add_to_text_buffer(buffer: TextBuffer*, text: str) {
     if (buffer) {
         let text_length = len(text);
@@ -29,6 +36,25 @@ fn add_to_text_buffer(buffer: TextBuffer*, text: str) {
 
 fn terminate_buffer(buffer: TextBuffer*) {
     buffer->buffer.append('\0');
+}
+
+fn print_loc(text_buffer: TextBuffer*, loc: int) {
+    let l = 0;
+    let r = line_positions.len() - 1;
+    let i = -1;
+    while (l <= r) {
+        let m = (l + r) / 2;
+        if (loc < line_positions[m]) {
+            r = m - 1;
+        }
+        else {
+            l = m + 1;
+            i = m;
+        }
+    }
+    let line_number = i + 1;
+    let line_position = loc - line_positions[i];
+    add_to_text_buffer(text_buffer, ".loc " + file_index.int_to_str() + " " + line_number.int_to_str() + " " + line_position.int_to_str() + "\n");
 }
 
 
@@ -439,9 +465,11 @@ fn emit_instruction_x86(text_buffer: TextBuffer*, instruction: Instruction*) {
         }
         elseif (opcode == LEAVE) { 
             add_to_text_buffer(text_buffer, "\tleave\n");
+            add_to_text_buffer(text_buffer, ".cfi_def_cfa 7, 8\n");
         }
         elseif (opcode == RET) {
             add_to_text_buffer(text_buffer, "\tret\n");
+            //add_to_text_buffer(text_buffer, ".cfi_endproc\n");
         }
         elseif (opcode == IDIV) {
             if (size == 4) {
@@ -2160,6 +2188,7 @@ fn compile_if_block(text_buffer: TextBuffer*, if_block: AstBlock*, stack_frame: 
     terminate_buffer(block_text_buffer);
     add_to_text_buffer(text_buffer, *(block_text_buffer->buffer));
     deallocate_stack_space(text_buffer, block_stack_frame);
+    delete_text_buffer(block_text_buffer);
 }
 
 fn compile_if(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
@@ -2232,6 +2261,33 @@ fn compile_return(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     return return_type;
 }
 
+fn compile_delete(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*) {
+    let delete_node = (node->node as DeleteNode*);
+    let value_type = compile_expression_into_register(text_buffer, delete_node->value, stack_frame, RAX, RVALUE);
+
+    if (delete_node->is_array) {
+        if (!is_array(value_type)) {
+            print_location_of_error(node->loc);
+            error("Expected array type, got " + debug_variable_type_name(value_type) + "\n");
+        }
+        add_instruction(text_buffer, make_reg(RAX), make_reg(RBX), MOV, LONG_VARIABLE);
+        add_instruction(text_buffer, make_mem(make_reg(RAX), 0 as Operand*, 0, 0, REGISTER_RELATIVE), make_reg(RDI), LOAD, LONG_VARIABLE);
+        add_instruction(text_buffer, make_stdlib_label("free"), 0 as Operand*, CALL, VOID);
+
+        add_instruction(text_buffer, make_reg(RBX), make_reg(RDI), MOV, LONG_VARIABLE);
+        add_instruction(text_buffer, make_stdlib_label("free"), 0 as Operand*, CALL, VOID);
+    }
+    else {
+        if (!is_pointer(value_type)) {
+            print_location_of_error(node->loc);
+            error("Expected pointer type, got " + debug_variable_type_name(value_type) + "\n");
+        }
+
+        add_instruction(text_buffer, make_reg(RAX), make_reg(RDI), MOV, LONG_VARIABLE);
+        add_instruction(text_buffer, make_stdlib_label("free"), 0 as Operand*, CALL, VOID);
+    }
+}
+
 fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
     let function_node = (node->node as FunctionNode*);
     if ((function_node->body) == (0 as ptr)) {
@@ -2271,8 +2327,12 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
     print(".globl " + name + "\n");
     print(name + ":\n");
     if (current_target == X86_64) {
+        print(".cfi_startproc\n");
         print("\tpushq %rbp\n");
+        print(".cfi_def_cfa_offset 16\n");
+        print(".cfi_offset 6, -16\n");
         print("\tmovq %rsp, %rbp\n");
+        print(".cfi_def_cfa_register 6\n");
     }
     elseif (current_target == AARCH64) {
         print("\tstp x29, x30, [sp, #-16]!\n");
@@ -2298,13 +2358,17 @@ fn compile_function(node: AstNode*, stack_frame: StackFrame*) {
     deallocate_stack_space(0 as TextBuffer*, function_stack_frame);
 
     if (current_target == X86_64) {
-        print("\tleave\n\tret\n");
+        print("\tleave\n");
+        print(".cfi_def_cfa 7, 8\n");
+        print("\tret\n");
+        print(".cfi_endproc\n");
     }
     elseif (current_target == AARCH64) {
         print("\tmov sp, x29\n");
         print("\tldp x29, x30, [sp], #16\n");
         print("\tret\n");
     } 
+    delete_text_buffer(function_text_buffer);
 }
 
 fn compile_break(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_loop: LoopSignature*) {
@@ -2377,6 +2441,7 @@ fn compile_while(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFra
     terminate_buffer(while_text_buffer);
     add_to_text_buffer(text_buffer, *(while_text_buffer->buffer));
     deallocate_stack_space(text_buffer, while_stack_frame);
+    delete_text_buffer(while_text_buffer);
 }
     
 fn compile_for(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*, curr_func: FunctionSignature*) {
@@ -2418,12 +2483,13 @@ fn compile_for(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame
     terminate_buffer(for_text_buffer);
     add_to_text_buffer(text_buffer, *(for_text_buffer->buffer));
     deallocate_stack_space(text_buffer, for_stack_frame);
+    delete_text_buffer(for_text_buffer);
 }
 
 fn compile_file(file_name: str)
 
 fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, statement: AstNode*, curr_func: FunctionSignature*, curr_loop: LoopSignature*) {
-
+    print_loc(text_buffer, statement->loc);
     if (statement->type == STATEMENT_LET) {
         compile_assign(text_buffer, statement, stack_frame, statement->type);
     }
@@ -2464,6 +2530,9 @@ fn compile_statement(text_buffer: TextBuffer*, stack_frame: StackFrame*, stateme
     elseif (statement->type == STATEMENT_IMPORT) {
         let import_node = (statement->node as ImportNode*);
         compile_file(import_node->filename);
+    }
+    elseif (statement->type == STATEMENT_DELETE) {
+        compile_delete(text_buffer, statement, stack_frame, curr_func);
     }
     else {
         print_location_of_error(statement->loc);

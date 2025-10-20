@@ -2,6 +2,8 @@
 let input_text = "";
 let curr_file = "";
 let text_size = 0;
+let global_file_index = 0;
+let file_index = 0;
 
 fn print_location_of_error(loc: int) {
     let index_of_last_newline_before_loc = -1;
@@ -36,3 +38,17 @@ fn print_location_of_error(loc: int) {
     warn("^\n");
     warn("Error in file " + curr_file + ", line " + int_to_str(line_number) + ", column " + int_to_str(line_position) + ":\n");
 }
+
+
+let line_positions: int[];
+
+fn calculate_line_positions() {
+    line_positions = new int[];
+    line_positions.append(0);
+    for (let i = 0; i < input_text.len(); i = i + 1) {
+        if (input_text[i] == '\n') {
+            line_positions.append(i);
+        }
+    }
+}
+

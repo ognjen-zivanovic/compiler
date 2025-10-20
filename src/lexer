@@ -172,6 +172,9 @@ fn lex_next_token(new_token: Token*) {
         elseif (token_string == "new") {
             new_token->type = NEW;
         }
+        elseif (token_string == "delete") {
+            new_token->type = DELETE;
+        }
         elseif (token_string == "struct") {
             new_token->type = STRUCT;
         }
@@ -210,6 +213,9 @@ fn lex_next_token(new_token: Token*) {
             new_token->value = token_string;
         }
 
+        if (new_token->type != IDENT) {
+            delete[] token_text;
+        }
     }
     elseif (isDigit()) {
         let value = new int*;

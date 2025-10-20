@@ -7,7 +7,7 @@ compile_and_run() {
     return 1
   fi
 
-  as -o "${name}.o" "${name}.s" &&
-  clang -no-pie -fsanitize=address -o "$name" "${name}.o" &&
+  as -g -o "${name}.o" "${name}.s" &&
+  clang -g -no-pie -fsanitize=address -fno-omit-frame-pointer -o "$name" "${name}.o" &&
   ./"$name"
 }

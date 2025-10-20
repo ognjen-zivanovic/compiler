@@ -45,6 +45,14 @@ fn compile_file(file_name: str) {
     else {
         relative_directory = "";
     }
+
+    let old_line_positions = line_positions;
+    calculate_line_positions();
+
+    global_file_index = global_file_index + 1;
+    let old_file_index = file_index;
+    file_index = global_file_index;
+    print(".file " + file_index.int_to_str() + " \"" + file_name + "\"\n");
  
     while (peek_next_token() != (0 as Token*)) {
         if (peek_next_token()->type == END) {
@@ -53,6 +61,8 @@ fn compile_file(file_name: str) {
         let node = get_statement();
 
         compile_statement(0 as TextBuffer*, 0 as StackFrame*, node, 0 as FunctionSignature*, 0 as LoopSignature*);
+
+        delete_ast_node(node);
     }
     input_text = old_input_text;
     text_size = len(input_text);
@@ -65,6 +75,8 @@ fn compile_file(file_name: str) {
     lexer_position = old_lexer_position;
     relative_directory = old_relative_directory;
     curr_file = old_curr_file;
+    line_positions = old_line_positions;
+    file_index = old_file_index;
 }
 
 
@@ -371,6 +383,18 @@ fn main(): int {
         print(".bss\n");
         print("\tfile_statbuf:\t.skip 144\n");
     }
+
+    delete[] register_names_byte;
+    delete[] register_names_dword;
+    delete[] register_names_qword;
+
+    // TODO: delete elements
+    delete[] instructions;
+
+    delete[] function_registry->signatures;
+    delete function_registry;
+    delete[] struct_registry->definitions;
+    delete struct_registry;
 
     return 0;
 }
