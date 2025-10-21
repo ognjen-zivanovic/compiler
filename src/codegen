@@ -611,6 +611,9 @@ fn emit_operand_aarch64(text_buffer: TextBuffer*, operand: Operand*, size: int) 
         if (operand->value > ((1L) << 16)) {
             error("Immediate value is too large for aarch64: " + long_to_str(operand->value) + "\n");
         }
+        if (operand->value < -((1L) << 16)) {
+            error("Immediate value is too small for aarch64: " + long_to_str(operand->value) + "\n");
+        }
         add_to_text_buffer(text_buffer, "#" + long_to_str(operand->value));
     } elseif (operand->type == LABEL) {
         add_to_text_buffer(text_buffer, operand->value as str);
@@ -784,12 +787,75 @@ fn emit_instruction_aarch64(text_buffer: TextBuffer*, instruction: Instruction*)
             add_to_text_buffer(text_buffer, "\n");
         }
         elseif (opcode == MOV) {
-            add_to_text_buffer(text_buffer, "\tmov");
-            add_to_text_buffer(text_buffer, " ");
-            emit_operand_aarch64(text_buffer, instruction->dest, size);
-            add_to_text_buffer(text_buffer, ", ");
-            emit_operand_aarch64(text_buffer, instruction->src, size);
-            add_to_text_buffer(text_buffer, "\n");
+            let src = instruction->src;
+            if (src->type == IMM) {
+                if (src->value >= 0 && src->value < (1L << 16)) {
+                    add_to_text_buffer(text_buffer, "\tmov");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, instruction->src, size);
+                    add_to_text_buffer(text_buffer, "\n");
+                }
+                elseif (src->value >= 0 && src->value < (1L << 32)) {
+                    add_to_text_buffer(text_buffer, "\tmovz");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm(src->value & ((1L << 16) - 1)), size);
+                    add_to_text_buffer(text_buffer, ", lsl #0");
+                    add_to_text_buffer(text_buffer, "\n");
+
+                    add_to_text_buffer(text_buffer, "\tmovk");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm((src->value & (((1L << 16) - 1) << 16)) >> 16), size);
+                    add_to_text_buffer(text_buffer, ", lsl #16");
+                    add_to_text_buffer(text_buffer, "\n");
+                }
+                else {
+                    add_to_text_buffer(text_buffer, "\tmovz");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm(src->value & ((1L << 16) - 1)), size);
+                    add_to_text_buffer(text_buffer, ", lsl #0");
+                    add_to_text_buffer(text_buffer, "\n");
+
+                    add_to_text_buffer(text_buffer, "\tmovk");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm(((src->value & (((1L << 16) - 1) << 16)) >> 16) & ((1L << 16) - 1)), size);
+                    add_to_text_buffer(text_buffer, ", lsl #16");
+                    add_to_text_buffer(text_buffer, "\n");
+
+                    add_to_text_buffer(text_buffer, "\tmovk");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm(((src->value & (((1L << 16) - 1) << 32)) >> 32) & ((1L << 16) - 1)), size);
+                    add_to_text_buffer(text_buffer, ", lsl #32");
+                    add_to_text_buffer(text_buffer, "\n");
+
+                    add_to_text_buffer(text_buffer, "\tmovk");
+                    add_to_text_buffer(text_buffer, " ");
+                    emit_operand_aarch64(text_buffer, instruction->dest, size);
+                    add_to_text_buffer(text_buffer, ", ");
+                    emit_operand_aarch64(text_buffer, make_imm(((src->value & (((1L << 16) - 1) << 48)) >> 48) & ((1L << 16) - 1)), size);
+                    add_to_text_buffer(text_buffer, ", lsl #48");
+                    add_to_text_buffer(text_buffer, "\n");
+                }
+            }
+            else {
+                add_to_text_buffer(text_buffer, "\tmov");
+                add_to_text_buffer(text_buffer, " ");
+                emit_operand_aarch64(text_buffer, instruction->dest, size);
+                add_to_text_buffer(text_buffer, ", ");
+                emit_operand_aarch64(text_buffer, instruction->src, size);
+                add_to_text_buffer(text_buffer, "\n");
+            }
         }
         elseif (opcode == LEA) {
             if (instruction->src->type != MEM) {
@@ -1189,9 +1255,176 @@ fn compile_string_into_builder(text_buffer: TextBuffer*) {
     dealign_stack(text_buffer, alignment_offset);
 }
 
+//fn calculate_compiletime_expression(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*): AstNode* {
+    //let binary_expression_node = (node->node as BinaryExpressionNode*);
+    //let operator = binary_expression_node->binary_expression_type;
+    //let left_expression_type = binary_expression_node->left->type;
+    //let right_expression_type = binary_expression_node->right->type;
+
+    //warn("Binary expression type " + debug_token_value_to_str(operator) + "\n");
+
+    //// TODO: make this not be duplicated
+    //if (left_expression_type == EXPRESSION_INT && right_expression_type == EXPRESSION_INT) {
+        //let left = *(binary_expression_node->left->node as int*);
+        //let right = *(binary_expression_node->right->node as int*);
+        //if (operator == PLUS || operator == MINUS || operator == ASTERISK || operator == SLASH || operator == MODULO) {
+            //let result: int;
+
+            //if (operator == PLUS) {
+                //result = left + right;
+            //}
+            //elseif (operator == MINUS) {
+                //result = left - right;
+            //}
+            //elseif (operator == ASTERISK) {
+                //result = left * right;
+            //}
+            //elseif (operator == SLASH) {
+                //result = left / right;
+            //}
+            //elseif (operator == MODULO) {
+                //result = left % right;
+            //}
+            //else {
+                //print_location_of_error(node->loc);
+                //error("Numeric operator not implemented for int compile time expression " + int_to_str(operator) + "\n");
+            //}
+            //let new_node = new AstNode*;
+            //new_node->type = EXPRESSION_INT;
+            //let int_node = new IntNode*;
+            //int_node->value = result;
+            //new_node->node = int_node;
+            //return new_node;
+        //}
+        //elseif (operator == LT || operator == LTE || operator == GT || operator == GTE || operator == EQ || operator == NEQ) {
+            //let bool_result = false;
+
+            //if (operator == LT) {
+                //bool_result = left < right;
+            //}
+            //elseif (operator == LTE) {
+                //bool_result = left <= right;
+            //}
+            //elseif (operator == GT) {
+                //bool_result = left > right;
+            //}
+            //elseif (operator == GTE) {
+                //bool_result = left >= right;
+            //}
+            //elseif (operator == EQ) {
+                //bool_result = left == right;
+            //}
+            //elseif (operator == NEQ) {
+                //bool_result = left != right;
+            //}
+            //else {
+                //print_location_of_error(node->loc);
+                //error("Boolean operator not implemented for int compile time expression " + int_to_str(operator) + "\n");
+            //}
+            //let new_node = new AstNode*;
+            //if (bool_result) {
+                //new_node->type = EXPRESSION_TRUE;
+            //}
+            //else {
+                //new_node->type = EXPRESSION_FALSE;
+            //}
+            //return new_node;
+        //}
+        //else {
+            //print_location_of_error(node->loc);
+            //error("Unknown operator to calculate int compile time expression " + int_to_str(operator) + "\n");
+        //}
+    //}
+    //else {
+        //let left: long;
+        //let right: long;
+        //if (left_expression_type == EXPRESSION_INT) {
+            //left = *(binary_expression_node->left->node as int*) as long;
+        //}
+        //else {
+            //left = *(binary_expression_node->left->node as long*);
+        //}
+
+        //if (right_expression_type == EXPRESSION_INT) {
+            //right = *(binary_expression_node->right->node as int*) as long;
+        //}
+        //else {
+            //right = *(binary_expression_node->right->node as long*);
+        //}
+        //if (operator == PLUS || operator == MINUS || operator == ASTERISK || operator == SLASH || operator == MODULO) {
+            //let result: long = 0L;
+
+            //if (operator == PLUS) {
+                //result = left + right;
+            //}
+            //elseif (operator == MINUS) {
+                //result = left - right;
+            //}
+            //elseif (operator == ASTERISK) {
+                //result = left * right;
+            //}
+            //elseif (operator == SLASH) {
+                //result = left / right;
+            //}
+            //elseif (operator == MODULO) {
+                //result = left % right;
+            //}
+            //else {
+                //print_location_of_error(node->loc);
+                //error("Numeric operator not implemented for long compile time expression " + int_to_str(operator) + "\n");
+            //}
+            //let new_node = new AstNode*;
+            //new_node->type = EXPRESSION_LONG;
+            //let long_node = new LongNode*;
+            //long_node->value = result;
+            //new_node->node = long_node;
+            //return new_node;
+        //}
+        //elseif (operator == LT || operator == LTE || operator == GT || operator == GTE || operator == EQ || operator == NEQ) {
+            //let bool_result = false;
+
+            //if (operator == LT) {
+                //bool_result = left < right;
+            //}
+            //elseif (operator == LTE) {
+                //bool_result = left <= right;
+            //}
+            //elseif (operator == GT) {
+                //bool_result = left > right;
+            //}
+            //elseif (operator == GTE) {
+                //bool_result = left >= right;
+            //}
+            //elseif (operator == EQ) {
+                //bool_result = left == right;
+            //}
+            //elseif (operator == NEQ) {
+                //bool_result = left != right;
+            //}
+            //else {
+                //print_location_of_error(node->loc);
+                //error("Boolean operator not implemented for long compile time expression " + int_to_str(operator) + "\n");
+            //}
+            //let new_node = new AstNode*;
+            //if (bool_result) {
+                //new_node->type = EXPRESSION_TRUE;
+            //}
+            //else {
+                //new_node->type = EXPRESSION_FALSE;
+            //}
+            //return new_node;
+        //}
+        //else {
+            //print_location_of_error(node->loc);
+            //error("Unknown operator to calculate long compile time expression " + int_to_str(operator) + "\n");
+        //}
+    //}
+//}
+
 fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFrame*): int {
     let binary_expression_node = (node->node as BinaryExpressionNode*);
     let operator = binary_expression_node->binary_expression_type;
+    let left_expression_type = binary_expression_node->left->type;
     let right_expression_type = binary_expression_node->right->type;
 
     let preserve_rax = right_expression_type == EXPRESSION_BINARY || right_expression_type == EXPRESSION_FUNCTION_CALL || right_expression_type == EXPRESSION_ARROW || right_expression_type == EXPRESSION_UNARY || right_expression_type == EXPRESSION_INDEX || right_expression_type == EXPRESSION_AS || right_expression_type == EXPRESSION_DOUBLE_COLON;
@@ -1210,6 +1443,7 @@ fn compile_binary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fra
         pop_register(text_buffer, make_reg(RAX), LONG_VARIABLE, 0, 16);
         free_stack_space(text_buffer, 16);
     }
+
 
 
     let right_underlying_type = get_underlying_type(right_type);
@@ -2022,7 +2256,7 @@ fn compile_assign(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
     let assign_node = (node->node as AssignNode*);
     let name = assign_node->name;
 
-    let variable_type = 0;
+    let variable_type = assign_node->type;
     if (text_buffer) {
         if (type == STATEMENT_ASSIGN) {
             variable_type = compile_expression_into_register(text_buffer, assign_node->lvalue, stack_frame, RAX, LVALUE);

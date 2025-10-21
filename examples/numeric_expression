@@ -1,0 +1,6 @@
+fn main() {
+	let a = (25 * 5 - 4) % 7; // compiles to a = 2
+	let b = 1 << (66 / 12); // compiles to b = 32
+	print("a is: " + a.int_to_str() + "\n");
+	print("b is: " + b.int_to_str() + "\n");
+}

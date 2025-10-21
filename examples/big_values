@@ -1,0 +1,23 @@
+fn main() {
+    let a: long = 5555555555L;
+    let b = 1111111;
+    let c: long = 4255677297L;
+    let d: long = 884294967298L;
+    let e: long = -4294967299L;
+    let f: long = -4444444444L;
+    let g: long = 4200094967301L;
+    let h: long = 429496730002L;
+	let i = -555555555;
+    let j: long = 9223372036854775808L;
+
+    print(a.long_to_str() + "\n");
+    print(b.int_to_str() + "\n");
+    print(c.long_to_str() + "\n");
+    print(d.long_to_str() + "\n");
+    print(e.long_to_str() + "\n");
+    print(f.long_to_str() + "\n");
+    print(g.long_to_str() + "\n");
+    print(h.long_to_str() + "\n");
+    print(i.int_to_str() + "\n");
+    print(j.long_to_str() + "\n");
+}
