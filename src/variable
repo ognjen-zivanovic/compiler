@@ -91,7 +91,7 @@ fn dereference_type(type: int): int {
     let pointer_bits = type & ((1 << 8) - 1);
 
     if ((array_bits & 1) != 0) {
-        array_bits = array_bits & (!1);
+        array_bits = array_bits & (~1);
         pointer_bits = pointer_bits | 1;
     }
     else {
@@ -366,7 +366,7 @@ fn to_const (type: int): int {
 }
 
 fn get_underlying_type(type: int): int {
-    type = type & (!(1 << 24));
+    type = type & (~(1 << 24));
     if (is_array(type)) {
         type = dereference_type(type);
         type = to_pointer(type);

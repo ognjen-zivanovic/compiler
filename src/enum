@@ -12,6 +12,7 @@ const {
     SLASH,
     MODULO,
     BANG,
+    TILDE,
 
     COMMA,
     DOT,
@@ -115,6 +116,9 @@ fn debug_token_value_to_str(token_val: int): str {
     }
     elseif (token_val == BANG) {
         return "BANG";
+    }
+    elseif (token_val == TILDE) {
+        return "TILDE";
     }
     elseif (token_val == COMMA) {
         return "COMMA";

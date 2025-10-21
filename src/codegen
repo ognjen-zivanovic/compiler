@@ -1029,7 +1029,7 @@ fn dealign_stack(text_buffer: TextBuffer*, offset: int) {
 fn allocate_stack_space(text_buffer: TextBuffer*, stack_frame: StackFrame*) {
     let stack_frame_size = -(stack_frame->stack_size);
     if (stack_frame_size > 0) {
-        stack_frame_size = (stack_frame_size + 15) & (!15);
+        stack_frame_size = (stack_frame_size + 15) & (~15);
         //add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
         add_instruction(text_buffer, make_imm(stack_frame_size as long), make_reg(RSP), SUB, LONG_VARIABLE);
     }
@@ -1038,7 +1038,7 @@ fn allocate_stack_space(text_buffer: TextBuffer*, stack_frame: StackFrame*) {
 fn deallocate_stack_space(text_buffer: TextBuffer*, stack_frame: StackFrame*) {
     let stack_frame_size = -(stack_frame->stack_size);
     if (stack_frame_size > 0) {
-        stack_frame_size = (stack_frame_size + 15) & (!15);
+        stack_frame_size = (stack_frame_size + 15) & (~15);
         //add_to_text_buffer(text_buffer, "\tsubq $" + int_to_str(stack_frame_size) + ", %rsp\n");
         add_instruction(text_buffer, make_imm(stack_frame_size as long), make_reg(RSP), ADD, LONG_VARIABLE);
     }
@@ -1152,9 +1152,17 @@ fn compile_unary_expression(text_buffer: TextBuffer*, node: AstNode*, stack_fram
             add_instruction(text_buffer, make_reg(RAX), make_reg(RAX), TESTZ, BOOL_VARIABLE);
         }
         else {
-            //add_to_text_buffer(text_buffer, "\tnot " + register_name + "\n");
-            add_instruction(text_buffer, 0 as Operand*, make_reg(RAX), NOT, value_type);
+            print_location_of_error(node->loc);
+            error("Expected bool type, got " + debug_variable_type_name(value_type) + "\n");
         }
+    }
+    elseif (unary_expression_node->unary_expression_type == TILDE) {
+        if (type == LVALUE) {
+            print_location_of_error(node->loc);
+            error("Tilde is not allowed as lvalue\n");
+        }
+        //add_to_text_buffer(text_buffer, "\tnot " + register_name + "\n");
+        add_instruction(text_buffer, 0 as Operand*, make_reg(RAX), NOT, value_type);
     }
     else {
         print_location_of_error(node->loc);
@@ -1567,7 +1575,7 @@ fn compile_function_call(node: AstNode*, text_buffer: TextBuffer*, stack_frame: 
 
         let alignment_offset = align_stack(text_buffer, rsp_offset - arguments_size);
         
-        let arguments_size_aligned = (arguments_size + 15) & (!15);
+        let arguments_size_aligned = (arguments_size + 15) & (~15);
         reserve_stack_space(text_buffer, arguments_size_aligned);
 
         let offset = 0;
@@ -2280,7 +2288,7 @@ fn compile_delete(text_buffer: TextBuffer*, node: AstNode*, stack_frame: StackFr
         add_instruction(text_buffer, make_stdlib_label("free"), 0 as Operand*, CALL, VOID);
     }
     else {
-        if (!is_pointer(value_type)) {
+        if (!is_pointer(value_type) && value_type != PTR_VARIABLE) {
             print_location_of_error(node->loc);
             error("Expected pointer type, got " + debug_variable_type_name(value_type) + "\n");
         }

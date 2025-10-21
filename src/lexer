@@ -362,6 +362,9 @@ fn lex_next_token(new_token: Token*) {
                 new_token->type = BANG;
             }
         }
+        elseif (curr == '~') {
+            new_token->type = TILDE;
+        }
         elseif (curr == '&') {
             let next = get_next_character();
             if (next == '&') {

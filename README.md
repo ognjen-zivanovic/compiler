@@ -44,6 +44,16 @@ fn main() {
 }
 ```
 
+Example of an error
+
+```
+
+	5 = a;
+	^
+Error in file examples/asign_to_lvalue, line 3, column 2:
+Int expression is not allowed as lvalue
+```
+
 You can find more examples in the `examples` directory.
 
 ## License
