@@ -520,7 +520,7 @@ fn get_statement(): AstNode* {
             if (peek_next_token()->type == LBRACE) {
                 consume_next_token();
 
-                let const_value = 0 as long;
+                let const_value = 0L;
 
                 while (peek_next_token()->type != RBRACE) {
                     token = expect_token(IDENT);

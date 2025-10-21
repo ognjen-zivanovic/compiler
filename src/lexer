@@ -218,8 +218,8 @@ fn lex_next_token(new_token: Token*) {
         }
     }
     elseif (isDigit()) {
-        let value = new int*;
-        *value = 0;
+        let value = new long*;
+        *value = 0L;
         while (lexer_position < text_size) {
             let curr = get_curr_character();
             if (!isDigit()) {
@@ -230,8 +230,15 @@ fn lex_next_token(new_token: Token*) {
             *value = *value * 10 + digit;
             lexer_position = lexer_position + 1;
         }
-        new_token->type = INT;
-        new_token->value = value;
+        if (get_curr_character() == 'L') {
+            lexer_position = lexer_position + 1;
+            new_token->type = LONG;
+            new_token->value = value;
+        }
+        else {
+            new_token->type = INT;
+            new_token->value = value as int*;
+        }
     }
     else {
         let curr = get_curr_character();
