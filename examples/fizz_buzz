@@ -1,0 +1,17 @@
+fn main() {
+    for (let i = 1; i <= 100; i = i + 1) {
+        let output_string = "";
+        if (i % 3 == 0) {
+            output_string = output_string + "Fizz";
+        }
+        if (i % 5 == 0) {
+            output_string = output_string + "Buzz";
+        }
+        if (output_string == "") {
+            print(i.int_to_str() + "\n");
+        }
+        else {
+            print(output_string + "\n");
+        }
+    }
+}

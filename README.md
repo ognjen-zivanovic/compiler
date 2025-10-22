@@ -115,6 +115,11 @@ fn add(a: int, b: int): int {
     return a + b;
 }
 
+// function calls
+let b = add(1, 2);
+// the first argument can be put in front
+let b = 1.add(2);
+
 // enum-like constants
 const {
     RED, // has value 0
